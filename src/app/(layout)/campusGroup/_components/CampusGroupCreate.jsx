@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import {
@@ -8,6 +8,7 @@ import {
     postCampusGroupSuccess
 } from '@/Redux/features/campusGroup/campusGroupSlice';
 import { sanitizeText } from '@/components/utils/sanitizeText';
+import TextField from '@/components/utils/TextField';
 
 const CampusGroupCreate = (props) => {
     const {
@@ -29,13 +30,30 @@ const CampusGroupCreate = (props) => {
         zoomEnabled: false,
         isActive: false,
     });
+    const [errors, setErrors] = useState({});
+    const [touchedFields, setTouchedFields] = useState({});
+    const fieldRefs = useRef({
+        campusGroupName: null,
+        licenseCount: null,
+        gpsEnabled: null,
+        zoomEnabled: null,
+        isActive: null,
+    });
 
     // Function to update form data
-    const updateFormData = (key, value) => {
-        setFormData((prevData) => ({
+    const handleChange = (name, value) => {
+        setFormData(prevData => ({
             ...prevData,
-            [key]: value,
+            [name]: value
         }));
+
+        // Clear error when user starts typing
+        if (errors[name]) {
+            setErrors(prev => ({
+                ...prev,
+                [name]: undefined
+            }));
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -47,6 +65,43 @@ const CampusGroupCreate = (props) => {
             toast.error(err || "Failed to submit data. Please try again.", {
                 position: "top-right",
                 duration: 2000,
+            });
+        }
+    };
+
+    const handleBlur = (name) => {
+        if (!touchedFields[name]) {
+            setTouchedFields(prev => ({
+                ...prev,
+                [name]: true
+            }));
+        }
+    };
+
+    // Scroll to the first field with error
+    const scrollToFirstError = () => {
+        const firstErrorField = Object.keys(errors)[0];
+        if (!firstErrorField) return;
+
+        let refToScroll = null;
+
+        // Map field names to their refs
+        if (firstErrorField === 'campusGroupName') {
+            refToScroll = fieldRefs.current.campusGroupName;
+        } else if (firstErrorField === 'licenseCount') {
+            refToScroll = fieldRefs.current.licenseCount;
+        } else if (firstErrorField === 'gpsEnabled') {
+            refToScroll = fieldRefs.current.gpsEnabled;
+        } else if (firstErrorField === 'zoomEnabled') {
+            refToScroll = fieldRefs.current.zoomEnabled;
+        } else if (firstErrorField === 'isActive') {
+            refToScroll = fieldRefs.current.isActive;
+        }
+
+        if (refToScroll && refToScroll.current) {
+            refToScroll.current.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
             });
         }
     };
@@ -72,18 +127,26 @@ const CampusGroupCreate = (props) => {
         }));
         dispatch(postCampusGroupSuccess(null));
         closeModal();
-    }, [campusGroupPostData, closeModal]);
+    }, [campusGroupPostData, closeModal, token]);
 
     // Handle API errors
     useEffect(() => {
         if (!error) return;
+        // Handle backend validation errors
         if (Array.isArray(error.error)) {
+            const newErrors = {};
             error.error.forEach((err) => {
+                newErrors[err.field] = err.message;
+                // Display error in toast
                 toast.error(`${err.field || 'Error'}: ${err.message}`, {
                     position: "top-right",
                     duration: 2000,
                 });
             });
+            setErrors(newErrors);
+
+            // Scroll to the first error after a small delay to allow state to update
+            setTimeout(scrollToFirstError, 100);
         } else if (error.message) {
             toast.error(error.message, { position: "top-right", duration: 2000 });
         } else {
@@ -142,7 +205,19 @@ const CampusGroupCreate = (props) => {
                                     </div>
 
                                     <div className="space-y-6 py-1">
-                                        {/* Campus Name Field */}
+                                        {/* Campus Group Name Field */}
+                                        {/* <div className="w-full" ref={fieldRefs.current.campusGroupName}>
+                                            <TextField
+                                                label="Campus Group Name"
+                                                placeholder="Enter Campus Group Name"
+                                                name="campusGroupName"
+                                                onChange={handleChange}
+                                                onBlur={handleBlur}
+                                                value={formData.campusGroupName}
+                                                error={errors.campusGroupName}
+                                                required
+                                            />
+                                        </div> */}
                                         <div className="flex flex-col md:flex-row md:items-center gap-5">
                                             <label htmlFor="campusGroupName" className="md:w-1/3 flex items-center">
                                                 <span className="text-sm font-medium text-secondary">

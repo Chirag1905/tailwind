@@ -1,14 +1,17 @@
 @import "tailwindcss";
 @layer theme, base, components, utilities;
- 
+
 @custom-variant dark (&:where([data-theme=dark], [data-theme=light], [data-theme=red], [data-theme=blush], [data-theme=orange], [data-theme=green], [data-theme=cyan], [data-theme=blue], [data-theme=indigo]) *);
 
-*, :before, :after {
-    box-sizing: border-box; 
+*,
+:before,
+:after {
+    box-sizing: border-box;
     border-style: solid;
     border-color: #e5e7eb;
 }
- :root {
+
+:root {
     --font-family: Mulish;
 
     --inset-shadow-sm: 0 .1rem .4rem rgba(25, 24, 24, .1);
@@ -23,15 +26,15 @@
     --color-theme-blush: #dd5e89;
     --color-theme-red: #f73859;
 
-     --theme-indigo: #4C3575;
+    /* --theme-indigo: #4C3575;
     --theme-blue: #1363DF;
     --theme-cyan: #219F94;
     --theme-green: #8CBA51;
     --theme-orange: #FF9234;
     --theme-blush: #dd5e89;
-    --theme-red: #f73859;
+    --theme-red: #f73859; */
 
-      --white: #fff;
+    --white: #fff;
     --white-10: #ffffff1a;
     --black: #000;
     --black-50: rgba(0, 0, 0, 0.5);
@@ -46,7 +49,7 @@
     --sky: #86b7fe;
     --blue: #0d6efd;
 
-     --primary: #191a1c;
+    --primary: #191a1c;
     --primary-10: #191a1c1a;
     --secondary: #837788;
     --chart-color1: #191a1c;
@@ -79,10 +82,10 @@
     --color-chart-color4: #484261;
     --color-chart-color5: #717788;
 }
- 
+
 
 @theme {
-    --blur-2xs: 2px; 
+    --blur-2xs: 2px;
     --color-theme-indigo: #5c6ac4;
     --color-theme-blue: #007bff;
     --color-theme-cyan: #17a2b8;
@@ -136,43 +139,43 @@
 @theme inline {
     --color-secondary: var(--secondary);
     --color-theme-indigo: var(--theme-indigo),
-    --color-theme-blue: var(--theme-blue),
-    --color-theme-cyan: var(--theme-cyan),
-    --color-theme-green: var(--theme-green),
-    --color-theme-orange: var(--theme-orange),
-    --color-theme-blush: var(--theme-blush),
-    --color-theme-red: var(--theme-red),
+        --color-theme-blue: var(--theme-blue),
+        --color-theme-cyan: var(--theme-cyan),
+        --color-theme-green: var(--theme-green),
+        --color-theme-orange: var(--theme-orange),
+        --color-theme-blush: var(--theme-blush),
+        --color-theme-red: var(--theme-red),
 
-    --color-white: var(--white),
-    --color-white-10: var(--white-10),
-    --color-black: var(--black),
-    --color-black-50: var(--black-50),
-    --color-dark: var(--dark),
-    --color-grey: var(--grey),
-    --color-success: var(--success),
-    --color-success-50: var(--success-50),
-    --color-warning: var(--warning),
-    --color-info: var(--info),
-    --color-danger: var(--danger),
-    --color-sky: var(--sky),
-    --color-blue: var(--blue),
+        --color-white: var(--white),
+        --color-white-10: var(--white-10),
+        --color-black: var(--black),
+        --color-black-50: var(--black-50),
+        --color-dark: var(--dark),
+        --color-grey: var(--grey),
+        --color-success: var(--success),
+        --color-success-50: var(--success-50),
+        --color-warning: var(--warning),
+        --color-info: var(--info),
+        --color-danger: var(--danger),
+        --color-sky: var(--sky),
+        --color-blue: var(--blue),
 
-    --color-body-color: var(--body-color),
-    --color-font-color: var(--font-color),
-    --color-font-color-100: var(--font-color-100),
-    --color-font-color-200: var(--font-color-200),
-    --color-font-color-400: var(--font-color-400),
-    --color-card-color: var(--card-color),
-    --color-border-color: var(--border-color),
+        --color-body-color: var(--body-color),
+        --color-font-color: var(--font-color),
+        --color-font-color-100: var(--font-color-100),
+        --color-font-color-200: var(--font-color-200),
+        --color-font-color-400: var(--font-color-400),
+        --color-card-color: var(--card-color),
+        --color-border-color: var(--border-color),
 
-    --color-primary: var(--primary),
-    --color-primary-10: var(--primary-10),
-    --color-secondary: var(--secondary),
-    --color-chart-color1: var(--chart-color1),
-    --color-chart-color2: var(--chart-color2),
-    --color-chart-color3: var(--chart-color3),
-    --color-chart-color4: var(--chart-color4),
-    --color-chart-color5: var(--chart-color5),
+        --color-primary: var(--primary),
+        --color-primary-10: var(--primary-10),
+        --color-secondary: var(--secondary),
+        --color-chart-color1: var(--chart-color1),
+        --color-chart-color2: var(--chart-color2),
+        --color-chart-color3: var(--chart-color3),
+        --color-chart-color4: var(--chart-color4),
+        --color-chart-color5: var(--chart-color5),
 }
 
 
@@ -539,7 +542,7 @@ body .ql-editor.ql-blank::before {
 }
 
 .cus-scrollbar::-webkit-scrollbar-thumb {
-    background: var(--scrollbar-thumb);
+    background: var(--color-scrollbar-thumb);
     border-radius: 100rem;
 }
 
@@ -562,7 +565,7 @@ body .rdt_TableHeadRow {
 }
 
 body .rdt_TableRow:not(:last-of-type) {
-    border-color: var(--border-color);
+    border-color: var(--color-border-color);
 }
 
 body .rdt_Pagination {
@@ -601,8 +604,8 @@ body .rdt_TableCol {
 }
 
 body .rdt_Pagination select {
-    background-color: var(--dark);
-    border: 1px solid var(--border-color);
+    background-color: var(--color-dark);
+    border: 1px solid var(--color-border-color);
 }
 
 body .rdt_Pagination select option {
@@ -619,12 +622,12 @@ body .react-data-table.striped .rdt_TableHeadRow {
 
 body .react-data-table.striped .rdt_TableRow {
     border-bottom: 0;
-    border-top: 1px dashed var(--border-color);
+    border-top: 1px dashed var(--color-border-color);
 }
 
 body .react-data-table.striped .rdt_TableCell:not(:last-of-type),
 body .react-data-table.striped .rdt_TableCol:not(:last-of-type) {
-    border-inline-end: 1px dashed var(--border-color);
+    border-inline-end: 1px dashed var(--color-border-color);
 }
 
 /* react data table css */
@@ -642,8 +645,8 @@ body .react-data-table.striped .rdt_TableCol:not(:last-of-type) {
 .form-control .form-textarea {
     padding: 10px 12px;
     border-radius: 6px;
-    border: 1px solid var(--border-color);
-    background-color: var(--card-color);
+    border: 1px solid var(--color-border-color);
+    background-color: var(--color-card-color);
     width: 100%;
 }
 
@@ -657,21 +660,21 @@ body .react-data-table.striped .rdt_TableCol:not(:last-of-type) {
     outline: none;
     border: 1px solid var(--primary);
     color: var(--primary);
-    box-shadow: var(--shadow-normal);
+    box-shadow: var(--inset-shadow-normal);
 }
 
 .form-control .form-input:disabled,
 .form-control .form-textarea:disabled {
     cursor: not-allowed;
-    background-color: var(--border-color);
+    background-color: var(--color-border-color);
 }
 
 .form-control .form-input[type="file"]::-webkit-file-upload-button {
-    background: var(--body-color);
+    background: var(--color-body-color);
     border: 0;
     padding: 6px 12px;
     margin-right: 12px;
-    border-right: 1px solid var(--border-color);
+    border-right: 1px solid var(--color-border-color);
 }
 
 .print-invoice textarea {
@@ -719,8 +722,8 @@ body .react-data-table.striped .rdt_TableCol:not(:last-of-type) {
 .floating-form-control .form-textarea {
     padding: 24px 12px 8px;
     border-radius: 6px;
-    border: 1px solid var(--border-color);
-    background-color: var(--card-color);
+    border: 1px solid var(--color-border-color);
+    background-color: var(--color-card-color);
     width: 100%;
 }
 
@@ -735,7 +738,7 @@ body .react-data-table.striped .rdt_TableCol:not(:last-of-type) {
     outline: none;
     border: 1px solid var(--primary);
     color: var(--primary);
-    box-shadow: var(--shadow-normal);
+    box-shadow: var(--inset-shadow-normal);
 }
 
 .floating-form-control .form-input:focus~label,
@@ -761,7 +764,7 @@ body .react-data-table.striped .rdt_TableCol:not(:last-of-type) {
     z-index: -1;
     height: 1.5em;
     content: "";
-    background-color: var(--card-color);
+    background-color: var(--color-card-color);
 }
 
 .floating-form-control .form-select {
@@ -789,7 +792,7 @@ body .react-data-table.striped .rdt_TableCol:not(:last-of-type) {
     margin-block-start: .3em;
     margin-inline-start: -1.5rem;
     float: left;
-    background-color: var(--border-color);
+    background-color: var(--color-border-color);
     border-radius: 0.25rem;
     appearance: none;
     -webkit-appearance: none;
@@ -896,7 +899,7 @@ body .react-data-table.striped .rdt_TableCol:not(:last-of-type) {
     margin-block-start: .35em;
     margin-inline-start: -1.5rem;
     float: inline-start;
-    background-color: var(--border-color);
+    background-color: var(--color-border-color);
     border-radius: 100rem;
     appearance: none;
     -webkit-appearance: none;
@@ -1022,8 +1025,8 @@ body .react-data-table.striped .rdt_TableCol:not(:last-of-type) {
 [data-theme="dark"] body .apexcharts-tooltip .apexcharts-tooltip-title,
 [data-theme="dark"] body .apexcharts-xaxistooltip,
 [data-theme="dark"] body .apexcharts-yaxistooltip {
-    background: var(--card-color);
-    border-color: var(--border-color);
+    background: var(--color-card-color);
+    border-color: var(--color-border-color);
     color: var(--color-font-color);
 }
 
@@ -1075,7 +1078,7 @@ body .apexcharts-legend-marker {
 .fc-theme-standard .fc-scrollgrid,
 .fc-theme-standard td,
 .fc-theme-standard th {
-    border-color: var(--border-color);
+    border-color: var(--color-border-color);
 }
 
 /* full calendar css start */

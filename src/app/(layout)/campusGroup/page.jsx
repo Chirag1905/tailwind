@@ -21,6 +21,7 @@ import useDebounce from '@/components/utils/useDebounce';
 import toast from 'react-hot-toast';
 import LoadingSpinner from '@/components/utils/LoadingSpinner';
 import { sanitizeText } from '@/components/utils/sanitizeText';
+import { Skeleton } from 'antd';
 
 const CampusGroup = () => {
   // Constants
@@ -186,24 +187,13 @@ const CampusGroup = () => {
       )}
 
       {!isCreateModalOpen && !isEditModalOpen && (
-        <div className="pt-6 md:pt-5 px-5 sm:px-6 md:px-0 bg-card-color border rounded-xl shadow-xl">
+        <div className="pt-6 md:pt-7 px-5 sm:px-6 md:px-0 bg-card-color border rounded-xl shadow-xl">
           {/* Header Section */}
-          <div className="flex flex-col md:mx-9 md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+          <div className="flex flex-col px-5 md:mx-6 md:flex-row justify-between items-start md:items-center">
             <div className="flex items-center w-full md:w-auto">
               <h5 className="text-lg sm:text-xl font-medium">
                 Campus Group Listing
               </h5>
-              {/* {isAscending ? (
-                <IconCaretDownFilled
-                  onClick={() => setIsAscending(false)}
-                  className="cursor-pointer ml-2"
-                />
-              ) : (
-                <IconCaretUpFilled
-                  onClick={() => setIsAscending(true)}
-                  className="cursor-pointer ml-2"
-                />
-              )} */}
             </div>
 
             <div className='flex items-center gap-2 md:gap-4 w-full md:w-auto'>
@@ -212,9 +202,9 @@ const CampusGroup = () => {
                 <input
                   type="text"
                   id="team_board_search"
-                  className="form-input !rounded-e-none !py-[6px]"
+                  className="form-input !rounded-e-none !py-[10px]"
                   placeholder="Search Campus Group..."
-                  value={sanitizeText(searchText || "")}
+                  value={sanitizeText(searchText)}
                   onChange={handleSearch}
                 />
                 <button className="btn border border-border-color !rounded-s-none">
@@ -268,18 +258,48 @@ const CampusGroup = () => {
           </div>
 
           {/* Content Section */}
-          <div
-            className={`my-6 md:my-[10px] px-2 sm:px-4 md:px-[30px] h-[60vh] md:h-[70vh] ${loading ? '' : 'overflow-auto cus-scrollbar'
-              }`}
-          >
+          <div className={`my-6 md:my-8 px-2 sm:px-4 md:px-10 h-fit md:h-max ${loading ? '' : 'overflow-auto cus-scrollbar'}`}>
             {loading ? (
-              <LoadingSpinner />
+              <ul className="flex flex-col gap-4 md:gap-6 h-full">
+                {[...Array(5)].map((_, index) => (
+                  <li
+                    className="flex items-center justify-between gap-3 p-3 bg-white/10 rounded-xl shadow-md border"
+                    key={`skeleton-${index}`}
+                  >
+                    <div className="flex items-center gap-3 min-w-0 w-full">
+                      <Skeleton.Avatar
+                        active
+                        size={36}
+                        shape="square"
+                        className="rounded-md min-w-[36px]"
+                      />
+                      <Skeleton.Input
+                        active
+                        style={{ width: '60%', height: 24 }}
+                        className="rounded-md"
+                      />
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <Skeleton.Button
+                        active
+                        style={{ width: 70, height: 32 }}
+                        className="rounded-md"
+                      />
+                      <Skeleton.Button
+                        active
+                        style={{ width: 70, height: 32 }}
+                        className="rounded-md"
+                      />
+                    </div>
+                  </li>
+                ))}
+              </ul>
             ) : (
               <ul className="flex flex-col gap-4 md:gap-6 h-full">
                 {data?.length > 0 ? (
                   data?.map((item, index) => (
                     <li
-                      className="flex items-center justify-between gap-3 p-3 bg-white/10 rounded-xl shadow-md border"
+                      className="flex items-center justify-between gap-3 p-3 bg-card-color rounded-xl shadow border"
                       key={`CampusGroup-${item.id || index}`}
                     >
                       <div className="flex items-center gap-3 min-w-0">
