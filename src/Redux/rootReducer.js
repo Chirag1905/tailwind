@@ -5,6 +5,7 @@ import campusGroupReducer from "./features/campusGroup/campusGroupSlice";
 import campusReducer from "./features/campus/campusSlice";
 import storage from "redux-persist/lib/storage";
 import { persistReducer } from "redux-persist";
+import { watchCustomization } from "./features/customization/customizationSaga";
 
 // Nested persist config only for campusGroup.campusGroupFormData
 const campusGroupPersistConfig = {
@@ -35,6 +36,7 @@ const appReducer = combineReducers({
   modal: modalReducer,
   campusGroup: persistedCampusGroupReducer,
   campus: persistedCampusReducer,
+  watchCustomization: watchCustomization
 });
 
 const rootReducer = (state, action) => {

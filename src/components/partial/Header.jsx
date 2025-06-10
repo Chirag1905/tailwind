@@ -53,8 +53,17 @@ import {
 import Image from 'next/image';
 import toast from 'react-hot-toast';
 import { useFavicon } from '../utils/useFavicon';
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function Header({ toggleMobileNav, mobileNav, toggleNote, toggleChat }) {
+    const dispatch = useDispatch();
+    const customization = useSelector((state) => state.customization);
+    const authToken = useSelector((state) => state.auth.token); // Assuming you have auth token
+
+    // Load customization on mount
+    useEffect(() => {
+        dispatch(fetchCustomization('master'));
+    }, [dispatch]);
 
     // Search bar open
     const [searchBar, setSearchBar] = useState(false);
