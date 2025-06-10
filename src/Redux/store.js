@@ -8,9 +8,9 @@ import rootSaga from "./rootSaga";
 const sagaMiddleware = createSagaMiddleware();
 
 const persistConfig = {
-  key: 'root',
+  key: "root",
   storage,
-  whitelist: ['auth'],
+  whitelist: ["auth", "campusGroup", "campus"],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -19,8 +19,8 @@ export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      thunk: false, // disable thunk because we use saga
-      serializableCheck: false, // avoid issues with redux-persist
+      thunk: false,
+      serializableCheck: false,
     }).concat(sagaMiddleware),
 });
 

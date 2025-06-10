@@ -25,6 +25,7 @@ const campusGroupSlice = createSlice({
     campusGroupFetchData: null,
     campusGroupPostData: null,
     campusGroupPutData: null,
+    campusGroupFormData: null,
     loading: false,
     error: null,
   },
@@ -34,6 +35,12 @@ const campusGroupSlice = createSlice({
     ...createAsyncReducers("getCampusGroupFetch", "campusGroupFetchData"),
     ...createAsyncReducers("postCampusGroup", "campusGroupPostData"),
     ...createAsyncReducers("putCampusGroup", "campusGroupPutData"),
+    setCampusGroupFormData: (state, action) => {
+      state.campusGroupFormData = action.payload;
+    },
+    resetCampusGroupFormData: (state) => {
+      state.campusGroupFormData = null;
+    },
   },
 });
 
@@ -58,6 +65,9 @@ export const {
   putCampusGroupRequest,
   putCampusGroupSuccess,
   putCampusGroupFailure,
+
+  setCampusGroupFormData,
+  resetCampusGroupFormData,
 } = campusGroupSlice.actions;
 
 export default campusGroupSlice.reducer;

@@ -229,14 +229,14 @@ const Signin = () => {
                                 Remember me
                             </label>
                         </div>
-                        <Link href="/forgotPassword" prefetch={false} className='text-primary text-[14px]/[20px] sm:text-[16px]/[24px]'>
+                        {/* <Link href="/forgotPassword" prefetch={false} className='text-primary text-[14px]/[20px] sm:text-[16px]/[24px]'>
                             Forgot Password?
-                        </Link>
+                        </Link> */}
                     </div>
                     {signInError && <p className="error mb-4 text-red-500">{'The email or password you entered is incorrect. Please try again!'}</p>}
                     <button
                         type="submit"
-                        className='btn btn-secondary large w-full uppercase'
+                        className='btn btn-primary large w-full uppercase'
                         disabled={signInLoading}
                     >
                         {signInLoading ? 'Signing in...' : 'Sign In'}

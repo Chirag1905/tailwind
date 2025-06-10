@@ -21,7 +21,7 @@ import useDebounce from '@/components/utils/useDebounce';
 import toast from 'react-hot-toast';
 import LoadingSpinner from '@/components/utils/LoadingSpinner';
 import { sanitizeText } from '@/components/utils/sanitizeText';
-import { Skeleton } from 'antd';
+import { Empty, Skeleton } from 'antd';
 
 const CampusGroup = () => {
   // Constants
@@ -33,11 +33,16 @@ const CampusGroup = () => {
     totalElements: 0,
   }), []);
 
+  // Memoized selectors to prevent unnecessary re-renders
+  const selectCampusGroup = useCallback((state) => state.campusGroup, []);
+  const selectAuth = useCallback((state) => state.auth, []);
+  const selectModal = useCallback((state) => state.modal, []);
+
   // Redux state
   const dispatch = useDispatch();
-  const { campusGroupPaginationData, loading, error } = useSelector((state) => state.campusGroup);
-  const { token } = useSelector((state) => state.auth);
-  const { modals } = useSelector((state) => state.modal);
+  const { campusGroupPaginationData, loading, error } = useSelector(selectCampusGroup);
+  const { token } = useSelector(selectAuth);
+  const { modals } = useSelector(selectModal);
 
   // Derived modal states
   const isCreateModalOpen = useMemo(() => modals.createCampusGroup.isOpen, [modals.createCampusGroup.isOpen]);
@@ -153,6 +158,31 @@ const CampusGroup = () => {
   //   }
   // }, [error]);
 
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showFilterDropdown) {
+        const dropdowns = document.querySelectorAll('.custom-dropdown-container');
+        let clickedOutside = true;
+
+        dropdowns.forEach(dropdown => {
+          if (dropdown.contains(event.target)) {
+            clickedOutside = false;
+          }
+        });
+
+        if (clickedOutside) {
+          setShowFilterDropdown(false);
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showFilterDropdown]);
+
   return (
     <>
       <div>
@@ -201,7 +231,6 @@ const CampusGroup = () => {
               <div className='w-full md:w-auto card bg-card-color rounded-xl form-control flex'>
                 <input
                   type="text"
-                  id="team_board_search"
                   className="form-input !rounded-e-none !py-[10px]"
                   placeholder="Search Campus Group..."
                   value={sanitizeText(searchText)}
@@ -328,8 +357,12 @@ const CampusGroup = () => {
                     </li>
                   ))
                 ) : (
-                  <li className="flex items-center justify-center h-full text-gray-500">
-                    No Campus Groups available
+                  <li className="text-center py-8 px-2 md:px-4">
+                    <Empty
+                      image={Empty.PRESENTED_IMAGE_SIMPLE}
+                      description="No Campus Groups Found"
+                      className="flex flex-col items-center justify-center"
+                    />
                   </li>
                 )}
               </ul>

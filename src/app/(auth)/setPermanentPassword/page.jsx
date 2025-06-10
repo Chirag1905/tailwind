@@ -165,7 +165,7 @@ export default function SetPermanentPassword() {
                     </div>
                 </div>
                 <button
-                    className='btn btn-secondary large w-full uppercase'
+                    className='btn btn-primary large w-full uppercase'
                     type='submit'
                     disabled={loading}
                 >

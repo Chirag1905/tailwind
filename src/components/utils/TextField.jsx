@@ -13,6 +13,7 @@
 // />
 import { forwardRef } from "react";
 import { Input } from "antd";
+import { sanitizeText } from "./sanitizeText";
 
 const TextField = forwardRef(
     (
@@ -49,6 +50,13 @@ const TextField = forwardRef(
             borderless: { variant: 'borderless' }
         }[variant] || {};
 
+        // Handle blur event conditionally
+        const handleBlur = (e) => {
+            if (onBlur) {
+                onBlur(name, e.target.value);
+            }
+        };
+
         return (
             <div className={`form-control ${className}`}>
                 {label && (
@@ -67,7 +75,7 @@ const TextField = forwardRef(
                         type={type}
                         placeholder={placeholder}
                         onChange={(e) => onChange(name, e.target.value)}
-                        onBlur={(e) => onBlur(name)}
+                        onBlur={handleBlur}
                         value={value}
                         required={required}
                         disabled={disabled}
@@ -89,7 +97,6 @@ const TextField = forwardRef(
                         <p className="text-gray-500">{helperText}</p>
                     ) : null}
                 </div>
-
             </div>
         );
     }

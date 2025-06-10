@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react'
+import { createRef, Fragment, useCallback, useEffect, useRef, useState } from 'react'
 import {
     getCampusGroupFetchRequest,
     getCampusGroupPaginationRequest,
@@ -8,8 +8,9 @@ import {
 } from '@/Redux/features/campusGroup/campusGroupSlice';
 import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
-import { IconBooksOff } from '@tabler/icons-react';
+import { IconBooksOff, IconChevronLeftPipe, IconChevronRightPipe, IconSquareRoundedCheck, IconSquareRoundedX } from '@tabler/icons-react';
 import { sanitizeText } from '@/components/utils/sanitizeText';
+import TextField from '@/components/utils/TextField';
 
 const CampusGroupEdit = (props) => {
     const {
@@ -19,50 +20,85 @@ const CampusGroupEdit = (props) => {
         setSelectedItem
     } = props;
 
+    // Memoized selectors to prevent unnecessary re-renders
+    const selectCampusGroup = useCallback((state) => state.campusGroup, []);
+    const selectAuth = useCallback((state) => state.auth, []);
+
     // Redux state
     const dispatch = useDispatch();
-    const { campusGroupFetchData, campusGroupPutData, loading, error } = useSelector((state) => state.campusGroup);
-    const { token } = useSelector((state) => state.auth);
+    const { campusGroupFetchData, campusGroupPutData, loading, error } = useSelector(selectCampusGroup);
+    const { token } = useSelector(selectAuth);
+
     // Component state
     const [activeTab, setActiveTab] = useState(0);
-    const [formData, setFormData] = useState({
-        campusGroupName: "",
-        licenseCount: "",
-        gpsEnabled: false,
-        zoomEnabled: false,
-        isActive: false,
+    const [formData, setFormData] = useState({});
+    const [errors, setErrors] = useState({});
+    const fieldRefs = useRef({
+        campusGroupName: createRef(),
+        licenseCount: createRef(),
+        gpsEnabled: createRef(),
+        zoomEnabled: createRef(),
+        isActive: createRef(),
     });
 
-    // Function to update form data
-    const updateFormData = (key, value) => {
-        setFormData((prevData) => ({
+    // Memoized form data update
+    const handleChange = useCallback((name, value) => {
+        setFormData(prevData => ({
             ...prevData,
-            [key]: value,
+            [name]: value
         }));
-    };
+
+        // Clear error when user starts typing
+        setErrors(prev => (prev[name] ? { ...prev, [name]: undefined } : prev));
+    }, []);
+
+    // License count specific handler
+    const handleLicenseCountChange = useCallback((name, value) => {
+        // Handle both direct value and event object
+        const inputValue = typeof value === 'string' ? value : (value?.target?.value || '');
+        const digitsOnly = inputValue.replace(/\D/g, '');
+        const limitedValue = digitsOnly.slice(0, 9);
+        handleChange("licenseCount", limitedValue);
+    }, [handleChange]);
+
+    // Memoized success/close handler
+    const handleSuccessOrClose = useCallback(() => {
+        setErrors({});
+        dispatch(putCampusGroupSuccess(null));
+        closeModal();
+    }, [dispatch, closeModal]);
 
     // Form submission handler
-    const handleSubmit = async (e) => {
+    const handleSubmit = useCallback(async (e) => {
         e.preventDefault();
         try {
-            const params = {
-                id: selectedItem?.id,
-                formData,
-                token
-            };
             dispatch(putCampusGroupRequest({
                 data: formData,
-                token,
                 id: selectedItem?.id,
+                token,
             }));
         } catch (err) {
             console.error("Error submitting data:", err);
-            toast.error(err || "An unexpected error occurred. Please try again.", {
+            toast.error(err?.message || "Failed to submit data. Please try again.", {
                 position: "top-right",
                 duration: 2000,
             });
         };
-    }
+    }, [formData, token, dispatch]);
+
+    // Memoized scroll to error function
+    const scrollToFirstError = useCallback(() => {
+        const firstErrorField = Object.keys(errors)[0];
+        if (!firstErrorField) return;
+
+        const ref = fieldRefs.current[firstErrorField];
+        if (ref?.current) {
+            ref.current.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+        }
+    }, [errors]);
 
     //  const modules = [
     //     "Instant Fee",
@@ -93,8 +129,8 @@ const CampusGroupEdit = (props) => {
     useEffect(() => {
         if (selectedItem) {
             dispatch(getCampusGroupFetchRequest({
-                token,
                 id: selectedItem?.id,
+                token,
             }));
         }
     }, [selectedItem]);
@@ -123,7 +159,7 @@ const CampusGroupEdit = (props) => {
         if (!campusGroupPutData?.message) return;
         toast.success(campusGroupPutData.message, {
             position: "top-right",
-            duration: 5000,
+            duration: 4000,
         });
 
         // Refresh campus data
@@ -137,28 +173,33 @@ const CampusGroupEdit = (props) => {
             },
             token
         }));
-        dispatch(putCampusGroupSuccess(null));
-        closeModal();
-    }, [campusGroupPutData, closeModal]);
+        handleSuccessOrClose();
+    }, [campusGroupPutData, handleSuccessOrClose, token, dispatch]);
 
     // Handle API errors
     useEffect(() => {
         if (!error) return;
+        // Handle backend validation errors
         if (Array.isArray(error.error)) {
-            error.error.forEach((err) => {
-                toast.error(`${err.field || 'Error'}: ${err.message}`, {
-                    position: "top-right",
-                    duration: 2000,
-                });
+            const newErrors = error.error.reduce((acc, err) => {
+                acc[err.field] = err.message;
+                return acc;
+            }, {});
+            toast.error('Oops! Some details are missing or incorrect.', {
+                position: "top-right",
+                duration: 2000,
             });
-        } else if (error.message) {
-            toast.error(error.message, { position: "top-right", duration: 2000 });
+            setErrors(newErrors);
+            setTimeout(scrollToFirstError, 100);
         } else {
-            toast.error("An unexpected error occurred", { position: "top-right", duration: 2000 });
+            toast.error(error.message || "An unexpected error occurred", {
+                position: "top-right",
+                duration: 2000
+            });
         }
         dispatch(putCampusGroupSuccess(null));
         dispatch(putCampusGroupFailure(null));
-    }, [error]);
+    }, [error, scrollToFirstError, dispatch]);
 
     return (
         <>
@@ -166,7 +207,7 @@ const CampusGroupEdit = (props) => {
                 <div className='my-6 md:my-[10px] px-2 md:px-4 lg:px-[20px] max-h-[60svh] md:max-h-[80svh] overflow-auto cus-scrollbar'>
                     <div className="flex justify-between items-center mb-4 md:mb-6">
                         <div className='text-lg md:text-2xl font-medium'>
-                            New Campus Group
+                            Modify Campus Group
                         </div>
                         <span> Step {activeTab + 1} of 7</span>
                         <button
@@ -182,7 +223,7 @@ const CampusGroupEdit = (props) => {
                     <div className="flex flex-col md:flex-row">
                         {/* Left Side Tabs - full width on mobile, 1/4 on desktop */}
                         <div className="w-full md:w-1/4 bg-card-color mb-4 md:mb-0">
-                            <div className="flex flex-row md:flex-col space-x-2 md:space-x-0 md:space-y-2 p-2 md:p-4 overflow-x-auto md:overflow-x-visible border rounded-xl shadow-sm">
+                            <div className="flex flex-row md:flex-col space-x-2 md:space-x-0 md:space-y-2 p-2 sm:p-3 md:p-4 overflow-x-auto md:overflow-x-visible border rounded-xl shadow-sm">
                                 {['Profile', 'Domain', 'Plugins', 'Email', 'SMS Setting', 'Plugin Settings', 'Gateways'].map((tab, index, array) => (
                                     <Fragment key={index}>
                                         <button
@@ -202,8 +243,8 @@ const CampusGroupEdit = (props) => {
                                 ))}
                             </div>
                         </div>
-                        <div className='border-r border-border-color mx-3' />
 
+                        <div className="hidden md:block border-r border-border-color mx-3" />
                         {/* Right Side Content - full width on mobile, 3/4 on desktop */}
                         <div className="w-full md:w-3/4">
                             {activeTab === 0 && (
@@ -216,7 +257,7 @@ const CampusGroupEdit = (props) => {
                                     </div>
 
                                     <div className="space-y-6 py-1">
-                                        {/* Campus Name Field */}
+                                        {/* Campus Group Name Field */}
                                         <div className="flex flex-col md:flex-row md:items-center gap-5">
                                             <label htmlFor="campusGroupName" className="md:w-1/3 flex items-center">
                                                 <span className="text-sm font-medium text-secondary">
@@ -226,20 +267,19 @@ const CampusGroupEdit = (props) => {
                                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                     </svg>
-                                                    <div className="absolute z-10 hidden group-hover:block w-64 p-2 mt-1 -ml-2 text-xs text-gray-600 bg-white border border-gray-200 rounded-md shadow-lg">
+                                                    <div className="absolute z-10 hidden group-hover:block w-64 p-2 mt-1 -ml-2 text-xs text-gray-600 bg-card-color border border-gray-200 rounded-md shadow-lg">
                                                         The official name of your campus group
                                                     </div>
                                                 </div>
                                             </label>
                                             <div className="md:w-3/4">
-                                                <input
-                                                    type="text"
-                                                    id="campusGroupName"
-                                                    placeholder="Enter campus name"
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none transition"
-                                                    value={sanitizeText(formData?.campusGroupName || "")}
-                                                    onChange={(e) => updateFormData("campusGroupName", e.target.value)}
-                                                    aria-describedby="campusGroupNameHelp"
+                                                <TextField
+                                                    placeholder="Enter Campus Group Name"
+                                                    name="campusGroupName"
+                                                    onChange={handleChange}
+                                                    value={formData.campusGroupName}
+                                                    error={errors.campusGroupName}
+                                                    required
                                                 />
                                                 <div id="campusGroupNameHelp" className="sr-only">The official name of your campus group</div>
                                             </div>
@@ -255,58 +295,23 @@ const CampusGroupEdit = (props) => {
                                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                     </svg>
-                                                    <div className="absolute z-10 hidden group-hover:block w-64 p-2 mt-1 -ml-2 text-xs text-gray-600 bg-white border border-gray-200 rounded-md shadow-lg">
+                                                    <div className="absolute z-10 hidden group-hover:block w-64 p-2 mt-1 -ml-2 text-xs text-gray-600 bg-card-color border border-gray-200 rounded-md shadow-lg">
                                                         Unique identifier for your campus group
                                                     </div>
                                                 </div>
                                             </label>
                                             <div className="md:w-3/4">
-                                                <input
-                                                    type="number"
-                                                    id="licenseCount"
-                                                    placeholder="Enter campus code"
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none transition"
-                                                    value={formData?.licenseCount || ""}
-                                                    onChange={(e) => {
-                                                        const digitsOnly = e.target.value.replace(/\D/g, '');
-                                                        const limitedValue = digitsOnly.slice(0, 9);
-                                                        updateFormData("licenseCount", limitedValue);
-                                                    }}
-                                                    maxLength={9}
-                                                    aria-describedby="licenseCountHelp"
+                                                <TextField
+                                                    placeholder="Enter Campus Group Code"
+                                                    name="licenseCount"
+                                                    onChange={handleLicenseCountChange}
+                                                    value={formData.licenseCount}
+                                                    error={errors.licenseCount}
+                                                    required
                                                 />
                                                 <div id="licenseCountHelp" className="sr-only">Unique identifier for your licenseCount</div>
                                             </div>
                                         </div>
-
-                                        {/* Admin Email Field */}
-                                        {/* <div className="flex flex-col md:flex-row md:items-center gap-5">
-                                                   <label htmlFor="campusEmail" className="md:w-1/3 flex items-center">
-                                                       <span className="text-sm font-medium text-secondary">
-                                                           Admin Email:
-                                                       </span>
-                                                       <div className="relative group ml-2">
-                                                           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                           </svg>
-                                                           <div className="absolute z-10 hidden group-hover:block w-64 p-2 mt-1 -ml-2 text-xs text-gray-600 bg-white border border-gray-200 rounded-md shadow-lg">
-                                                               Primary contact email for campus admin
-                                                           </div>
-                                                       </div>
-                                                   </label>
-                                                   <div className="md:w-3/4">
-                                                       <input
-                                                           type="email"
-                                                           id="campusEmail"
-                                                           placeholder="admin@campus.edu"
-                                                           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:outline-none transition"
-                                                           value={sanitizeText(formData?.campusEmailId || "")}
-                                                           onChange={(e) => updateFormData("campusEmailId", e.target.value)}
-                                                           aria-describedby="campusEmailHelp"
-                                                       />
-                                                       <div id="campusEmailHelp" className="sr-only">Primary contact email for campus admin</div>
-                                                   </div>
-                                               </div> */}
 
                                         {/* GPS Enabled Toggle */}
                                         <div className="flex flex-col md:flex-row md:items-center gap-5">
@@ -318,7 +323,7 @@ const CampusGroupEdit = (props) => {
                                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                     </svg>
-                                                    <div className="absolute z-10 hidden group-hover:block w-64 p-2 mt-1 -ml-2 text-xs text-gray-600 bg-white border border-gray-200 rounded-md shadow-lg">
+                                                    <div className="absolute z-10 hidden group-hover:block w-64 p-2 mt-1 -ml-2 text-xs text-gray-600 bg-card-color border border-gray-200 rounded-md shadow-lg">
                                                         Enable location services for this campus group
                                                     </div>
                                                 </div>
@@ -329,12 +334,15 @@ const CampusGroupEdit = (props) => {
                                                         type="checkbox"
                                                         className='form-check-input sr-only peer'
                                                         checked={formData?.gpsEnabled || false}
-                                                        onChange={(e) => updateFormData("gpsEnabled", e.target.checked)}
+                                                        onChange={(e) => handleChange("gpsEnabled", e.target.checked)}
                                                         aria-describedby="gpsEnabledHelp"
                                                     />
                                                     <span className="ml-3 text-sm font-medium text-primary">
                                                         {formData?.gpsEnabled ? "Enabled" : "Disabled"}
                                                     </span>
+                                                    {errors.gpsEnabled && (
+                                                        <p className="mt-1 text-sm text-red-600">{errors.gpsEnabled}</p>
+                                                    )}
                                                 </label>
                                                 <div id="gpsEnabledHelp" className="sr-only">Enable location services for this campus</div>
                                             </div>
@@ -350,7 +358,7 @@ const CampusGroupEdit = (props) => {
                                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                     </svg>
-                                                    <div className="absolute z-10 hidden group-hover:block w-64 p-2 mt-1 -ml-2 text-xs text-gray-600 bg-white border border-gray-200 rounded-md shadow-lg">
+                                                    <div className="absolute z-10 hidden group-hover:block w-64 p-2 mt-1 -ml-2 text-xs text-gray-600 bg-card-color border border-gray-200 rounded-md shadow-lg">
                                                         Enable Zoom services for this campus group
                                                     </div>
                                                 </div>
@@ -361,12 +369,15 @@ const CampusGroupEdit = (props) => {
                                                         type="checkbox"
                                                         className='form-check-input sr-only peer'
                                                         checked={formData?.zoomEnabled || false}
-                                                        onChange={(e) => updateFormData("zoomEnabled", e.target.checked)}
+                                                        onChange={(e) => handleChange("zoomEnabled", e.target.checked)}
                                                         aria-describedby="zoomEnabledHelp"
                                                     />
                                                     <span className="ml-3 text-sm font-medium text-primary">
                                                         {formData?.zoomEnabled ? "Enabled" : "Disabled"}
                                                     </span>
+                                                    {errors.zoomEnabled && (
+                                                        <p className="mt-1 text-sm text-red-600">{errors.zoomEnabled}</p>
+                                                    )}
                                                 </label>
                                                 <div id="zoomEnabledHelp" className="sr-only">Enable Zoom services for this campus</div>
                                             </div>
@@ -382,7 +393,7 @@ const CampusGroupEdit = (props) => {
                                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                     </svg>
-                                                    <div className="absolute z-10 hidden group-hover:block w-64 p-2 mt-1 -ml-2 text-xs text-gray-600 bg-white border border-gray-200 rounded-md shadow-lg">
+                                                    <div className="absolute z-10 hidden group-hover:block w-64 p-2 mt-1 -ml-2 text-xs text-gray-600 bg-card-color border border-gray-200 rounded-md shadow-lg">
                                                         Activate or deactivate this campus group profile
                                                     </div>
                                                 </div>
@@ -393,12 +404,15 @@ const CampusGroupEdit = (props) => {
                                                         type="checkbox"
                                                         className='form-check-input sr-only peer'
                                                         checked={formData?.isActive || false}
-                                                        onChange={(e) => updateFormData("isActive", e.target.checked)}
+                                                        onChange={(e) => handleChange("isActive", e.target.checked)}
                                                         aria-describedby="isActiveHelp"
                                                     />
                                                     <span className="ml-3 text-sm font-medium text-primary">
                                                         {formData?.isActive ? "Active" : "Inactive"}
                                                     </span>
+                                                    {errors.isActive && (
+                                                        <p className="mt-1 text-sm text-red-600">{errors.isActive}</p>
+                                                    )}
                                                 </label>
                                                 <div id="isActiveHelp" className="sr-only">Activate or deactivate this campus group profile</div>
                                             </div>
@@ -413,44 +427,6 @@ const CampusGroupEdit = (props) => {
                                             Domain Settings
                                         </h2>
                                         <div className='border-b border-border-color' />
-                                    </div>
-
-                                    <div className="space-y-6 py-1">
-                                        {/* Domain Name Field */}
-                                        {/* <div className="flex flex-col md:flex-row md:items-center gap-5">
-                                                   <label htmlFor="campusEmail" className="md:w-1/3 flex items-center">
-                                                       <span className="text-sm font-medium text-secondary">
-                                                           Domain Name:
-                                                       </span>
-                                                       <div className="relative group ml-2">
-                                                           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                           </svg>
-                                                           <div className="absolute z-10 hidden group-hover:block w-64 p-2 mt-1 -ml-2 text-xs text-gray-600 bg-white border border-gray-200 rounded-md shadow-lg">
-                                                               Primary domain assigned to Campus Admin. Only edit the subdomain part (before .testing.com)
-                                                           </div>
-                                                       </div>
-                                                   </label>
-                                                   <div className="md:w-3/4 flex items-center">
-                                                       <div className="relative flex-grow">
-                                                           <input
-                                                               type="text"
-                                                               id="campusDomainHelp"
-                                                               placeholder="primaryDomainName"
-                                                               className="w-full px-4 py-2 border border-gray-300 rounded-l-lg focus:ring-1 focus:outline-none transition"
-                                                               value={sanitizeText(subDomain || "")}
-                                                               onChange={(e) => hardCodedDomain(e.target.value)}
-                                                               aria-describedby="campusDomainHelp"
-                                                           />
-                                                       </div>
-                                                       <div className="px-4 py-2 bg-gray-100 border border-l-0 border-gray-300 rounded-r-lg text-primary">
-                                                           .testmazing.com
-                                                       </div>
-                                                   </div>
-                                                   <div id="campusDomainHelp" className="sr-only">
-                                                       Enter subdomain part only (e.g., "dev" for dev.testing.com)
-                                                   </div>
-                                               </div> */}
                                     </div>
                                 </div>
                             )}
@@ -491,40 +467,6 @@ const CampusGroupEdit = (props) => {
                                         </h2>
                                         <div className='border-b border-border-color' />
                                     </div>
-
-                                    <div className="space-y-6 py-1">
-                                        {/* Email Enabled Toggle */}
-                                        {/* <div className="flex flex-col md:flex-row md:items-center gap-5">
-                                                   <div className="md:w-1/3 flex items-center">
-                                                       <span className="text-sm font-medium text-secondary">
-                                                           Email Enabled:
-                                                       </span>
-                                                       <div className="relative group ml-2">
-                                                           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                           </svg>
-                                                           <div className="absolute z-10 hidden group-hover:block w-64 p-2 mt-1 -ml-2 text-xs text-gray-600 bg-white border border-gray-200 rounded-md shadow-lg">
-                                                               Enable Email services for this campus
-                                                           </div>
-                                                       </div>
-                                                   </div>
-                                                   <div className="md:w-3/4 flex items-center">
-                                                       <label className="form-check form-switch inline-flex items-center cursor-pointer">
-                                                           <input
-                                                               type="checkbox"
-                                                               className='form-check-input sr-only peer'
-                                                               checked={formData?.emailEnabled || false}
-                                                               onChange={(e) => updateFormData("emailEnabled", e.target.checked)}
-                                                               aria-describedby="emailEnabledHelp"
-                                                           />
-                                                           <span className="ml-3 text-sm font-medium text-primary">
-                                                               {formData?.emailEnabled ? "Enabled" : "Disabled"}
-                                                           </span>
-                                                       </label>
-                                                       <div id="emailEnabledHelp" className="sr-only">Enable Email services for this campus</div>
-                                                   </div>
-                                               </div> */}
-                                    </div>
                                 </div>
                             )}
                             {activeTab === 4 && (
@@ -534,40 +476,6 @@ const CampusGroupEdit = (props) => {
                                             SMS Settings
                                         </h2>
                                         <div className='border-b border-border-color' />
-                                    </div>
-
-                                    <div className="space-y-6 py-1">
-                                        {/* SMS Enabled Toggle */}
-                                        {/* <div className="flex flex-col md:flex-row md:items-center gap-5">
-                                                   <div className="md:w-1/3 flex items-center">
-                                                       <span className="text-sm font-medium text-secondary">
-                                                           SMS Enabled:
-                                                       </span>
-                                                       <div className="relative group ml-2">
-                                                           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                           </svg>
-                                                           <div className="absolute z-10 hidden group-hover:block w-64 p-2 mt-1 -ml-2 text-xs text-gray-600 bg-white border border-gray-200 rounded-md shadow-lg">
-                                                               Enable SMS services for this campus
-                                                           </div>
-                                                       </div>
-                                                   </div>
-                                                   <div className="md:w-3/4 flex items-center">
-                                                       <label className="form-check form-switch inline-flex items-center cursor-pointer">
-                                                           <input
-                                                               type="checkbox"
-                                                               className='form-check-input sr-only peer'
-                                                               checked={formData?.smsEnabled || false}
-                                                               onChange={(e) => updateFormData("smsEnabled", e.target.checked)}
-                                                               aria-describedby="SMSEnabledHelp"
-                                                           />
-                                                           <span className="ml-3 text-sm font-medium text-primary">
-                                                               {formData?.smsEnabled ? "Enabled" : "Disabled"}
-                                                           </span>
-                                                       </label>
-                                                       <div id="SMSEnabledHelp" className="sr-only">Enable SMS services for this campus</div>
-                                                   </div>
-                                               </div> */}
                                     </div>
                                 </div>
                             )}
@@ -579,40 +487,6 @@ const CampusGroupEdit = (props) => {
                                         </h2>
                                         <div className='border-b border-border-color' />
                                     </div>
-
-                                    <div className="space-y-6 py-1">
-                                        {/* Plugin Enabled Toggle */}
-                                        {/* <div className="flex flex-col md:flex-row md:items-center gap-5">
-                                                   <div className="md:w-1/3 flex items-center">
-                                                       <span className="text-sm font-medium text-secondary">
-                                                           Plugin Enabled:
-                                                       </span>
-                                                       <div className="relative group ml-2">
-                                                           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                           </svg>
-                                                           <div className="absolute z-10 hidden group-hover:block w-64 p-2 mt-1 -ml-2 text-xs text-gray-600 bg-white border border-gray-200 rounded-md shadow-lg">
-                                                               Enable Plugin services for this campus
-                                                           </div>
-                                                       </div>
-                                                   </div>
-                                                   <div className="md:w-3/4 flex items-center">
-                                                       <label className="form-check form-switch inline-flex items-center cursor-pointer">
-                                                           <input
-                                                               type="checkbox"
-                                                               className='form-check-input sr-only peer'
-                                                               checked={formData?.onlineMeetingEnabled || false}
-                                                               onChange={(e) => updateFormData("onlineMeetingEnabled", e.target.checked)}
-                                                               aria-describedby="meetingEnabledHelp"
-                                                           />
-                                                           <span className="ml-3 text-sm font-medium text-primary">
-                                                               {formData?.onlineMeetingEnabled ? "Enabled" : "Disabled"}
-                                                           </span>
-                                                       </label>
-                                                       <div id="meetingEnabledHelp" className="sr-only">Enable Plugin services for this campus</div>
-                                                   </div>
-                                               </div> */}
-                                    </div>
                                 </div>
                             )}
                             {activeTab === 6 && (
@@ -623,76 +497,64 @@ const CampusGroupEdit = (props) => {
                                         </h2>
                                         <div className='border-b border-border-color' />
                                     </div>
-
-                                    <div className="space-y-6 py-1">
-                                        {/* Plugin Enabled Toggle */}
-                                        {/* <div className="flex flex-col md:flex-row md:items-center gap-5">
-                                                   <div className="md:w-1/3 flex items-center">
-                                                       <span className="text-sm font-medium text-secondary">
-                                                           Gateways Enabled:
-                                                       </span>
-                                                       <div className="relative group ml-2">
-                                                           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                           </svg>
-                                                           <div className="absolute z-10 hidden group-hover:block w-64 p-2 mt-1 -ml-2 text-xs text-gray-600 bg-white border border-gray-200 rounded-md shadow-lg">
-                                                               Enable Gateways services for this campus
-                                                           </div>
-                                                       </div>
-                                                   </div>
-                                                   <div className="md:w-3/4 flex items-center">
-                                                       <label className="form-check form-switch inline-flex items-center cursor-pointer">
-                                                           <input
-                                                               type="checkbox"
-                                                               className='form-check-input sr-only peer'
-                                                               checked={formData?.paymentGatewayEnabled || false}
-                                                               onChange={(e) => updateFormData("paymentGatewayEnabled", e.target.checked)}
-                                                               aria-describedby="gatewayEnabledHelp"
-                                                           />
-                                                           <span className="ml-3 text-sm font-medium text-primary">
-                                                               {formData?.paymentGatewayEnabled ? "Enabled" : "Disabled"}
-                                                           </span>
-                                                       </label>
-                                                       <div id="gatewayEnabledHelp" className="sr-only">Enable Gateways services for this campus</div>
-                                                   </div>
-                                               </div> */}
-                                    </div>
                                 </div>
                             )}
                         </div>
                     </div>
 
-                    {/* Buttons Section */}
-                    <div className="flex flex-col-reverse md:flex-row justify-start gap-4 mt-10">
-                        <button
-                            onClick={closeModal}
-                            className='btn btn-secondary flex-1 sm:flex-none'
-                        >
-                            Close
-                        </button>
-                        {activeTab < 6 && (
+                    {/* Buttons */}
+                    <div className="flex flex-col-reverse md:flex-row md:justify-start items-stretch md:items-center gap-3 mt-5 w-full">
+                        {/* Close button - only shown on tab 1 */}
+                        {activeTab === 0 && (
                             <button
-                                className='btn btn-primary flex-1 sm:flex-none'
-                                onClick={() => setActiveTab(activeTab + 1)}
+                                onClick={handleSuccessOrClose}
+                                className="flex items-center justify-center gap-2 px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:text-primary hover:border-primary transition-colors duration-200 w-full md:w-auto"
                             >
-                                Next
+                                Close
+                                <IconSquareRoundedX className="w-5 h-5 text-current" />
                             </button>
                         )}
+
+                        {/* Previous button - shown on all tabs except first */}
+                        {activeTab > 0 && (
+                            <button
+                                onClick={() => setActiveTab(activeTab - 1)}
+                                className="flex items-center justify-center gap-2 px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:text-primary hover:border-primary transition-colors duration-200 w-full md:w-auto"
+                            >
+                                <IconChevronLeftPipe className="w-5 h-5 text-current" />
+                                Previous
+                            </button>
+                        )}
+
+                        {/* Next button - shown on all tabs except last */}
+                        {activeTab < 6 && (
+                            <button
+                                onClick={() => setActiveTab(activeTab + 1)}
+                                className="flex items-center justify-center gap-2 px-4 py-2 rounded-md bg-primary border border-primary-10 text-card-color hover:bg-primary-dark disabled:opacity-80 disabled:cursor-wait transition-colors duration-200 w-full md:w-auto group"
+                            >
+                                Next
+                                <IconChevronRightPipe className="w-5 h-5 text-card-color" />
+                            </button>
+                        )}
+
+                        {/* Submit button - only shown on last tab */}
                         {activeTab === 6 && (
                             <button
-                                className='btn btn-primary flex-1 sm:flex-none'
                                 onClick={handleSubmit}
                                 disabled={loading}
+                                className="flex items-center justify-center gap-2 px-4 py-2 rounded-md bg-primary border border-primary-10 text-card-color hover:bg-primary-dark disabled:opacity-80 disabled:cursor-wait transition-colors duration-200 w-full md:w-auto group"
                             >
                                 {loading ? (
-                                    <span className="flex items-center justify-center">
-                                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
+                                    <>
                                         Updating...
-                                    </span>
-                                ) : 'Update'}
+                                        <div className="w-5 h-5 border-2 border-t-transparent border-card-color rounded-full animate-spin" />
+                                    </>
+                                ) : (
+                                    <>
+                                        Update
+                                        <IconSquareRoundedCheck className="w-5 h-5 text-card-color" />
+                                    </>
+                                )}
                             </button>
                         )}
                     </div>

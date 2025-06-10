@@ -25,6 +25,7 @@ const campusSlice = createSlice({
     campusFetchData: null,
     campusPostData: null,
     campusPutData: null,
+    campusFormData: null,
     loading: false,
     error: null,
   },
@@ -34,6 +35,12 @@ const campusSlice = createSlice({
     ...createAsyncReducers("getCampusFetch", "campusFetchData"),
     ...createAsyncReducers("postCampus", "campusPostData"),
     ...createAsyncReducers("putCampus", "campusPutData"),
+    setCampusFormData: (state, action) => {
+      state.campusFormData = action.payload;
+    },
+    resetCampusFormData: (state) => {
+      state.campusFormData = null;
+    },
   },
 });
 
@@ -58,6 +65,9 @@ export const {
   putCampusRequest,
   putCampusSuccess,
   putCampusFailure,
+
+  setCampusFormData,
+  resetCampusFormData,
 } = campusSlice.actions;
 
 export default campusSlice.reducer;

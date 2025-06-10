@@ -21,6 +21,7 @@ import CustomPagination from '@/components/common/CustomPagination';
 import useDebounce from '@/components/utils/useDebounce';
 import LoadingSpinner from '@/components/utils/LoadingSpinner';
 import { sanitizeText } from '@/components/utils/sanitizeText';
+import { Empty, Skeleton } from 'antd';
 
 const Campus = () => {
   // Constants
@@ -32,11 +33,16 @@ const Campus = () => {
     totalElements: 0,
   }), []);
 
+  // Memoized selectors to prevent unnecessary re-renders
+  const selectCampus = useCallback((state) => state.campus, []);
+  const selectAuth = useCallback((state) => state.auth, []);
+  const selectModal = useCallback((state) => state.modal, []);
+
   // Redux state
   const dispatch = useDispatch();
-  const { campusPaginationData, loading, error } = useSelector((state) => state.campus);
-  const { token } = useSelector((state) => state.auth);
-  const { modals } = useSelector((state) => state.modal);
+  const { campusPaginationData, loading, error } = useSelector(selectCampus);
+  const { token } = useSelector(selectAuth);
+  const { modals } = useSelector(selectModal);
 
   // Derived modal states
   const isCreateModalOpen = useMemo(() => modals.createCampus.isOpen, [modals.createCampus.isOpen]);
@@ -225,24 +231,13 @@ const Campus = () => {
       )}
 
       {!isCreateModalOpen && !isEditModalOpen && (
-        <div className="pt-6 md:pt-5 px-5 sm:px-6 md:px-0 bg-card-color border rounded-xl shadow-xl">
+        <div className="pt-6 md:pt-7 px-5 sm:px-6 md:px-0 bg-card-color border rounded-xl shadow-xl">
           {/* Header Section */}
-          <div className="flex flex-col md:mx-9 md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+          <div className="flex flex-col px-5 md:mx-6 md:flex-row justify-between items-start md:items-center">
             <div className="flex items-center w-full md:w-auto">
               <h5 className="text-lg sm:text-xl font-medium">
                 Campus Listing
               </h5>
-              {/* {isAscending ? (
-                <IconCaretDownFilled
-                  onClick={() => setIsAscending(false)}
-                  className="cursor-pointer ml-2"
-                />
-              ) : (
-                <IconCaretUpFilled
-                  onClick={() => setIsAscending(true)}
-                  className="cursor-pointer ml-2"
-                />
-              )} */}
             </div>
 
             <div className='flex items-center gap-2 md:gap-4 w-full md:w-auto'>
@@ -275,7 +270,7 @@ const Campus = () => {
                   <div className="absolute right-0 z-10 p-3 mt-2 w-[185px] bg-white border border-gray-300 rounded-xl shadow-xl">
                     {/* Notch (triangle) at the top-right */}
                     <div className="absolute -top-2 right-3 w-4 h-4 bg-white transform rotate-45 border-t border-l border-gray-300 z-0"></div>
- 
+
                     <div className="relative z-10 form-check flex items-center mb-2">
                       <input
                         type="checkbox"
@@ -307,18 +302,48 @@ const Campus = () => {
           </div>
 
           {/* Content Section */}
-          <div
-            className={`my-6 md:my-[10px] px-2 sm:px-4 md:px-[30px] h-[60vh] md:h-max ${loading ? '' : 'overflow-auto cus-scrollbar'
-              }`}
-          >
+          <div className={`my-6 md:my-8 px-2 sm:px-4 md:px-10 h-fit md:h-max ${loading ? '' : 'overflow-auto cus-scrollbar'}`}>
             {loading ? (
-              <LoadingSpinner />
+              <ul className="flex flex-col gap-4 md:gap-6 h-full">
+                {[...Array(5)].map((_, index) => (
+                  <li
+                    className="flex items-center justify-between gap-3 p-3 bg-white/10 rounded-xl shadow-md border"
+                    key={`skeleton-${index}`}
+                  >
+                    <div className="flex items-center gap-3 min-w-0 w-full">
+                      <Skeleton.Avatar
+                        active
+                        size={36}
+                        shape="square"
+                        className="rounded-md min-w-[36px]"
+                      />
+                      <Skeleton.Input
+                        active
+                        style={{ width: '60%', height: 24 }}
+                        className="rounded-md"
+                      />
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <Skeleton.Button
+                        active
+                        style={{ width: 70, height: 32 }}
+                        className="rounded-md"
+                      />
+                      <Skeleton.Button
+                        active
+                        style={{ width: 70, height: 32 }}
+                        className="rounded-md"
+                      />
+                    </div>
+                  </li>
+                ))}
+              </ul>
             ) : (
               <ul className="flex flex-col gap-4 md:gap-6 h-full">
                 {data?.length > 0 ? (
                   data?.map((item, index) => (
                     <li
-                      className="flex items-center justify-between gap-3 p-3 bg-white/10 rounded-xl shadow-md border"
+                      className="flex items-center justify-between gap-3 p-3 bg-white/10 rounded-xl shadow border"
                       key={`campus-${item.id || index}`}
                     >
                       <div className="flex items-center gap-3 min-w-0">
@@ -349,8 +374,12 @@ const Campus = () => {
                     </li>
                   ))
                 ) : (
-                  <li className="flex items-center justify-center h-full text-gray-500">
-                    No Campus available
+                  <li className="text-center py-8 px-2 md:px-4">
+                    <Empty
+                      image={Empty.PRESENTED_IMAGE_SIMPLE}
+                      description="No Campus Found"
+                      className="flex flex-col items-center justify-center"
+                    />
                   </li>
                 )}
               </ul>
