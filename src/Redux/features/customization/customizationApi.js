@@ -4,7 +4,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export const getCustomization = async (realmName) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/download`, {
+        const response = await axios.post(`${API_BASE_URL}/utils/realmSettings/download`, {
             realmName
         }, {
             headers: {

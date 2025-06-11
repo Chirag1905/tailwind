@@ -54,15 +54,17 @@ import Image from 'next/image';
 import toast from 'react-hot-toast';
 import { useFavicon } from '../utils/useFavicon';
 import { useDispatch, useSelector } from 'react-redux';
+import { fetchCustomizationRequest, resetCustomization } from '@/Redux/features/customization/customizationSlice';
 
 export default function Header({ toggleMobileNav, mobileNav, toggleNote, toggleChat }) {
     const dispatch = useDispatch();
     const customization = useSelector((state) => state.customization);
+    console.log("🚀 ~ Header ~ customization:", customization)
     const authToken = useSelector((state) => state.auth.token); // Assuming you have auth token
 
     // Load customization on mount
     useEffect(() => {
-        dispatch(fetchCustomization('master'));
+        dispatch(fetchCustomizationRequest('master'));
     }, [dispatch]);
 
     // Search bar open
@@ -433,6 +435,7 @@ export default function Header({ toggleMobileNav, mobileNav, toggleNote, toggleC
     };
 
     const handleReset = () => {
+        dispatch(resetCustomization());
         setCustomizations(defaultSettings);
         localStorage.removeItem('customizations');
         setDynamicColorItem(dynamicColorItem.map(item => ({

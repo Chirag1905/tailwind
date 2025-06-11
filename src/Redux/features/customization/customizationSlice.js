@@ -38,18 +38,32 @@ export const customizationSlice = createSlice({
   name: 'customization',
   initialState: defaultSettings,
   reducers: {
-    updateCustomization: (state, action) => {
+    fetchCustomizationRequest: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    fetchCustomizationSuccess: (state, action) => {
       return { ...state, ...action.payload, loading: false, error: null };
+    },
+    fetchCustomizationFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    postCustomizationRequest: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    postCustomizationSuccess: (state, action) => {
+      return { ...state, ...action.payload, loading: false, error: null };
+    },
+    postCustomizationFailure: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
     },
     resetCustomization: () => {
       return defaultSettings;
     },
-    setLoading: (state, action) => {
-      state.loading = action.payload;
-    },
-    setError: (state, action) => {
-      state.error = action.payload;
-    },
+    // Other specific actions remain the same
     setSchoolLogo: (state, action) => {
       state.schoolLogo = action.payload;
     },
@@ -80,11 +94,14 @@ export const customizationSlice = createSlice({
   },
 });
 
-export const { 
-  updateCustomization, 
+export const {
+  fetchCustomizationRequest,
+  fetchCustomizationSuccess,
+  fetchCustomizationFailure,
+  postCustomizationRequest,
+  postCustomizationSuccess,
+  postCustomizationFailure,
   resetCustomization,
-  setLoading,
-  setError,
   setSchoolLogo,
   setTheme,
   toggleDarkMode,
@@ -97,7 +114,6 @@ export const {
 } = customizationSlice.actions;
 
 export default customizationSlice.reducer;
-
 
 
 // curl --location 'https://api.testmazing.com/utils/realmSettings/download' \

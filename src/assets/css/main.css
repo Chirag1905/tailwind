@@ -11,6 +11,7 @@
     border-color: #e5e7eb;
 }
 
+
 :root {
     --font-family: Mulish;
 
@@ -83,7 +84,6 @@
     --color-chart-color5: #717788;
 }
 
-
 @theme {
     --blur-2xs: 2px;
     --color-theme-indigo: #5c6ac4;
@@ -134,8 +134,6 @@
 
 }
 
-
-
 @theme inline {
     --color-secondary: var(--secondary);
     --color-theme-indigo: var(--theme-indigo),
@@ -178,9 +176,6 @@
         --color-chart-color5: var(--chart-color5),
 }
 
-
-
-
 /* Default (light) theme */
 
 /* Optional dark theme override */
@@ -192,8 +187,6 @@
     --color-black: #ffffff;
     --color-success: #28a745;
 }
-
-
 
 [data-theme="light"] {
     --color-body-color: #f8f6f2;
