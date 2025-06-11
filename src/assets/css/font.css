@@ -1,0 +1,243 @@
+/* ---- mali ---- */
+@font-face {
+    font-family: 'Mali';
+    src: url('../fonts/mali/Mali-Light.woff2') format('woff2'),
+        url('../fonts/mali/Mali-Light.woff') format('woff'),
+        url('../fonts/mali/Mali-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Mali';
+    src: url('../fonts/mali/Mali-ExtraLight.woff2') format('woff2'),
+        url('../fonts/mali/Mali-ExtraLight.woff') format('woff'),
+        url('../fonts/mali/Mali-ExtraLight.ttf') format('truetype');
+    font-weight: 200;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Mali';
+    src: url('../fonts/mali/Mali-Bold.woff2') format('woff2'),
+        url('../fonts/mali/Mali-Bold.woff') format('woff'),
+        url('../fonts/mali/Mali-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Mali';
+    src: url('../fonts/mali/Mali-Medium.woff2') format('woff2'),
+        url('../fonts/mali/Mali-Medium.woff') format('woff'),
+        url('../fonts/mali/Mali-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Mali';
+    src: url('../fonts/mali/Mali-Regular.woff2') format('woff2'),
+        url('../fonts/mali/Mali-Regular.woff') format('woff'),
+        url('../fonts/mali/Mali-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Mali';
+    src: url('../fonts/mali/Mali-SemiBold.woff2') format('woff2'),
+        url('../fonts/mali/Mali-SemiBold.woff') format('woff'),
+        url('../fonts/mali/Mali-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* quicksand */
+@font-face {
+    font-family: 'Quicksand';
+    src: url('../fonts/quicksand/Quicksand-Light.woff2') format('woff2'),
+        url('../fonts/quicksand/Quicksand-Light.woff') format('woff'),
+        url('../fonts/quicksand/Quicksand-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Quicksand';
+    src: url('../fonts/quicksand/Quicksand-Medium.woff2') format('woff2'),
+        url('../fonts/quicksand/Quicksand-Medium.woff') format('woff'),
+        url('../fonts/quicksand/Quicksand-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Quicksand';
+    src: url('../fonts/quicksand/Quicksand-Regular.woff2') format('woff2'),
+        url('../fonts/quicksand/Quicksand-Regular.woff') format('woff'),
+        url('../fonts/quicksand/Quicksand-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Quicksand';
+    src: url('../fonts/quicksand/Quicksand-SemiBold.woff2') format('woff2'),
+        url('../fonts/quicksand/Quicksand-SemiBold.woff') format('woff'),
+        url('../fonts/quicksand/Quicksand-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Quicksand';
+    src: url('../fonts/quicksand/Quicksand-Bold.woff2') format('woff2'),
+        url('../fonts/quicksand/Quicksand-Bold.woff') format('woff'),
+        url('../fonts/quicksand/Quicksand-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* ---- mulish ---- */
+@font-face {
+    font-family: 'Mulish';
+    src: url('../fonts/mulish/Mulish-ExtraLight.woff2') format('woff2'),
+        url('../fonts/mulish/Mulish-ExtraLight.woff') format('woff'),
+        url('../fonts/mulish/Mulish-ExtraLight.ttf') format('truetype');
+    font-weight: 200;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Mulish';
+    src: url('../fonts/mulish/Mulish-Light.woff2') format('woff2'),
+        url('../fonts/mulish/Mulish-Light.woff') format('woff'),
+        url('../fonts/mulish/Mulish-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Mulish';
+    src: url('../fonts/mulish/Mulish-Regular.woff2') format('woff2'),
+        url('../fonts/mulish/Mulish-Regular.woff') format('woff'),
+        url('../fonts/mulish/Mulish-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Mulish';
+    src: url('../fonts/mulish/Mulish-Medium.woff2') format('woff2'),
+        url('../fonts/mulish/Mulish-Medium.woff') format('woff'),
+        url('../fonts/mulish/Mulish-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Mulish';
+    src: url('../fonts/mulish/Mulish-SemiBold.woff2') format('woff2'),
+        url('../fonts/mulish/Mulish-SemiBold.woff') format('woff'),
+        url('../fonts/mulish/Mulish-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Mulish';
+    src: url('../fonts/mulish/Mulish-Bold.woff2') format('woff2'),
+        url('../fonts/mulish/Mulish-Bold.woff') format('woff'),
+        url('../fonts/mulish/Mulish-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Mulish';
+    src: url('../fonts/mulish/Mulish-ExtraBold.woff2') format('woff2'),
+        url('../fonts/mulish/Mulish-ExtraBold.woff') format('woff'),
+        url('../fonts/mulish/Mulish-ExtraBold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Mulish';
+    src: url('../fonts/mulish/Mulish-Black.woff2') format('woff2'),
+        url('../fonts/mulish/Mulish-Black.woff') format('woff'),
+        url('../fonts/mulish/Mulish-Black.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* jura */
+@font-face {
+    font-family: 'Jura';
+    src: url('../fonts/jura/Jura-Light.woff2') format('woff2'),
+        url('../fonts/jura/Jura-Light.woff') format('woff'),
+        url('../fonts/jura/Jura-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Jura';
+    src: url('../fonts/jura/Jura-Regular.woff2') format('woff2'),
+        url('../fonts/jura/Jura-Regular.woff') format('woff'),
+        url('../fonts/jura/Jura-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Jura';
+    src: url('../fonts/jura/Jura-SemiBold.woff2') format('woff2'),
+        url('../fonts/jura/Jura-SemiBold.woff') format('woff'),
+        url('../fonts/jura/Jura-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Jura';
+    src: url('../fonts/jura/Jura-Medium.woff2') format('woff2'),
+        url('../fonts/jura/Jura-Medium.woff') format('woff'),
+        url('../fonts/jura/Jura-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Jura';
+    src: url('../fonts/jura/Jura-Bold.woff2') format('woff2'),
+        url('../fonts/jura/Jura-Bold.woff') format('woff'),
+        url('../fonts/jura/Jura-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
