@@ -130,4 +130,3 @@ export default customizationSlice.reducer;
 //     "clientId": "admin-cli",
 //     "realmName": "master"
 // }'
-

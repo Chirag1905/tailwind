@@ -59,8 +59,7 @@ import { fetchCustomizationRequest, resetCustomization } from '@/Redux/features/
 export default function Header({ toggleMobileNav, mobileNav, toggleNote, toggleChat }) {
     const dispatch = useDispatch();
     const customization = useSelector((state) => state.customization);
-    console.log("🚀 ~ Header ~ customization:", customization)
-    const authToken = useSelector((state) => state.auth.token); // Assuming you have auth token
+    const authToken = useSelector((state) => state.auth.token);
 
     // Load customization on mount
     useEffect(() => {
@@ -102,7 +101,7 @@ export default function Header({ toggleMobileNav, mobileNav, toggleNote, toggleC
             try {
                 const parsedCustomizations = JSON.parse(savedCustomizations);
                 setCustomizations({
-                    ...defaultSettings,
+                    ...customization,
                     ...parsedCustomizations,
                     dynamicFont: {
                         fontUrl: parsedCustomizations.dynamicFont?.fontUrl || "",
@@ -112,42 +111,42 @@ export default function Header({ toggleMobileNav, mobileNav, toggleNote, toggleC
             } catch (error) {
                 console.error("Failed to parse customizations from localStorage:", error);
                 localStorage.removeItem('customizations'); // Clear invalid data
-                setCustomizations(defaultSettings);
+                setCustomizations(customization);
             }
         }
     }, []);
 
-    const defaultSettings = {
-        schoolLogo: profile_av,
-        schoolName: "Admin Portal",
-        heading: "Effortless Control, Powerful Management.",
-        motto: "All-in-One Tool",
-        quote: "Welcome to the central hub for managing your Campus & School Management ERP solution. Streamline administration, improve efficiency, and stay organized — all from one place.",
-        motto2: "Log in to take full control of your ERP ecosystem.",
-        quote2: "Built on a robust AWS microservices architecture, this portal empowers SSAS administrators with seamless access to configure, monitor, and support tenant environments in real time.",
-        theme: "indigo",
-        darkMode: false,
-        rtlMode: false,
-        fontFamily: "Mulish, sans-serif",
-        dynamicFont: {
-            fontUrl: "",
-            fontLink: ""
-        },
-        showRadius: true,
-        showShadow: false,
-        dynamicColors: {
-            primary: { r: 99, g: 102, b: 241, a: 1 },
-            secondary: { r: 128, g: 129, b: 145, a: 1 },
-            bodyColor: { r: 22, g: 22, b: 30, a: 1 },
-            cardColor: { r: 28, g: 28, b: 39, a: 1 },
-            borderColor: { r: 45, g: 45, b: 60, a: 1 },
-            chartColor1: { r: 99, g: 102, b: 241, a: 1 },
-            chartColor2: { r: 14, g: 165, b: 233, a: 1 },
-            chartColor3: { r: 22, g: 163, b: 74, a: 1 },
-            chartColor4: { r: 234, g: 88, b: 12, a: 1 },
-            chartColor5: { r: 244, g: 63, b: 94, a: 1 }
-        }
-    };
+    // const customization = {
+    //     schoolLogo: profile_av,
+    //     schoolName: "Admin Portal",
+    //     heading: "Effortless Control, Powerful Management.",
+    //     motto: "All-in-One Tool",
+    //     quote: "Welcome to the central hub for managing your Campus & School Management ERP solution. Streamline administration, improve efficiency, and stay organized — all from one place.",
+    //     motto2: "Log in to take full control of your ERP ecosystem.",
+    //     quote2: "Built on a robust AWS microservices architecture, this portal empowers SSAS administrators with seamless access to configure, monitor, and support tenant environments in real time.",
+    //     theme: "indigo",
+    //     darkMode: false,
+    //     rtlMode: false,
+    //     fontFamily: "Mulish, sans-serif",
+    //     dynamicFont: {
+    //         fontUrl: "",
+    //         fontLink: ""
+    //     },
+    //     showRadius: true,
+    //     showShadow: false,
+    //     dynamicColors: {
+    //         primary: { r: 99, g: 102, b: 241, a: 1 },
+    //         secondary: { r: 128, g: 129, b: 145, a: 1 },
+    //         bodyColor: { r: 22, g: 22, b: 30, a: 1 },
+    //         cardColor: { r: 28, g: 28, b: 39, a: 1 },
+    //         borderColor: { r: 45, g: 45, b: 60, a: 1 },
+    //         chartColor1: { r: 99, g: 102, b: 241, a: 1 },
+    //         chartColor2: { r: 14, g: 165, b: 233, a: 1 },
+    //         chartColor3: { r: 22, g: 163, b: 74, a: 1 },
+    //         chartColor4: { r: 234, g: 88, b: 12, a: 1 },
+    //         chartColor5: { r: 244, g: 63, b: 94, a: 1 }
+    //     }
+    // };
 
     const colorItem = [
         {
@@ -257,7 +256,7 @@ export default function Header({ toggleMobileNav, mobileNav, toggleNote, toggleC
         },
     ]
 
-    const [customizations, setCustomizations] = useState(defaultSettings);
+    const [customizations, setCustomizations] = useState(customization);
     // In your component, use the hook with the schoolLogo
     const setFavicon = useFavicon();
     useEffect(() => {
@@ -398,7 +397,7 @@ export default function Header({ toggleMobileNav, mobileNav, toggleNote, toggleC
                 fontUrl: "",
                 fontLink: ""
             },
-            fontFamily: defaultSettings.fontFamily // Reset to default font
+            fontFamily: customization.fontFamily // Reset to default font
         }));
     };
 
@@ -436,26 +435,26 @@ export default function Header({ toggleMobileNav, mobileNav, toggleNote, toggleC
 
     const handleReset = () => {
         dispatch(resetCustomization());
-        setCustomizations(defaultSettings);
+        setCustomizations(customization);
         localStorage.removeItem('customizations');
         setDynamicColorItem(dynamicColorItem.map(item => ({
             ...item,
-            colorValue: defaultSettings.dynamicColors[item.label.toLowerCase().replace(/\s+/g, '')],
+            colorValue: customization.dynamicColors[item.label.toLowerCase().replace(/\s+/g, '')],
             displayColorPicker: false
         })));
         toast.success('Customizations reset to default', { position: 'top-right' });
         setFavicon('/Techvein_logo.png');
-        document.body.setAttribute("data-swift-theme", defaultSettings.theme);
-        document.documentElement.setAttribute('data-theme', defaultSettings.darkMode ? 'dark' : 'light');
-        document.documentElement.setAttribute('dir', defaultSettings.rtlMode ? 'rtl' : 'ltr');
-        document.body.style.setProperty("--font-family", defaultSettings.fontFamily);
-        if (defaultSettings.showRadius) {
+        document.body.setAttribute("data-swift-theme", customization.theme);
+        document.documentElement.setAttribute('data-theme', customization.darkMode ? 'dark' : 'light');
+        document.documentElement.setAttribute('dir', customization.rtlMode ? 'rtl' : 'ltr');
+        document.body.style.setProperty("--font-family", customization.fontFamily);
+        if (customization.showRadius) {
             document.body.classList.remove("radius-0");
         } else {
             document.body.classList.add("radius-0");
         }
         document.querySelectorAll(".card").forEach(card => {
-            if (defaultSettings.showShadow) {
+            if (customization.showShadow) {
                 card.classList.add("shadow-shadow-sm");
             } else {
                 card.classList.remove("shadow-shadow-sm");
@@ -559,7 +558,7 @@ export default function Header({ toggleMobileNav, mobileNav, toggleNote, toggleC
                     <div className='relative group'>
                         <button className='md:py-2 md:px-3 p-2 hover:bg-primary-10 transition-all duration-300'>
                             <span className='xl:block hidden'>
-                                Notification
+                                <IconBellRinging className='stroke-[1.5]' />
                             </span>
                             <IconBellRinging className='stroke-[1.5] xl:hidden w-[20px] h-[20px]' />
                         </button>
@@ -584,7 +583,8 @@ export default function Header({ toggleMobileNav, mobileNav, toggleNote, toggleC
                                         Logs
                                     </Tab>
                                 </TabList>
-                                <div className='md:h-[calc(60svh-185px)] h-[calc(80svh-185px)] sm:p-6 p-4 overflow-auto no-scrollbar'>
+                                {/* <div className='md:h-[calc(60svh-185px)] h-[calc(80svh-185px)] sm:p-6 p-4 overflow-auto no-scrollbar'> */}
+                                <div className="md:h-[45svh] h-[60svh] sm:p-6 p-4 overflow-auto no-scrollbar">
                                     <TabPanel>
                                         <ul>
                                             <li className='py-[10px] border-b border-border-color flex gap-4'>
