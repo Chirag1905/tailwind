@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import Link from 'next/link'
+import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import {
@@ -60,8 +60,7 @@ import {
   IconCalendarCog,
   IconForms,
   IconCertificate,
-} from '@tabler/icons-react'
-// import NewProject from '../../pages/app/project/NewProject';
+} from '@tabler/icons-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { signOutSuccess } from '../../Redux/features/auth/authSlice';
 import Image from 'next/image';
@@ -79,10 +78,10 @@ export default function Sidebar(props) {
   const [submenuActive, setSubmenuActive] = useState({});
 
   const pageUrl = usePathname();
-  const [schedule, setSchedule] = useState(false)
+  const [schedule, setSchedule] = useState(false);
   const toggleSchedule = () => {
-    setSchedule(!schedule)
-  }
+    setSchedule(!schedule);
+  };
 
   const handleLogout = () => {
     if (isAuthenticated) {
@@ -117,21 +116,8 @@ export default function Sidebar(props) {
             { link: 'Application Form', url: '/academicsManagement/applicationForm' }
           ],
         },
-        // {
-        //   icon: IconAdjustmentsDollar,
-        //   link: "Course Register",
-        //   url: "/academicsManagement/courseRegister",
-        // },
-        // {
-        //   icon: IconForms,
-        //   link: "Application Form",
-        //   url: "/applicationForm",
-        // },
       ],
     },
-    // {
-    //   devider: "RESOURCES",
-    // },
     {
       icon: IconAdjustmentsDollar,
       link: "Finances",
@@ -143,18 +129,15 @@ export default function Sidebar(props) {
     let itemToPin;
 
     if (childIndex !== null) {
-      // Pinning a submenu item
       itemToPin = {
         ...menuList[parentIndex]?.children[key]?.children[childIndex],
         parentLink: menuList[parentIndex]?.children[key]?.link,
       };
     } else {
-      // Pinning a main menu item
       itemToPin = menuList[parentIndex]?.children[key];
     }
 
     if (itemToPin) {
-      // Check if the item is already pinned
       const isPinned = pinnedItems.some(
         (item) =>
           item.url === itemToPin.url &&
@@ -162,7 +145,6 @@ export default function Sidebar(props) {
       );
 
       if (isPinned) {
-        // Unpin the item if it's already pinned
         setPinnedItems((prevState) =>
           prevState.filter(
             (item) =>
@@ -171,7 +153,6 @@ export default function Sidebar(props) {
           )
         );
       } else {
-        // Pin the item
         setPinnedItems((prevState) => [...prevState, itemToPin]);
       }
     }
@@ -185,7 +166,6 @@ export default function Sidebar(props) {
   };
 
   const closeModals = () => {
-    // Close all campus group and campus modals
     dispatch(closeModal({ modalType: "createAcademicYear" }));
     dispatch(closeModal({ modalType: "editAcademicYear" }));
     dispatch(getAcademicYearPaginationRequest({
@@ -226,26 +206,67 @@ export default function Sidebar(props) {
   };
 
   useEffect(() => {
-    const findActiveMenu = (url) => {
-      for (let i = 0; i < menuList.length; i++) {
-        const item = menuList[i];
-        if (item.children) {
-          for (let j = 0; j < item.children.length; j++) {
-            if (item.children[j].url === url) {
-              setMenuActive(i);
-              return;
+    if (typeof window !== 'undefined') {
+      const savedMenuActive = localStorage.getItem('menuActive');
+      const savedSubmenuActive = localStorage.getItem('submenuActive');
+      if (savedMenuActive) {
+        setMenuActive(JSON.parse(savedMenuActive));
+      }
+      if (savedSubmenuActive) {
+        setSubmenuActive(JSON.parse(savedSubmenuActive));
+      }
+      if (!savedMenuActive || !savedSubmenuActive) {
+        findActiveMenu(pageUrl);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('menuActive', JSON.stringify(menuActive));
+      localStorage.setItem('submenuActive', JSON.stringify(submenuActive));
+    }
+  }, [menuActive, submenuActive]);
+
+  const findActiveMenu = (url) => {
+    for (let i = 0; i < menuList.length; i++) {
+      const item = menuList[i];
+      if (item.url === url) {
+        setMenuActive(i);
+        setSubmenuActive({});
+        return true;
+      }
+      if (item.children) {
+        for (let j = 0; j < item.children.length; j++) {
+          const child = item.children[j];
+          if (child.url === url) {
+            setMenuActive(i);
+            setSubmenuActive({ [`${i}-${j}`]: true });
+            return true;
+          }
+          if (child.children) {
+            for (let k = 0; k < child.children.length; k++) {
+              if (child.children[k].url === url) {
+                setMenuActive(i);
+                setSubmenuActive({ [`${i}-${j}`]: true });
+                return true;
+              }
             }
           }
         }
       }
-    };
+    }
+    setMenuActive(null);
+    setSubmenuActive({});
+    return false;
+  };
 
+  useEffect(() => {
     findActiveMenu(pageUrl);
   }, [pageUrl]);
 
   const [customizations, setCustomizations] = useState();
 
-  // Load customizations from localStorage on mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const savedCustomizations = localStorage.getItem('customizations');
@@ -273,28 +294,22 @@ export default function Sidebar(props) {
   }, []);
 
   const highlightAncestors = (item, currentUrl, path = []) => {
-    // Check if the current item's URL matches the current page
     if (item.url === currentUrl) {
-      return [...path, item]; // Return current path of matched items
+      return [...path, item];
     }
-
-    // If there are children, recursively search them
     if (item.children) {
       for (let child of item.children) {
         const result = highlightAncestors(child, currentUrl, [...path, item]);
-        if (result.length > 0) return result; // If the child matches, return the result
+        if (result.length > 0) return result;
       }
     }
-
-    return []; // If no match is found
+    return [];
   };
 
   const isAncestorHighlighted = (item, ancestors) => {
-    // Check if the current item is in the ancestors list
     return ancestors.some(ancestor => ancestor.url === item.url);
   };
 
-  // In your component, add the logic to apply the appropriate class to the active items
   const ancestors = menuList?.map(item => highlightAncestors(item, pageUrl)).find(path => path.length > 0) || [];
 
   return (
@@ -304,7 +319,7 @@ export default function Sidebar(props) {
           <button>
             <Image src={customizations?.schoolLogo || profile_av} alt='profile' width={56} height={56} className='bg-white shadow-shadow-lg p-1 rounded-lg saturate-50 transition-all hover:filter-none' />
           </button>
-          <div className='bg-card-color text-font-color rounded-xl overflow-hidden w-[240px] text-start shadow-shadow-lg absolute start-0 top-full origin-top-left rtl:origin-top-right z-[1] opacity-0 invisible scale-0 transition-all duration-300 group-hover:opacity-100 group-hover:visible group-hover:scale-100'> 
+          <div className='bg-card-color text-font-color rounded-xl overflow-hidden w-[240px] text-start shadow-shadow-lg absolute start-0 top-full origin-top-left rtl:origin-top-right z-[1] opacity-0 invisible scale-0 transition-all duration-300 group-hover:opacity-100 group-hover:visible group-hover:scale-100'>
             <div className='p-4 border-b border-border-color'>
               <div className='font-semibold'>
                 Utkarsh Paliwal
@@ -340,9 +355,11 @@ export default function Sidebar(props) {
                 Support Ticket
               </Link>
             </div>
-            <Link href="auth-signin" prefetch={true} className='bg-secondary uppercase text-[14px]/[20px] text-white py-[5px] px-10 text-center w-full inline-block'>
+            <button className='bg-secondary uppercase text-[14px]/[20px] text-white py-[5px] px-10 text-center w-full inline-block'
+              onClick={() => handleLogout()}
+            >
               Sign Out
-            </Link>
+            </button>
           </div>
         </div>
         <div className='text-white'>
@@ -350,7 +367,6 @@ export default function Sidebar(props) {
             Assistant Prof
           </span>
           <div className='font-medium'>
-            {/* Utkarsh Paliwal */}
             Tester
           </div>
           <div className='flex gap-4 mt-[10px]'>
@@ -380,9 +396,11 @@ export default function Sidebar(props) {
           item.children ? (
             <li key={parentIndex}>
               <button
-                onClick={() => setMenuActive(menuActive === parentIndex ? null : parentIndex)}
+                onClick={() => {
+                  setMenuActive(menuActive === parentIndex ? null : parentIndex);
+                }}
                 className={`flex items-center gap-2.5 w-full py-2.5 transition-all hover:text-secondary 
-          ${menuActive === parentIndex ? 'text-secondary' : ''}`}
+          ${menuActive === parentIndex || isAncestorHighlighted(item, ancestors) ? 'text-secondary' : ''}`}
               >
                 <item.icon className="stroke-[1.5] w-[22px] h-[22px]" />
                 <Link
@@ -392,19 +410,13 @@ export default function Sidebar(props) {
                 >
                   {item?.link}
                 </Link>
-                <IconChevronRight className={`stroke-[1.5] w-[18px] h-[18px] ms-auto rtl:rotate-180 transition-all ${menuActive === parentIndex ? 'rotate-90 rtl:rotate-90' : ''}`} />
+                <IconChevronRight className={`stroke-[1.5] w-[18px] h-[18px] ms-auto rtl:rotate-180 transition-all ${menuActive === parentIndex || isAncestorHighlighted(item, ancestors) ? 'rotate-90 rtl:rotate-90' : ''}`} />
               </button>
-
-              {/* Submenu Rendering */}
-              {menuActive === parentIndex && (
-                <ul
-                  className="ps-[52px] relative before:absolute before:h-full before:w-[1px] ltr:before:left-8 rtl:before:right-10 before:top-0 before:bg-white-10"
-                >
+              {(menuActive === parentIndex || isAncestorHighlighted(item, ancestors)) && (
+                <ul className="ps-[52px] relative before:absolute before:h-full before:w-[1px] ltr:before:left-8 rtl:before:right-10 before:top-0 before:bg-white-10">
                   {item?.children?.map((res, key) => (
                     <li key={key}>
-                      <div
-                        className={`py-1 justify-between gap-1 item-center text-[14px]/[20px] flex relative before:hidden before:absolute before:h-full before:w-[1px] ltr:before:left-[-20px] rtl:before:right-[-20px] before:top-0 before:bg-secondary hover:text-secondary hover:before:block transition-all ${pageUrl === res.url ? 'text-secondary before:!block' : ''}`}
-                      >
+                      <div className={`py-1 justify-between gap-1 item-center text-[14px]/[20px] flex relative before:hidden before:absolute before:h-full before:w-[1px] ltr:before:left-[-20px] rtl:before:right-[-20px] before:top-0 before:bg-secondary hover:text-secondary hover:before:block transition-all ${pageUrl === res.url || isAncestorHighlighted(res, ancestors) || submenuActive[`${parentIndex}-${key}`] ? 'text-secondary before:!block' : ''}`}>
                         <res.icon className="stroke-[1.5] w-[18px] h-[18px]" />
                         <Link
                           href={res.url ?? "#"}
@@ -415,11 +427,11 @@ export default function Sidebar(props) {
                           }}
                           prefetch={true}
                         >
-                          {res.link}
+                          {res?.link}
                         </Link>
-                        {res.children && (
+                        {res?.children && (
                           <IconChevronRight
-                            className={`inline-block ms-auto cursor-pointer w-4 h-4 transition-transform ${submenuActive[`${parentIndex}-${key}`] ? 'rotate-90 rtl:rotate-90' : ''}`}
+                            className={`inline-block ms-auto cursor-pointer w-4 h-4 transition-transform ${submenuActive[`${parentIndex}-${key}`] || isAncestorHighlighted(res, ancestors) ? 'rotate-90 rtl:rotate-90' : ''}`}
                             onClick={() => {
                               window.innerWidth < 1200 && setMobileNav(false);
                               toggleSubmenu(parentIndex, key);
@@ -427,8 +439,6 @@ export default function Sidebar(props) {
                             }}
                           />
                         )}
-
-                        {/* Pin icon logic */}
                         {parentIndex === 0 ? (
                           <IconPinFilled onClick={() => handlePinClick(parentIndex, key)} className="ms-auto cursor-pointer" size={20} />
                         ) : pinnedItems?.some((item) => item.url === res.url) ? (
@@ -437,16 +447,11 @@ export default function Sidebar(props) {
                           <IconPin onClick={() => handlePinClick(parentIndex, key)} className="ms-auto cursor-pointer" size={20} />
                         )}
                       </div>
-
-                      {/* Submenu for the current item */}
-                      {submenuActive[`${parentIndex}-${key}`] && res.children && (
-                        <ul
-                          className="ps-[52px] relative before:absolute before:h-full before:w-[1px] ltr:before:left-8 rtl:before:right-10 before:top-0 before:bg-white-10">
+                      {(submenuActive[`${parentIndex}-${key}`] || isAncestorHighlighted(res, ancestors)) && res.children && (
+                        <ul className="ps-[52px] relative before:absolute before:h-full before:w-[1px] ltr:before:left-8 rtl:before:right-10 before:top-0 before:bg-white-10">
                           {res.children.map((subItem, childIndex) => (
                             <li key={childIndex}>
-                              <div
-                                className={`py-1 text-[14px]/[20px] flex relative before:hidden before:absolute before:h-full before:w-[1px] ltr:before:left-[-20px] rtl:before:right-[-20px] before:top-0 before:bg-secondary hover:text-secondary hover:before:block transition-all ${pageUrl === subItem.url ? 'text-secondary before:!block' : ''}`}
-                              >
+                              <div className={`py-1 text-[14px]/[20px] flex relative before:hidden before:absolute before:h-full before:w-[1px] ltr:before:left-[-20px] rtl:before:right-[-20px] before:top-0 before:bg-secondary hover:text-secondary hover:before:block transition-all ${pageUrl === subItem.url || isAncestorHighlighted(subItem, ancestors) ? 'text-secondary before:!block' : ''}`}>
                                 <Link
                                   href={subItem.url ?? "#"}
                                   onClick={() => {
@@ -457,7 +462,6 @@ export default function Sidebar(props) {
                                 >
                                   {subItem.link}
                                 </Link>
-                                {/* Pin icon logic for submenu */}
                                 {pinnedItems?.some(
                                   (item) =>
                                     item.url === subItem.url &&
@@ -477,7 +481,7 @@ export default function Sidebar(props) {
                 </ul>
               )}
             </li>
-          ) : item.url ?
+          ) : item.url ? (
             <li key={parentIndex}>
               <Link
                 href={item.url ?? "#"}
@@ -485,16 +489,17 @@ export default function Sidebar(props) {
                 onClick={() => {
                   window.innerWidth < 1200 && setMobileNav(false);
                 }}
-                className={`flex items-center gap-2.5 w-full py-2 transition-all hover:text-secondary ${pageUrl === item.url ? 'text-secondary' : ''}`}
+                className={`flex items-center gap-2.5 w-full py-2 transition-all hover:text-secondary ${pageUrl === item.url || isAncestorHighlighted(item, ancestors) ? 'text-secondary' : ''}`}
               >
                 {item.icon ? <item.icon className="stroke-[1.5] w-[22px] h-[22px]" /> : <IconChevronRight />}
                 <span>{item.link}</span>
               </Link>
             </li>
-            :
+          ) : (
             <li key={parentIndex} className={`py-3 text-[12px]/[15px]${item.color ? ` text-${item.color}` : ''}${item.fontWeight ? ` font-${item.fontWeight}` : ''}`}>
               {item.devider}
             </li>
+          )
         ))}
       </ul>
       {schedule && (
@@ -769,7 +774,7 @@ export default function Sidebar(props) {
                       <span className='inline-block text-[14px]/[20px] text-font-color-100'>
                         01 December 2021
                       </span>
-                      <div className='mb-4 text-[20px]/[30px]'>
+                      <div className='mb-4 textான்[20px]/[30px]'>
                         Change a Design
                       </div>
                       <p>
@@ -1289,558 +1294,6 @@ export default function Sidebar(props) {
                 <div className='flex flex-wrap py-4 px-2 items-center justify-between gap-2.5 border-b border-border-color'>
                   <div className='flex gap-4'>
                     <Image src={avatar4} width={36} height={36} alt='chat profile' className='w-[36px] h-[36px] min-w-[36px] rounded-md' />
-                    <div>
-                      <div className='mb-2 text-[16px]/[1]'>
-                        Issa Bell
-                      </div>
-                      <div className='text-font-color-100 text-[14px]/[1]'>
-                        Last seen: 1 hrs ago
-                      </div>
-                    </div>
-                  </div>
-                  <div className='flex gap-3'>
-                    <button className='xl:block hidden'>
-                      <IconCamera className='stroke-secondary w-[20px] h-[20px]' />
-                    </button>
-                    <button className='xl:block hidden'>
-                      <IconVideo className='stroke-secondary w-[20px] h-[20px]' />
-                    </button>
-                    <button className='bg-primary-10 p-[2px] rounded text-primary transition-all hover:bg-primary hover:text-white'>
-                      <IconDots className='w-[18px] h-[18px]' />
-                    </button>
-                    <button onClick={toggleChat} className='xl:hidden bg-danger p-[2px] rounded'>
-                      <IconX className='w-[18px] h-[18px] stroke-white' />
-                    </button>
-                  </div>
-                </div>
-                <div className='h-[calc(100svh-71px-79px)] py-6 px-2 overflow-auto no-scrollbar'>
-                  <ul className='flex flex-col gap-4'>
-                    <li className='flex flex-row-reverse items-end'>
-                      <div>
-                        <div className='mb-2 flex justify-end gap-1'>
-                          <span className="text-[14px]/[1] text-font-color-100">10:12 AM, Today</span>
-                        </div>
-                        <div className='p-3 rounded-lg bg-primary text-white'>
-                          <div className="message">Are we meeting today?</div>
-                        </div>
-                      </div>
-                      <button className='p-3'>
-                        <IconDots className='stroke-font-color-100 w-[18px] h-[18px] rotate-90' />
-                      </button>
-                    </li>
-                    <li className='flex flex-row items-end'>
-                      <div>
-                        <div className='mb-2 flex gap-1'>
-                          <Image src={avatar4} width={16} height={16} alt='chat profile' className='w-[16px] h-[16px] min-w-[16px] rounded' />
-                          <span className="text-[14px]/[1] text-font-color-100">10:13 AM, Today</span>
-                        </div>
-                        <div className='p-3 rounded-lg'>
-                          <div className="message">Hi Aiden, how are you?</div>
-                        </div>
-                      </div>
-                      <button className='p-3'>
-                        <IconDots className='stroke-font-color-100 w-[18px] h-[18px] rotate-90' />
-                      </button>
-                    </li>
-                    <li className='flex flex-row-reverse items-end'>
-                      <div>
-                        <div className='mb-2 flex justify-end gap-1'>
-                          <span className="text-[14px]/[1] text-font-color-100">10:14 AM, Today</span>
-                        </div>
-                        <div className='p-3 rounded-lg bg-primary text-white'>
-                          <div className="message">Yes, Orlando Allredy done There are many variations of passages of Lorem Ipsum available</div>
-                        </div>
-                      </div>
-                      <button className='p-3'>
-                        <IconDots className='stroke-font-color-100 w-[18px] h-[18px] rotate-90' />
-                      </button>
-                    </li>
-                    <li className='flex flex-row items-end'>
-                      <div>
-                        <div className='mb-2 flex gap-1'>
-                          <Image src={avatar4} width={16} height={16} alt='chat profile' className='w-[16px] h-[16px] min-w-[16px] rounded' />
-                          <span className="text-[14px]/[1] text-font-color-100">10:16 AM, Today</span>
-                        </div>
-                        <div className='p-3 rounded-lg'>
-                          <div className="message">Please find attached images</div>
-                          <div className='flex flex-wrap gap-5 mt-4'>
-                            <Image src={gallery1} width={110} height={69} alt='chat attachment' className='p-1 border border-border-color rounded-md' />
-                            <Image src={gallery2} width={110} height={69} alt='chat attachment' className='p-1 border border-border-color rounded-md' />
-                          </div>
-                        </div>
-                      </div>
-                      <button className='p-3'>
-                        <IconDots className='stroke-font-color-100 w-[18px] h-[18px] rotate-90' />
-                      </button>
-                    </li>
-                    <li className='flex flex-row-reverse items-end'>
-                      <div>
-                        <div className='mb-2 flex justify-end gap-1'>
-                          <span className="text-[14px]/[1] text-font-color-100">10:20 AM, Today</span>
-                        </div>
-                        <div className='p-3 rounded-lg bg-primary text-white'>
-                          <div className="message">Okay, will check and let you know.</div>
-                        </div>
-                      </div>
-                      <button className='p-3'>
-                        <IconDots className='stroke-font-color-100 w-[18px] h-[18px] rotate-90' />
-                      </button>
-                    </li>
-                    <li className='flex flex-row items-end'>
-                      <div>
-                        <div className='mb-2 flex gap-1'>
-                          <Image src={avatar4} width={16} height={16} alt='chat profile' className='w-[16px] h-[16px] min-w-[16px] rounded' />
-                          <span className="text-[14px]/[1] text-font-color-100">10:13 AM, Today</span>
-                        </div>
-                        <div className='p-3 rounded-lg'>
-                          <div className="message">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.</div>
-                        </div>
-                      </div>
-                      <button className='p-3'>
-                        <IconDots className='stroke-font-color-100 w-[18px] h-[18px] rotate-90' />
-                      </button>
-                    </li>
-                    <li className='flex flex-row items-end'>
-                      <div>
-                        <div className='mb-2 flex gap-1'>
-                          <Image src={avatar4} width={16} height={16} alt='chat profile' className='w-[16px] h-[16px] min-w-[16px] rounded' />
-                          <span className="text-[14px]/[1] text-font-color-100">10:13 AM, Today</span>
-                        </div>
-                        <div className='p-3 rounded-lg'>
-                          <div className="message">Contrary to popular belief, Lorem Ipsum is not simply random text.</div>
-                        </div>
-                      </div>
-                      <button className='p-3'>
-                        <IconDots className='stroke-font-color-100 w-[18px] h-[18px] rotate-90' />
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-                <div className='py-4 px-2 border-t border-border-color'>
-                  <div className='form-control flex'>
-                    <input type="text" className="form-input !rounded-e-none" placeholder="Enter text here..." />
-                    <button className="btn btn-primary !rounded-s-none" type="button">Send</button>
-                  </div>
-                </div>
-              </TabPanel>
-              <TabPanel>
-                <div className='flex flex-wrap py-4 px-2 items-center justify-between gap-2.5 border-b border-border-color'>
-                  <div className='flex gap-4'>
-                    <Image src={avatar5} width={36} height={36} alt='chat profile' className='w-[36px] h-[36px] min-w-[36px] rounded-md' />
-                    <div>
-                      <div className='mb-2 text-[16px]/[1]'>
-                        Orlando Lentz
-                      </div>
-                      <div className='text-success text-[14px]/[1]'>
-                        Online
-                      </div>
-                    </div>
-                  </div>
-                  <div className='flex gap-3'>
-                    <button className='xl:block hidden'>
-                      <IconCamera className='stroke-secondary w-[20px] h-[20px]' />
-                    </button>
-                    <button className='xl:block hidden'>
-                      <IconVideo className='stroke-secondary w-[20px] h-[20px]' />
-                    </button>
-                    <button className='bg-primary-10 p-[2px] rounded text-primary transition-all hover:bg-primary hover:text-white'>
-                      <IconDots className='w-[18px] h-[18px]' />
-                    </button>
-                    <button onClick={toggleChat} className='xl:hidden bg-danger p-[2px] rounded'>
-                      <IconX className='w-[18px] h-[18px] stroke-white' />
-                    </button>
-                  </div>
-                </div>
-                <div className='h-[calc(100svh-71px-79px)] py-6 px-2 overflow-auto no-scrollbar'>
-                  <ul className='flex flex-col gap-4'>
-                    <li className='flex flex-row items-end'>
-                      <div>
-                        <div className='mb-2 flex gap-1'>
-                          <Image src={avatar5} width={16} height={16} alt='chat profile' className='w-[16px] h-[16px] min-w-[16px] rounded' />
-                          <span className="text-[14px]/[1] text-font-color-100">10:10 AM, Today</span>
-                        </div>
-                        <div className='p-3 rounded-lg'>
-                          <div className="message"> Hi Aiden, how are you?</div>
-                        </div>
-                      </div>
-                      <button className='p-3'>
-                        <IconDots className='stroke-font-color-100 w-[18px] h-[18px] rotate-90' />
-                      </button>
-                    </li>
-                    <li className='flex flex-row-reverse items-end'>
-                      <div>
-                        <div className='mb-2 flex justify-end gap-1'>
-                          <span className="text-[14px]/[1] text-font-color-100">10:12 AM, Today</span>
-                        </div>
-                        <div className='p-3 rounded-lg bg-primary text-white'>
-                          <div className="message"> Hi Aiden, how are you?</div>
-                        </div>
-                      </div>
-                      <button className='p-3'>
-                        <IconDots className='stroke-font-color-100 w-[18px] h-[18px] rotate-90' />
-                      </button>
-                    </li>
-                    <li className='flex flex-row items-end'>
-                      <div>
-                        <div className='mb-2 flex gap-1'>
-                          <Image src={avatar5} width={16} height={16} alt='chat profile' className='w-[16px] h-[16px] min-w-[16px] rounded' />
-                          <span className="text-[14px]/[1] text-font-color-100">10:13 AM, Today</span>
-                        </div>
-                        <div className='p-3 rounded-lg'>
-                          <div className="message">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.</div>
-                        </div>
-                      </div>
-                      <button className='p-3'>
-                        <IconDots className='stroke-font-color-100 w-[18px] h-[18px] rotate-90' />
-                      </button>
-                    </li>
-                    <li className='flex flex-row items-end'>
-                      <div>
-                        <div className='mb-2 flex gap-1'>
-                          <Image src={avatar5} width={16} height={16} alt='chat profile' className='w-[16px] h-[16px] min-w-[16px] rounded' />
-                          <span className="text-[14px]/[1] text-font-color-100">10:13 AM, Today</span>
-                        </div>
-                        <div className='p-3 rounded-lg'>
-                          <div className="message">Contrary to popular belief, Lorem Ipsum is not simply random text.</div>
-                        </div>
-                      </div>
-                      <button className='p-3'>
-                        <IconDots className='stroke-font-color-100 w-[18px] h-[18px] rotate-90' />
-                      </button>
-                    </li>
-                    <li className='flex flex-row-reverse items-end'>
-                      <div>
-                        <div className='mb-2 flex justify-end gap-1'>
-                          <span className="text-[14px]/[1] text-font-color-100">10:14 AM, Today</span>
-                        </div>
-                        <div className='p-3 rounded-lg bg-primary text-white'>
-                          <div className="message">Yes, Orlando Allredy done There are many variations of passages of Lorem Ipsum available</div>
-                        </div>
-                      </div>
-                      <button className='p-3'>
-                        <IconDots className='stroke-font-color-100 w-[18px] h-[18px] rotate-90' />
-                      </button>
-                    </li>
-                    <li className='flex flex-row items-end'>
-                      <div>
-                        <div className='mb-2 flex gap-1'>
-                          <Image src={avatar5} width={16} height={16} alt='chat profile' className='w-[16px] h-[16px] min-w-[16px] rounded' />
-                          <span className="text-[14px]/[1] text-font-color-100">10:16 AM, Today</span>
-                        </div>
-                        <div className='p-3 rounded-lg'>
-                          <div className="message">Please find attached images</div>
-                          <div className='flex flex-wrap gap-5 mt-4'>
-                            <Image src={gallery3} width={110} height={69} alt='chat attachment' className='p-1 border border-border-color rounded-md' />
-                            <Image src={gallery4} width={110} height={69} alt='chat attachment' className='p-1 border border-border-color rounded-md' />
-                          </div>
-                        </div>
-                      </div>
-                      <button className='p-3'>
-                        <IconDots className='stroke-font-color-100 w-[18px] h-[18px] rotate-90' />
-                      </button>
-                    </li>
-                    <li className='flex flex-row-reverse items-end'>
-                      <div>
-                        <div className='mb-2 flex justify-end gap-1'>
-                          <span className="text-[14px]/[1] text-font-color-100">10:20 AM, Today</span>
-                        </div>
-                        <div className='p-3 rounded-lg bg-primary text-white'>
-                          <div className="message">Okay, will check and let you know.</div>
-                        </div>
-                      </div>
-                      <button className='p-3'>
-                        <IconDots className='stroke-font-color-100 w-[18px] h-[18px] rotate-90' />
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-                <div className='py-4 px-2 border-t border-border-color'>
-                  <div className='form-control flex'>
-                    <input type="text" className="form-input !rounded-e-none" placeholder="Enter text here..." />
-                    <button className="btn btn-primary !rounded-s-none" type="button">Send</button>
-                  </div>
-                </div>
-              </TabPanel>
-              <TabPanel>
-                <div className='flex flex-wrap py-4 px-2 items-center justify-between gap-2.5 border-b border-border-color'>
-                  <div className='flex gap-4'>
-                    <Image src={avatar6} width={36} height={36} alt='chat profile' className='w-[36px] h-[36px] min-w-[36px] rounded-md' />
-                    <div>
-                      <div className='mb-2 text-[16px]/[1]'>
-                        Issa Bell
-                      </div>
-                      <div className='text-font-color-100 text-[14px]/[1]'>
-                        Last seen: 1 hrs ago
-                      </div>
-                    </div>
-                  </div>
-                  <div className='flex gap-3'>
-                    <button className='xl:block hidden'>
-                      <IconCamera className='stroke-secondary w-[20px] h-[20px]' />
-                    </button>
-                    <button className='xl:block hidden'>
-                      <IconVideo className='stroke-secondary w-[20px] h-[20px]' />
-                    </button>
-                    <button className='bg-primary-10 p-[2px] rounded text-primary transition-all hover:bg-primary hover:text-white'>
-                      <IconDots className='w-[18px] h-[18px]' />
-                    </button>
-                    <button onClick={toggleChat} className='xl:hidden bg-danger p-[2px] rounded'>
-                      <IconX className='w-[18px] h-[18px] stroke-white' />
-                    </button>
-                  </div>
-                </div>
-                <div className='h-[calc(100svh-71px-79px)] py-6 px-2 overflow-auto no-scrollbar'>
-                  <ul className='flex flex-col gap-4'>
-                    <li className='flex flex-row-reverse items-end'>
-                      <div>
-                        <div className='mb-2 flex justify-end gap-1'>
-                          <span className="text-[14px]/[1] text-font-color-100">10:12 AM, Today</span>
-                        </div>
-                        <div className='p-3 rounded-lg bg-primary text-white'>
-                          <div className="message">Are we meeting today?</div>
-                        </div>
-                      </div>
-                      <button className='p-3'>
-                        <IconDots className='stroke-font-color-100 w-[18px] h-[18px] rotate-90' />
-                      </button>
-                    </li>
-                    <li className='flex flex-row items-end'>
-                      <div>
-                        <div className='mb-2 flex gap-1'>
-                          <Image src={avatar6} width={16} height={16} alt='chat profile' className='w-[16px] h-[16px] min-w-[16px] rounded' />
-                          <span className="text-[14px]/[1] text-font-color-100">10:13 AM, Today</span>
-                        </div>
-                        <div className='p-3 rounded-lg'>
-                          <div className="message">Hi Aiden, how are you?</div>
-                        </div>
-                      </div>
-                      <button className='p-3'>
-                        <IconDots className='stroke-font-color-100 w-[18px] h-[18px] rotate-90' />
-                      </button>
-                    </li>
-                    <li className='flex flex-row-reverse items-end'>
-                      <div>
-                        <div className='mb-2 flex justify-end gap-1'>
-                          <span className="text-[14px]/[1] text-font-color-100">10:14 AM, Today</span>
-                        </div>
-                        <div className='p-3 rounded-lg bg-primary text-white'>
-                          <div className="message">Yes, Orlando Allredy done There are many variations of passages of Lorem Ipsum available</div>
-                        </div>
-                      </div>
-                      <button className='p-3'>
-                        <IconDots className='stroke-font-color-100 w-[18px] h-[18px] rotate-90' />
-                      </button>
-                    </li>
-                    <li className='flex flex-row items-end'>
-                      <div>
-                        <div className='mb-2 flex gap-1'>
-                          <Image src={avatar6} width={16} height={16} alt='chat profile' className='w-[16px] h-[16px] min-w-[16px] rounded' />
-                          <span className="text-[14px]/[1] text-font-color-100">10:16 AM, Today</span>
-                        </div>
-                        <div className='p-3 rounded-lg'>
-                          <div className="message">Please find attached images</div>
-                          <div className='flex flex-wrap gap-5 mt-4'>
-                            <Image src={gallery1} width={110} height={69} alt='chat attachment' className='p-1 border border-border-color rounded-md' />
-                            <Image src={gallery2} width={110} height={69} alt='chat attachment' className='p-1 border border-border-color rounded-md' />
-                          </div>
-                        </div>
-                      </div>
-                      <button className='p-3'>
-                        <IconDots className='stroke-font-color-100 w-[18px] h-[18px] rotate-90' />
-                      </button>
-                    </li>
-                    <li className='flex flex-row-reverse items-end'>
-                      <div>
-                        <div className='mb-2 flex justify-end gap-1'>
-                          <span className="text-[14px]/[1] text-font-color-100">10:20 AM, Today</span>
-                        </div>
-                        <div className='p-3 rounded-lg bg-primary text-white'>
-                          <div className="message">Okay, will check and let you know.</div>
-                        </div>
-                      </div>
-                      <button className='p-3'>
-                        <IconDots className='stroke-font-color-100 w-[18px] h-[18px] rotate-90' />
-                      </button>
-                    </li>
-                    <li className='flex flex-row items-end'>
-                      <div>
-                        <div className='mb-2 flex gap-1'>
-                          <Image src={avatar6} width={16} height={16} alt='chat profile' className='w-[16px] h-[16px] min-w-[16px] rounded' />
-                          <span className="text-[14px]/[1] text-font-color-100">10:13 AM, Today</span>
-                        </div>
-                        <div className='p-3 rounded-lg'>
-                          <div className="message">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.</div>
-                        </div>
-                      </div>
-                      <button className='p-3'>
-                        <IconDots className='stroke-font-color-100 w-[18px] h-[18px] rotate-90' />
-                      </button>
-                    </li>
-                    <li className='flex flex-row items-end'>
-                      <div>
-                        <div className='mb-2 flex gap-1'>
-                          <Image src={avatar6} width={16} height={16} alt='chat profile' className='w-[16px] h-[16px] min-w-[16px] rounded' />
-                          <span className="text-[14px]/[1] text-font-color-100">10:13 AM, Today</span>
-                        </div>
-                        <div className='p-3 rounded-lg'>
-                          <div className="message">Contrary to popular belief, Lorem Ipsum is not simply random text.</div>
-                        </div>
-                      </div>
-                      <button className='p-3'>
-                        <IconDots className='stroke-font-color-100 w-[18px] h-[18px] rotate-90' />
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-                <div className='py-4 px-2 border-t border-border-color'>
-                  <div className='form-control flex'>
-                    <input type="text" className="form-input !rounded-e-none" placeholder="Enter text here..." />
-                    <button className="btn btn-primary !rounded-s-none" type="button">Send</button>
-                  </div>
-                </div>
-              </TabPanel>
-              <TabPanel>
-                <div className='flex flex-wrap py-4 px-2 items-center justify-between gap-2.5 border-b border-border-color'>
-                  <div className='flex gap-4'>
-                    <Image src={avatar7} width={36} height={36} alt='chat profile' className='w-[36px] h-[36px] min-w-[36px] rounded-md' />
-                    <div>
-                      <div className='mb-2 text-[16px]/[1]'>
-                        Orlando Lentz
-                      </div>
-                      <div className='text-success text-[14px]/[1]'>
-                        Online
-                      </div>
-                    </div>
-                  </div>
-                  <div className='flex gap-3'>
-                    <button className='xl:block hidden'>
-                      <IconCamera className='stroke-secondary w-[20px] h-[20px]' />
-                    </button>
-                    <button className='xl:block hidden'>
-                      <IconVideo className='stroke-secondary w-[20px] h-[20px]' />
-                    </button>
-                    <button className='bg-primary-10 p-[2px] rounded text-primary transition-all hover:bg-primary hover:text-white'>
-                      <IconDots className='w-[18px] h-[18px]' />
-                    </button>
-                    <button onClick={toggleChat} className='xl:hidden bg-danger p-[2px] rounded'>
-                      <IconX className='w-[18px] h-[18px] stroke-white' />
-                    </button>
-                  </div>
-                </div>
-                <div className='h-[calc(100svh-71px-79px)] py-6 px-2 overflow-auto no-scrollbar'>
-                  <ul className='flex flex-col gap-4'>
-                    <li className='flex flex-row items-end'>
-                      <div>
-                        <div className='mb-2 flex gap-1'>
-                          <Image src={avatar7} width={16} height={16} alt='chat profile' className='w-[16px] h-[16px] min-w-[16px] rounded' />
-                          <span className="text-[14px]/[1] text-font-color-100">10:10 AM, Today</span>
-                        </div>
-                        <div className='p-3 rounded-lg'>
-                          <div className="message"> Hi Aiden, how are you?</div>
-                        </div>
-                      </div>
-                      <button className='p-3'>
-                        <IconDots className='stroke-font-color-100 w-[18px] h-[18px] rotate-90' />
-                      </button>
-                    </li>
-                    <li className='flex flex-row-reverse items-end'>
-                      <div>
-                        <div className='mb-2 flex justify-end gap-1'>
-                          <span className="text-[14px]/[1] text-font-color-100">10:12 AM, Today</span>
-                        </div>
-                        <div className='p-3 rounded-lg bg-primary text-white'>
-                          <div className="message"> Hi Aiden, how are you?</div>
-                        </div>
-                      </div>
-                      <button className='p-3'>
-                        <IconDots className='stroke-font-color-100 w-[18px] h-[18px] rotate-90' />
-                      </button>
-                    </li>
-                    <li className='flex flex-row items-end'>
-                      <div>
-                        <div className='mb-2 flex gap-1'>
-                          <Image src={avatar7} width={16} height={16} alt='chat profile' className='w-[16px] h-[16px] min-w-[16px] rounded' />
-                          <span className="text-[14px]/[1] text-font-color-100">10:13 AM, Today</span>
-                        </div>
-                        <div className='p-3 rounded-lg'>
-                          <div className="message">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.</div>
-                        </div>
-                      </div>
-                      <button className='p-3'>
-                        <IconDots className='stroke-font-color-100 w-[18px] h-[18px] rotate-90' />
-                      </button>
-                    </li>
-                    <li className='flex flex-row items-end'>
-                      <div>
-                        <div className='mb-2 flex gap-1'>
-                          <Image src={avatar7} width={16} height={16} alt='chat profile' className='w-[16px] h-[16px] min-w-[16px] rounded' />
-                          <span className="text-[14px]/[1] text-font-color-100">10:13 AM, Today</span>
-                        </div>
-                        <div className='p-3 rounded-lg'>
-                          <div className="message">Contrary to popular belief, Lorem Ipsum is not simply random text.</div>
-                        </div>
-                      </div>
-                      <button className='p-3'>
-                        <IconDots className='stroke-font-color-100 w-[18px] h-[18px] rotate-90' />
-                      </button>
-                    </li>
-                    <li className='flex flex-row-reverse items-end'>
-                      <div>
-                        <div className='mb-2 flex justify-end gap-1'>
-                          <span className="text-[14px]/[1] text-font-color-100">10:14 AM, Today</span>
-                        </div>
-                        <div className='p-3 rounded-lg bg-primary text-white'>
-                          <div className="message">Yes, Orlando Allredy done There are many variations of passages of Lorem Ipsum available</div>
-                        </div>
-                      </div>
-                      <button className='p-3'>
-                        <IconDots className='stroke-font-color-100 w-[18px] h-[18px] rotate-90' />
-                      </button>
-                    </li>
-                    <li className='flex flex-row items-end'>
-                      <div>
-                        <div className='mb-2 flex gap-1'>
-                          <Image src={avatar7} width={16} height={16} alt='chat profile' className='w-[16px] h-[16px] min-w-[16px] rounded' />
-                          <span className="text-[14px]/[1] text-font-color-100">10:16 AM, Today</span>
-                        </div>
-                        <div className='p-3 rounded-lg'>
-                          <div className="message">Please find attached images</div>
-                          <div className='flex flex-wrap gap-5 mt-4'>
-                            <Image src={gallery3} width={110} height={69} alt='chat attachment' className='p-1 border border-border-color rounded-md' />
-                            <Image src={gallery4} width={110} height={69} alt='chat attachment' className='p-1 border border-border-color rounded-md' />
-                          </div>
-                        </div>
-                      </div>
-                      <button className='p-3'>
-                        <IconDots className='stroke-font-color-100 w-[18px] h-[18px] rotate-90' />
-                      </button>
-                    </li>
-                    <li className='flex flex-row-reverse items-end'>
-                      <div>
-                        <div className='mb-2 flex justify-end gap-1'>
-                          <span className="text-[14px]/[1] text-font-color-100">10:20 AM, Today</span>
-                        </div>
-                        <div className='p-3 rounded-lg bg-primary text-white'>
-                          <div className="message">Okay, will check and let you know.</div>
-                        </div>
-                      </div>
-                      <button className='p-3'>
-                        <IconDots className='stroke-font-color-100 w-[18px] h-[18px] rotate-90' />
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-                <div className='py-4 px-2 border-t border-border-color'>
-                  <div className='form-control flex'>
-                    <input type="text" className="form-input !rounded-e-none" placeholder="Enter text here..." />
-                    <button className="btn btn-primary !rounded-s-none" type="button">Send</button>
-                  </div>
-                </div>
-              </TabPanel>
-              <TabPanel>
-                <div className='flex flex-wrap py-4 px-2 items-center justify-between gap-2.5 border-b border-border-color'>
-                  <div className='flex gap-4'>
-                    <Image src={avatar8} width={36} height={36} alt='chat profile' className='w-[36px] h-[36px] min-w-[36px] rounded-md' />
                     <div>
                       <div className='mb-2 text-[16px]/[1]'>
                         Issa Bell
