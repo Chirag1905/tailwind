@@ -18,7 +18,7 @@ const RegisterCourse = () => {
         { link: "course", url: "/academicsManagement/course" },
         { name: "registerCourse" }
     ], []);
-
+    // console.log()
     const router = useRouter();
     const dispatch = useDispatch();
     const { courseRegisterData, courseRegisterPostData, loading, error } = useSelector((state) => state.courseRegister);
