@@ -227,7 +227,7 @@ export default function AuthLayout({ children }) {
                 </div>
 
                 {/* Right Content (Sign In Box) */}
-                <div className="w-full max-w-xs sm:max-w-sm md:max-w-md px-2 sm:px-0">
+                <div className="w-full sm:max-w-sm md:max-w-md px-2 sm:px-0">
                     <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-md w-full">
                         {children}
                     </div>
