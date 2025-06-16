@@ -192,6 +192,7 @@ export default function Sidebar(props) {
     }));
     dispatch(closeModal({ modalType: "createBatch" }));
     dispatch(closeModal({ modalType: "editBatch" }));
+    dispatch(closeModal({ modalType: "registrationCourse" }));
     dispatch(closeModal({ modalType: "selectApplicationFormTemplate" }));
     dispatch(getBatchPaginationRequest({
       data: {

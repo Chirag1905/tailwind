@@ -11,7 +11,7 @@ const modalSlice = createSlice({
       createBatch: { isOpen: false },
       editBatch: { isOpen: false },
       selectApplicationFormTemplate: { isOpen: false },
-      // registrationCourse: { isOpen: false },
+      registrationCourse: { isOpen: false },
     },
   },
   reducers: {

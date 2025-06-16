@@ -559,7 +559,7 @@ export default function Header({ toggleMobileNav, mobileNav, toggleNote, toggleC
                     <div className='relative group'>
                         <button className='md:py-2 md:px-3 p-2 hover:bg-primary-10 transition-all duration-300'>
                             <span className='xl:block hidden'>
-                                Notification
+                                <IconBellRinging className='stroke-[1.5]' />
                             </span>
                             <IconBellRinging className='stroke-[1.5] xl:hidden w-[20px] h-[20px]' />
                         </button>

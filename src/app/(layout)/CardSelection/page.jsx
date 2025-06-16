@@ -50,7 +50,7 @@ const CardSelection = (props) => {
     },
     {
       id: 2,
-      title: 'Advanced Form',
+      title: 'Available Form',
       description: 'For power users',
       icon: (
         <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -178,7 +178,7 @@ const CardSelection = (props) => {
         </button>
         <button
           onClick={closeModal}
-          className="flex items-center gap-2 px-3 py-1 rounded-md bg-primary border border-primary-10 text-white hover:bg-primary-dark disabled:opacity-80 disabled:cursor-wait transition-colors duration-200 group"
+          className="flex items-center gap-2 px-3 py-1 rounded-md btn btn-primary border border-primary-10 text-white hover:bg-primary-dark disabled:opacity-80 disabled:cursor-wait transition-colors duration-200 group"
         >
           Use This Template
           <IconArrowRight

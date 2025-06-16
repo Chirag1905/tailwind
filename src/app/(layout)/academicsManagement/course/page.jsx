@@ -31,6 +31,7 @@ import CardSelection from '../../CardSelection/page';
 import { Empty, Select } from 'antd';
 import CourseRegisterListPage from './registerCourse/page';
 import { getAcademicYearRequest, getActiveAcademicYearRequest, setSelectedAcademicYear } from '@/Redux/features/academicYear/academicYearSlice';
+import SingleCourseRegister from './registerCourse/_components/SingleCourseRegister';
 
 const CourseListPage = () => {
   // Constants
@@ -55,6 +56,7 @@ const CourseListPage = () => {
   // Derived modal states
   const isCreateModalOpen = useMemo(() => modals.createCourse.isOpen, [modals.createCourse.isOpen]);
   const isEditModalOpen = useMemo(() => modals.editCourse.isOpen, [modals.editCourse.isOpen]);
+  const isRegistrationCourseModalOpen = useMemo(() => modals.registrationCourse.isOpen, [modals.registrationCourse.isOpen]);
   const isFormTemplateModalOpen = useMemo(() => modals.selectApplicationFormTemplate.isOpen, [modals.selectApplicationFormTemplate.isOpen]);
 
   // Component state
@@ -64,7 +66,6 @@ const CourseListPage = () => {
   const [pagination, setPagination] = useState(initialPagination);
   const [selectedItem, setSelectedItem] = useState(null);
   const [expandedCourseId, setExpandedCourseId] = useState(null);
-
 
   const [academicYears, setAcademicYears] = useState();
 
@@ -79,11 +80,11 @@ const CourseListPage = () => {
   }, [activeAcademicYearData, selectedAcademicYear, dispatch]);
 
   // Effect for data update
- useEffect(() => {
-  if (token) {
-    dispatch(getActiveAcademicYearRequest({ token }));
-  }
-}, [dispatch, token]);
+  useEffect(() => {
+    if (token) {
+      dispatch(getActiveAcademicYearRequest({ token }));
+    }
+  }, [dispatch, token]);
 
   const handleChange = (value) => {
     dispatch(setSelectedAcademicYear(value));
@@ -123,16 +124,16 @@ const CourseListPage = () => {
       },
       close: () => dispatch(closeModal({ modalType: "selectApplicationFormTemplate" }))
     },
-    // courseRegistration: {
-    //   open: (item) => {
-    //     dispatch(openModal({ modalType: "registrationCourse" }));
-    //     dispatch(closeModal({ modalType: "createCourse" }));
-    //     dispatch(closeModal({ modalType: "editCourse" }));
-    //     dispatch(closeModal({ modalType: "selectApplicationFormTemplate" }));
-    //     setSelectedItem(item);
-    //   },
-    //   close: () => dispatch(closeModal({ modalType: "registrationCourse" }))
-    // }
+    courseRegistration: {
+      open: (item) => {
+        dispatch(openModal({ modalType: "registrationCourse" }));
+        dispatch(closeModal({ modalType: "createCourse" }));
+        dispatch(closeModal({ modalType: "editCourse" }));
+        dispatch(closeModal({ modalType: "selectApplicationFormTemplate" }));
+        setSelectedItem(item);
+      },
+      close: () => dispatch(closeModal({ modalType: "registrationCourse" }))
+    }
   }), [dispatch]);
 
   // Memoized pagination handlers
@@ -248,15 +249,15 @@ const CourseListPage = () => {
         />
       )}
 
-      {/* {isRegistrationCourseModalOpen && (
-        <CourseRegisterListPage
+      {isRegistrationCourseModalOpen && (
+        <SingleCourseRegister
           openModal={modalHandlers.courseRegistration.open}
           closeModal={modalHandlers.courseRegistration.close}
-          // courseData={data}
+        // courseData={data}
         // selectedItem={selectedItem}
         // setSelectedItem={setSelectedItem}
         />
-      )} */}
+      )}
 
       {isFormTemplateModalOpen && (
         <CardSelection
@@ -266,7 +267,7 @@ const CourseListPage = () => {
         // setSelectedItem={setSelectedItem}
         />
       )}
-      {!isCreateModalOpen && !isEditModalOpen && !isFormTemplateModalOpen && (
+      {!isCreateModalOpen && !isEditModalOpen && !isRegistrationCourseModalOpen && !isFormTemplateModalOpen && (
         <>
           <div className="pt-6 md:pt-7 px-5 sm:px-6 md:px-0 bg-card-color border rounded-xl shadow-xl">
             {/* Header Section */}
@@ -395,10 +396,10 @@ const CourseListPage = () => {
                                     <IconEdit className='w-[16px] h-[16px] md:w-[18px] md:h-[18px] min-w-[16px]' />
                                   </button>
                                   {/* <button className="btn btn-light-primary p-2"
-                                    onClick={() => router.push("/academicsManagement/applicationForm")}
-                                  // onClick={() => router.push(`/academicsManagement/courseRegister/${item.id}`)}
+                                    // onClick={() => router.push("/academicsManagement/applicationForm")}
+                                    onClick={() => modalHandlers.courseRegistration.open(item)}
                                   >
-                                    <IconCertificate2 className='w-[16px] h-[16px] md:w-[18px] md:h-[18px] min-w-[16px]' />
+                                    <IconPencilPlus className='w-[16px] h-[16px] md:w-[18px] md:h-[18px] min-w-[16px]' />
                                   </button> */}
                                   <button className="btn btn-light-primary p-2"
                                     onClick={() => modalHandlers.formTemplate.open(item)}

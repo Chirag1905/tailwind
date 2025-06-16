@@ -298,7 +298,7 @@ const BatchListPage = (props) => {
                         <td colSpan="6" className="text-center py-4 px-2 md:px-4">
                           <Empty
                             image={Empty.PRESENTED_IMAGE_SIMPLE}
-                            description="No Courses Found"
+                            description="No Batch Found"
                             className="flex flex-col items-center justify-center"
                           />
                         </td>
