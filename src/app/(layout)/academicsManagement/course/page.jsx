@@ -30,7 +30,7 @@ import { useRouter } from 'next/navigation';
 import CardSelection from '../../CardSelection/page';
 import { Empty, Select } from 'antd';
 import CourseRegisterListPage from './registerCourse/page';
-import { getAcademicYearRequest, setSelectedAcademicYear } from '@/Redux/features/academicYear/academicYearSlice';
+import { getAcademicYearRequest, getActiveAcademicYearRequest, setSelectedAcademicYear } from '@/Redux/features/academicYear/academicYearSlice';
 
 const CourseListPage = () => {
   // Constants
@@ -46,7 +46,8 @@ const CourseListPage = () => {
   // Redux state
   const dispatch = useDispatch();
   const { courseDataPagination, loading, error } = useSelector((state) => state.course);
-  const { academicYearData } = useSelector((state) => state.academicYear);
+  const { activeAcademicYearData } = useSelector((state) => state.academicYear);
+  // console.log("🚀 ~ CourseListPage ~ activeAcademicYearData:", activeAcademicYearData)
   const selectedAcademicYear = useSelector(state => state.academicYear.selectedAcademicYear);
   const { token } = useSelector((state) => state.auth);
   const { modals } = useSelector((state) => state.modal);
@@ -68,19 +69,21 @@ const CourseListPage = () => {
   const [academicYears, setAcademicYears] = useState();
 
   useEffect(() => {
-    if (academicYearData) {
-      setAcademicYears(academicYearData?.data || []);
+    if (activeAcademicYearData) {
+      setAcademicYears(activeAcademicYearData?.data || []);
     }
     // Optionally set the first academic year as default if none is selected
-    if (academicYearData?.data?.length > 0 && !selectedAcademicYear) {
-      dispatch(setSelectedAcademicYear(academicYearData.data[0].id));
+    if (activeAcademicYearData?.data?.length > 0 && !selectedAcademicYear) {
+      dispatch(setSelectedAcademicYear(activeAcademicYearData.data[0].id));
     }
-  }, [academicYearData, selectedAcademicYear, dispatch]);
+  }, [activeAcademicYearData, selectedAcademicYear, dispatch]);
 
   // Effect for data update
-  useEffect(() => {
-    dispatch(getAcademicYearRequest({ token }));
-  }, []);
+ useEffect(() => {
+  if (token) {
+    dispatch(getActiveAcademicYearRequest({ token }));
+  }
+}, [dispatch, token]);
 
   const handleChange = (value) => {
     dispatch(setSelectedAcademicYear(value));

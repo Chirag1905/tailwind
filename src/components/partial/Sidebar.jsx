@@ -322,10 +322,10 @@ export default function Sidebar(props) {
           <div className='bg-card-color text-font-color rounded-xl overflow-hidden w-[240px] text-start shadow-shadow-lg absolute start-0 top-full origin-top-left rtl:origin-top-right z-[1] opacity-0 invisible scale-0 transition-all duration-300 group-hover:opacity-100 group-hover:visible group-hover:scale-100'>
             <div className='p-4 border-b border-border-color'>
               <div className='font-semibold'>
-                Utkarsh Paliwal
+                Chirag Demo
               </div>
               <div className='text-font-color-100'>
-                utkarsh@techvein.com
+                chirag@techvein.com
               </div>
               <div className="text-danger text-[12px]/[18px] mt-10">Last login: 1 Hours Ago</div>
             </div>

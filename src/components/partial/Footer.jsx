@@ -17,8 +17,8 @@ export default function Footer({ className }) {
         {/* <CompanyLogo className="w-[53px] h-[18px] text-primary transition-all hover:text-secondary" /> */}
         <Image
           src={profile_av}
-          // alt="Techvein IT Solutions Logo"
-          className="text-primary transition-all hover:text-secondary"
+          alt="Campus Logo"
+          className="text-primary transition-all hover:text-secondary rounded-4xl"
           width={53}
           height={18}
           priority

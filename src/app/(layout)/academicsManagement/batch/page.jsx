@@ -28,7 +28,7 @@ const BatchListPage = (props) => {
   const router = useRouter();
   const { courseId } = props;
   const selectedAcademicYear = useSelector((state) => state.academicYear.selectedAcademicYear);
-  console.log("Batch Listing Page", selectedAcademicYear)
+  // console.log("Batch Listing Page", selectedAcademicYear)
   // Constants
   const breadcrumbItem = useMemo(() => [{ name: "Batches Management" }], []);
   const initialPagination = useMemo(() => ({

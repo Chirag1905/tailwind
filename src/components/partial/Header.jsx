@@ -59,7 +59,7 @@ import { fetchCustomizationRequest, resetCustomization } from '@/Redux/features/
 export default function Header({ toggleMobileNav, mobileNav, toggleNote, toggleChat }) {
     const dispatch = useDispatch();
     const customization = useSelector((state) => state.customization);
-    console.log("🚀 ~ Header ~ customization:", customization)
+    // console.log("🚀 ~ Header ~ customization:", customization)
     const authToken = useSelector((state) => state.auth.token); // Assuming you have auth token
 
     // Load customization on mount

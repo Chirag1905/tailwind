@@ -30,7 +30,7 @@ export default function RootLayout({ children }) {
         {/* Favicons are now handled by the metadata.icons config */}
         {/* Additional head tags can be added here if needed */}
       </head>
-      <body data-swift-theme="indigo">
+      <body data-swift-theme="cyan">
         <ClientProvider>
           {children}
         </ClientProvider>

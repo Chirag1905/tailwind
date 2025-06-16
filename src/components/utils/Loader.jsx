@@ -1,25 +1,27 @@
 'use client';
+import { LoadingOutlined } from '@ant-design/icons';
+import { Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 
 const Loader = () => {
-    const [randomFact, setRandomFact] = useState("");
+  const [randomFact, setRandomFact] = useState("");
 
-    useEffect(() => {
-      const facts = [
-        "Our platform processes requests in under 500ms on average.",
-        "You can use keyboard shortcuts to navigate faster.",
-        "Over 90% of users find what they need within 3 clicks.",
-        "We refresh your data every 30 seconds automatically."
-      ];
-      setRandomFact(facts[Math.floor(Math.random() * facts.length)]);
-    }, []);
+  useEffect(() => {
+    const facts = [
+      "Our platform processes requests in under 500ms on average.",
+      "You can use keyboard shortcuts to navigate faster.",
+      "Over 90% of users find what they need within 3 clicks.",
+      "We refresh your data every 30 seconds automatically."
+    ];
+    setRandomFact(facts[Math.floor(Math.random() * facts.length)]);
+  }, []);
 
   return (
     <div className="fixed inset-0 flex flex-col items-center justify-center bg-card-color z-50 space-y-6">
-      <div className="relative w-24 h-24">
-        <div className="absolute inset-0 border-4 border-gray-200 rounded-full"></div>
-        <div className="absolute inset-0 border-4 border-t-[#8B2433] rounded-full animate-spin"></div>
-      </div>
+      <Spin
+        indicator={<LoadingOutlined style={{ fontSize: 48, color: 'var(--color-primary)' }} spin />}
+        className="custom-spin" // Applies the custom class
+      />
 
       <div className="text-center max-w-md px-4">
         <h3 className="text-xl font-medium text-gray-800 mb-2">Please wait</h3>

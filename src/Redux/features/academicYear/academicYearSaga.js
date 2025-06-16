@@ -19,6 +19,10 @@ import {
   putAcademicYearRequest,
   putAcademicYearSuccess,
   putAcademicYearFailure,
+  
+  getActiveAcademicYearSuccess,
+  getActiveAcademicYearFailure,
+  getActiveAcademicYearRequest,
 } from "./academicYearSlice";
 
 import {
@@ -27,7 +31,17 @@ import {
   getAcademicYearFetch,
   postAcademicYear,
   putAcademicYear,
+  getActiveAcademicYear,
 } from "./academicYearApi";
+
+function* getActiveAcademicYearSaga(action) {
+  try {
+    const response = yield call(getActiveAcademicYear, action.payload);
+    yield put(getActiveAcademicYearSuccess(response.data));
+  } catch (error) {
+    yield put(getActiveAcademicYearFailure(error.message));
+  }
+}
 
 function* getAcademicYearSaga(action) {
   try {
@@ -116,6 +130,7 @@ function* putAcademicYearSaga(action) {
 }
 
 export default function* academicYearSaga() {
+  yield takeLatest(getActiveAcademicYearRequest.type, getActiveAcademicYearSaga);
   yield takeLatest(getAcademicYearRequest.type, getAcademicYearSaga);
   yield takeLatest(getAcademicYearPaginationRequest.type, getAcademicYearPaginationSaga);
   yield takeLatest(getAcademicYearFetchRequest.type, getAcademicYearFetchSaga);

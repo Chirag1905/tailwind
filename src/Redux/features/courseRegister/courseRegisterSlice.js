@@ -26,6 +26,8 @@ const courseRegisterSlice = createSlice({
     error: null,
   },
   reducers: {
+    ...createAsyncReducers("getSingleCourseRegister", "courseRegisterData"),
+    ...createAsyncReducers("postSingleCourseRegister", "courseRegisterPostData"),
     ...createAsyncReducers("getCourseRegister", "courseRegisterData"),
     ...createAsyncReducers("postCourseRegister", "courseRegisterPostData"),
   },
@@ -33,6 +35,14 @@ const courseRegisterSlice = createSlice({
 
 // Now these exports will match your original names
 export const {
+  getSingleCourseRegisterRequest,
+  getSingleCourseRegisterSuccess,
+  getSingleCourseRegisterFailure,
+
+  postSingleCourseRegisterRequest,
+  postSingleCourseRegisterSuccess,
+  postSingleCourseRegisterFailure,
+
   getCourseRegisterRequest,
   getCourseRegisterSuccess,
   getCourseRegisterFailure,

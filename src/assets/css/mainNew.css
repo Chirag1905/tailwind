@@ -1,7 +1,17 @@
 @import "tailwindcss";
 @layer theme, base, components, utilities;
 
-:where([data-theme=dark], [data-theme=light], [data-swift-theme=red], [data-swift-theme=blush], [data-swift-theme=orange], [data-swift-theme=green], [data-swift-theme=cyan], [data-swift-theme=blue], [data-swift-theme=indigo]) * {
+:where(
+    [data-theme=dark], 
+    [data-theme=light], 
+    [data-swift-theme=indigo]
+    [data-swift-theme=blue], 
+    [data-swift-theme=cyan], 
+    [data-swift-theme=green], 
+    [data-swift-theme=orange], 
+    [data-swift-theme=blush], 
+    [data-swift-theme=red], 
+    ) * {
     color-scheme: dark;
 }
 
@@ -27,38 +37,6 @@
     --color-theme-orange: #FF9234;
     --color-theme-blush: #dd5e89;
     --color-theme-red: #f73859;
-
-    /* --theme-indigo: #4C3575;
-    --theme-blue: #1363DF;
-    --theme-cyan: #219F94;
-    --theme-green: #8CBA51;
-    --theme-orange: #FF9234;
-    --theme-blush: #dd5e89;
-    --theme-red: #f73859; */
-
-    --white: #fff;
-    --white-10: #ffffff1a;
-    --black: #000;
-    --black-50: rgba(0, 0, 0, 0.5);
-    --dark: #2c3239;
-    --grey: #6c757d;
-    --success: #198754;
-    --success-50: #d1e7dd;
-    --warning: #f1df3c;
-    --info: #38818d;
-    --danger: #dc3545;
-    --danger-50: #fc5a6926;
-    --sky: #86b7fe;
-    --blue: #0d6efd;
-
-    --primary: #191a1c;
-    --primary-10: #191a1c1a;
-    --secondary: #837788;
-    --chart-color1: #191a1c;
-    --chart-color2: #837788;
-    --chart-color3: #374765;
-    --chart-color4: #484261;
-    --chart-color5: #717788;
 
     --color-white: #fff;
     --color-white-10: #ffffff1a;
@@ -136,28 +114,28 @@
 }
 
 @theme inline {
-    --color-secondary: var(--secondary);
-    --color-theme-indigo: var(--theme-indigo),
-        --color-theme-blue: var(--theme-blue),
-        --color-theme-cyan: var(--theme-cyan),
-        --color-theme-green: var(--theme-green),
-        --color-theme-orange: var(--theme-orange),
-        --color-theme-blush: var(--theme-blush),
-        --color-theme-red: var(--theme-red),
+    --color-secondary: var(--color-secondary);
+    --color-theme-indigo: var(--color-theme-indigo),
+        --color-theme-blue: var(--color-theme-blue),
+        --color-theme-cyan: var(--color-theme-cyan),
+        --color-theme-green: var(--color-theme-green),
+        --color-theme-orange: var(--color-theme-orange),
+        --color-theme-blush: var(--color-theme-blush),
+        --color-theme-red: var(--color-theme-red),
 
-        --color-white: var(--white),
-        --color-white-10: var(--white-10),
-        --color-black: var(--black),
-        --color-black-50: var(--black-50),
-        --color-dark: var(--dark),
-        --color-grey: var(--grey),
-        --color-success: var(--success),
-        --color-success-50: var(--success-50),
-        --color-warning: var(--warning),
-        --color-info: var(--info),
-        --color-danger: var(--danger),
-        --color-sky: var(--sky),
-        --color-blue: var(--blue),
+        --color-white: var(--color-white),
+        --color-white-10: var(--color-white-10),
+        --color-black: var(--color-black),
+        --color-black-50: var(--color-black-50),
+        --color-dark: var(--color-dark),
+        --color-grey: var(--color-grey),
+        --color-success: var(--color-success),
+        --color-success-50: var(--color-success-50),
+        --color-warning: var(--color-warning),
+        --color-info: var(--color-info),
+        --color-danger: var(--color-danger),
+        --color-sky: var(--color-sky),
+        --color-blue: var(--color-blue),
 
         --color-body-color: var(--body-color),
         --color-font-color: var(--font-color),
@@ -167,14 +145,14 @@
         --color-card-color: var(--card-color),
         --color-border-color: var(--border-color),
 
-        --color-primary: var(--primary),
-        --color-primary-10: var(--primary-10),
-        --color-secondary: var(--secondary),
-        --color-chart-color1: var(--chart-color1),
-        --color-chart-color2: var(--chart-color2),
-        --color-chart-color3: var(--chart-color3),
-        --color-chart-color4: var(--chart-color4),
-        --color-chart-color5: var(--chart-color5),
+        --color-primary: var(--color-primary),
+        --color-primary-10: var(--color-primary-10),
+        --color-secondary: var(--color-secondary),
+        --color-chart-color1: var(--color-chart-color1),
+        --color-chart-color2: var(--color-chart-color2),
+        --color-chart-color3: var(--color-chart-color3),
+        --color-chart-color4: var(--color-chart-color4),
+        --color-chart-color5: var(--color-chart-color5),
 }
 
 /* Default (light) theme */
@@ -212,80 +190,80 @@
 }
 
 [data-swift-theme="indigo"] {
-    --primary: #4C3575;
-    --primary-10: #4c35751a;
-    --secondary: #e05170;
-    --chart-color1: #b9b3a8;
-    --chart-color2: #4C3575;
-    --chart-color3: #98427e;
-    --chart-color4: #d55a75;
-    --chart-color5: #fb8665;
+    --color-primary: #4C3575;
+    --color-primary-10: #4c35751a;
+    --color-secondary: #e05170;
+    --color-chart-color1: #b9b3a8;
+    --color-chart-color2: #4C3575;
+    --color-chart-color3: #98427e;
+    --color-chart-color4: #d55a75;
+    --color-chart-color5: #fb8665;
 }
 
 [data-swift-theme="blue"] {
-    --primary: #1363DF;
-    --primary-10: #4c35751a;
-    --secondary: #4FD3C4;
-    --chart-color1: #1363df;
-    --chart-color2: #ff8974;
-    --chart-color3: #ffc25b;
-    --chart-color4: #70afeb;
-    --chart-color5: #4FD3C4;
+    --color-primary: #1363DF;
+    --color-primary-10: #4c35751a;
+    --color-secondary: #4FD3C4;
+    --color-chart-color1: #1363df;
+    --color-chart-color2: #ff8974;
+    --color-chart-color3: #ffc25b;
+    --color-chart-color4: #70afeb;
+    --color-chart-color5: #4FD3C4;
 }
 
 [data-swift-theme="cyan"] {
-    --primary: #219F94;
-    --primary-10: #219F941a;
-    --secondary: #655D8A;
-    --chart-color1: #219F94;
-    --chart-color2: #655D8A;
-    --chart-color3: #C1DEAE;
-    --chart-color4: #FDCEB9;
-    --chart-color5: #D885A3;
+    --color-primary: #219F94;
+    --color-primary-10: #219F941a;
+    --color-secondary: #655D8A;
+    --color-chart-color1: #219F94;
+    --color-chart-color2: #655D8A;
+    --color-chart-color3: #C1DEAE;
+    --color-chart-color4: #FDCEB9;
+    --color-chart-color5: #D885A3;
 }
 
 [data-swift-theme="green"] {
-    --primary: #8CBA51;
-    --primary-10: #8CBA511a;
-    --secondary: #A1DD70;
-    --chart-color1: #79B989;
-    --chart-color2: #7E8954;
-    --chart-color3: #91A7FB;
-    --chart-color4: #3FBCB8;
-    --chart-color5: #ecbc7c;
+    --color-primary: #8CBA51;
+    --color-primary-10: #8CBA511a;
+    --color-secondary: #A1DD70;
+    --color-chart-color1: #79B989;
+    --color-chart-color2: #7E8954;
+    --color-chart-color3: #91A7FB;
+    --color-chart-color4: #3FBCB8;
+    --color-chart-color5: #ecbc7c;
 }
 
 [data-swift-theme="orange"] {
-    --primary: #FF9234;
-    --primary-10: #FF92341a;
-    --secondary: #D8C962;
-    --chart-color1: #FFA600;
-    --chart-color2: #FF8982;
-    --chart-color3: #FFC0B7;
-    --chart-color4: #CF7F00;
-    --chart-color5: #00B4B7;
+    --color-primary: #FF9234;
+    --color-primary-10: #FF92341a;
+    --color-secondary: #D8C962;
+    --color-chart-color1: #FFA600;
+    --color-chart-color2: #FF8982;
+    --color-chart-color3: #FFC0B7;
+    --color-chart-color4: #CF7F00;
+    --color-chart-color5: #00B4B7;
 }
 
 [data-swift-theme="blush"] {
-    --primary: #dd5e89;
-    --primary-10: #dd5e891a;
-    --secondary: #f7bb97;
-    --chart-color1: #dd5e89;
-    --chart-color2: #b45d98;
-    --chart-color3: #865e99;
-    --chart-color4: #5b5b8b;
-    --chart-color5: #f7bb97;
+    --color-primary: #dd5e89;
+    --color-primary-10: #dd5e891a;
+    --color-secondary: #f7bb97;
+    --color-chart-color1: #dd5e89;
+    --color-chart-color2: #b45d98;
+    --color-chart-color3: #865e99;
+    --color-chart-color4: #5b5b8b;
+    --color-chart-color5: #f7bb97;
 }
 
 [data-swift-theme="red"] {
-    --primary: #f73859;
-    --primary-10: #f738591a;
-    --secondary: #7e52b9;
-    --chart-color1: #FF7171;
-    --chart-color2: #FFAA71;
-    --chart-color3: #6E6D6D;
-    --chart-color4: #D9C6A5;
-    --chart-color5: #99B898;
+    --color-primary: #f73859;
+    --color-primary-10: #f738591a;
+    --color-secondary: #7e52b9;
+    --color-chart-color1: #FF7171;
+    --color-chart-color2: #FFAA71;
+    --color-chart-color3: #6E6D6D;
+    --color-chart-color4: #D9C6A5;
+    --color-chart-color5: #99B898;
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -385,7 +363,7 @@ small {
 }
 
 .admin-wrapper::before {
-    background-image: repeating-linear-gradient(45deg, hsla(64, 83%, 54%, .05) 0, hsla(64, 83%, 54%, .05) 1px, transparent 1px, transparent 11px, hsla(64, 83%, 54%, .05) 11px, hsla(64, 83%, 54%, .05) 12px, transparent 12px, transparent 32px), repeating-linear-gradient(90deg, hsla(64, 83%, 54%, .05) 0, hsla(64, 83%, 54%, .05) 1px, transparent 1px, transparent 11px, hsla(64, 83%, 54%, .05) 11px, hsla(64, 83%, 54%, .05) 12px, transparent 12px, transparent 32px), repeating-linear-gradient(0deg, hsla(64, 83%, 54%, .05) 0, hsla(64, 83%, 54%, .05) 1px, transparent 1px, transparent 11px, hsla(64, 83%, 54%, .05) 11px, hsla(64, 83%, 54%, .05) 12px, transparent 12px, transparent 32px), repeating-linear-gradient(135deg, hsla(64, 83%, 54%, .05) 0, hsla(64, 83%, 54%, .05) 1px, transparent 1px, transparent 11px, hsla(64, 83%, 54%, .05) 11px, hsla(64, 83%, 54%, .05) 12px, transparent 12px, transparent 32px), linear-gradient(145deg, var(--primary), var(--secondary));
+    background-image: repeating-linear-gradient(45deg, hsla(64, 83%, 54%, .05) 0, hsla(64, 83%, 54%, .05) 1px, transparent 1px, transparent 11px, hsla(64, 83%, 54%, .05) 11px, hsla(64, 83%, 54%, .05) 12px, transparent 12px, transparent 32px), repeating-linear-gradient(90deg, hsla(64, 83%, 54%, .05) 0, hsla(64, 83%, 54%, .05) 1px, transparent 1px, transparent 11px, hsla(64, 83%, 54%, .05) 11px, hsla(64, 83%, 54%, .05) 12px, transparent 12px, transparent 32px), repeating-linear-gradient(0deg, hsla(64, 83%, 54%, .05) 0, hsla(64, 83%, 54%, .05) 1px, transparent 1px, transparent 11px, hsla(64, 83%, 54%, .05) 11px, hsla(64, 83%, 54%, .05) 12px, transparent 12px, transparent 32px), repeating-linear-gradient(135deg, hsla(64, 83%, 54%, .05) 0, hsla(64, 83%, 54%, .05) 1px, transparent 1px, transparent 11px, hsla(64, 83%, 54%, .05) 11px, hsla(64, 83%, 54%, .05) 12px, transparent 12px, transparent 32px), linear-gradient(145deg, var(--color-primary), var(--color-secondary));
 }
 
 .btn {
@@ -398,7 +376,6 @@ small {
     justify-content: center;
     gap: 10px;
     transition: box-shadow .25s ease, transform .25s ease;
-    cursor: pointer;
 }
 
 .btn.large {
@@ -411,89 +388,89 @@ small {
 /* } */
 
 .btn.btn-primary {
-    background-color: var(--primary);
-    border: 1px solid var(--primary);
-    color: var(--white);
+    background-color: var(--color-primary);
+    border: 1px solid var(--color-primary);
+    color: var(--color-white);
 }
 
 .btn.btn-secondary {
-    background-color: var(--grey);
-    border: 1px solid var(--grey);
-    color: var(--white);
+    background-color: var(--color-grey);
+    border: 1px solid var(--color-grey);
+    color: var(--color-white);
 }
 
 .btn.btn-danger {
-    background-color: var(--danger);
-    border: 1px solid var(--danger);
-    color: var(--white);
+    background-color: var(--color-danger);
+    border: 1px solid var(--color-danger);
+    color: var(--color-white);
 }
 
 .btn.btn-success {
-    background-color: var(--success);
-    border: 1px solid var(--success);
-    color: var(--white);
+    background-color: var(--color-success);
+    border: 1px solid var(--color-success);
+    color: var(--color-white);
 }
 
 .btn.btn-white {
-    background-color: var(--white);
-    border: 1px solid var(--white);
-    color: var(--grey);
+    background-color: var(--color-white);
+    border: 1px solid var(--color-white);
+    color: var(--color-grey);
 }
 
 .btn.btn-black {
-    background-color: var(--dark);
-    border: 1px solid var(--dark);
-    color: var(--white);
+    background-color: var(--color-dark);
+    border: 1px solid var(--color-dark);
+    color: var(--color-white);
 }
 
 .btn.btn-info {
-    background-color: var(--info);
-    border: 1px solid var(--info);
-    color: var(--white);
+    background-color: var(--color-info);
+    border: 1px solid var(--color-info);
+    color: var(--color-white);
 }
 
 .btn.btn-outline-primary {
-    border: 1px solid var(--primary);
-    color: var(--primary);
+    border: 1px solid var(--color-primary);
+    color: var(--color-primary);
 }
 
 .btn.btn-outline-primary:hover {
-    background-color: var(--primary);
-    color: var(--white);
+    background-color: var(--color-primary);
+    color: var(--color-white);
 }
 
 .btn.btn-outline-secondary {
-    border: 1px solid var(--grey);
-    color: var(--grey);
+    border: 1px solid var(--color-grey);
+    color: var(--color-grey);
 }
 
 .btn.btn-outline-secondary:hover {
-    background-color: var(--grey);
-    color: var(--white);
+    background-color: var(--color-grey);
+    color: var(--color-white);
 }
 
 .btn.btn-light-primary {
-    background-color: var(--primary-10);
-    border: 1px solid var(--primary-10);
-    color: var(--primary);
+    background-color: var(--color-primary-10);
+    border: 1px solid var(--color-primary-10);
+    color: var(--color-primary);
 }
 
 .btn.btn-light-primary:hover {
-    background-color: var(--primary);
-    border: 1px solid var(--primary);
-    color: var(--white);
+    background-color: var(--color-primary);
+    border: 1px solid var(--color-primary);
+    color: var(--color-white);
 }
 
 .btn.btn-light-danger {
-    background-color: var(--danger-50);
-    border: 1px solid var(--danger-50);
-    color: var(--danger);
+    background-color: var(--color-danger-50);
+    border: 1px solid var(--color-danger-50);
+    color: var(--color-danger);
 }
 
 .btn.btn-light-danger:hover {
-    background-color: var(--danger);
-    border: 1px solid var(--danger);
-    color: var(--white);
+    background-color: var(--color-danger);
+    border: 1px solid var(--color-danger);
+    color: var(--color-white);
 }
 
 body .ql-snow {
@@ -523,7 +500,7 @@ body .ql-editor.ql-blank::before {
 }
 
 .swiper-pagination-bullet-active {
-    background-color: var(--primary);
+    background-color: var(--color-primary);
 }
 
 /* scrollbar css start */
@@ -654,8 +631,8 @@ body .react-data-table.striped .rdt_TableCol:not(:last-of-type) {
 .form-control .form-input:focus,
 .form-control .form-textarea:focus {
     outline: none;
-    border: 1px solid var(--primary);
-    color: var(--primary);
+    border: 1px solid var(--color-primary);
+    color: var(--color-primary);
     box-shadow: var(--inset-shadow-normal);
 }
 
@@ -679,14 +656,14 @@ body .react-data-table.striped .rdt_TableCol:not(:last-of-type) {
 }
 
 .print-invoice textarea:hover {
-    border: 1px solid var(--primary);
+    border: 1px solid var(--color-primary);
 }
 
 .print-invoice textarea:focus,
 .print-invoice textarea:focus-visible {
     outline: none;
-    background-color: var(--primary-10);
-    border: 1px solid var(--primary);
+    background-color: var(--color-primary-10);
+    border: 1px solid var(--color-primary);
 }
 
 /* form css end */
@@ -732,8 +709,8 @@ body .react-data-table.striped .rdt_TableCol:not(:last-of-type) {
 .floating-form-control .form-select:focus,
 .floating-form-control .form-textarea:focus {
     outline: none;
-    border: 1px solid var(--primary);
-    color: var(--primary);
+    border: 1px solid var(--color-primary);
+    color: var(--color-primary);
     box-shadow: var(--inset-shadow-normal);
 }
 
@@ -802,8 +779,8 @@ body .react-data-table.striped .rdt_TableCol:not(:last-of-type) {
 }
 
 .form-check .form-check-input:checked {
-    background-color: var(--primary);
-    border-color: var(--primary);
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
     /* background-image: url('@/assets/images/check_solid.svg'); */
     background-image: url('../images/check_solid.svg');
     background-size: 12px 12px;
@@ -813,14 +790,14 @@ body .react-data-table.striped .rdt_TableCol:not(:last-of-type) {
 
 .form-check .form-check-input:focus,
 .form-check .form-check-input:focus-visible {
-    border-color: var(--sky);
+    border-color: var(--color-sky);
     outline: 0;
     box-shadow: 0 0 0 .25rem rgba(13, 110, 253, .25);
 }
 
 .form-check .form-check-input.check-line:checked+.form-check-label {
     text-decoration: line-through;
-    color: var(--primary);
+    color: var(--color-primary);
 }
 
 .form-check.form-switch {
@@ -839,7 +816,7 @@ body .react-data-table.striped .rdt_TableCol:not(:last-of-type) {
     content: "";
     width: 10px;
     height: 10px;
-    background-color: var(--white);
+    background-color: var(--color-white);
     border-radius: 100rem;
     top: 50%;
     transform: translateY(-50%);
@@ -905,8 +882,8 @@ body .react-data-table.striped .rdt_TableCol:not(:last-of-type) {
 }
 
 .form-radio .form-radio-input:checked {
-    background-color: var(--primary);
-    border-color: var(--primary);
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
     /* background-image: url('@/assets/images/round_solid.svg'); */
     background-image: url('../images/round_solid.svg');
     background-size: 12px 12px;
@@ -916,7 +893,7 @@ body .react-data-table.striped .rdt_TableCol:not(:last-of-type) {
 
 .form-radio .form-radio-input:focus,
 .form-radio .form-radio-input:focus-visible {
-    border-color: var(--sky);
+    border-color: var(--color-sky);
     outline: 0;
     box-shadow: 0 0 0 .25rem rgba(13, 110, 253, .25);
 }
@@ -976,8 +953,8 @@ body .react-data-table.striped .rdt_TableCol:not(:last-of-type) {
 /* loader css start */
 /* body::before {
     content: ":: Swift Admin ::";
-    background: linear-gradient(145deg, var(--primary), var(--secondary));
-    color: var(--white);
+    background: linear-gradient(145deg, var(--color-primary), var(--color-secondary));
+    color: var(--color-white);
     position: fixed;
     animation: up 1.1s ease-in-out;
     text-align: center;
@@ -1127,12 +1104,12 @@ body .apexcharts-legend-marker {
 }
 
 .ant-select-selector:hover {
-    border-color: var(--primary) !important;
+    border-color: var(--color-primary) !important;
 }
 
 .ant-select-focused .ant-select-selector {
-    border-color: var(--primary) !important;
-    box-shadow: 0 0 0 2px var(--primary-10) !important;
+    border-color: var(--color-primary) !important;
+    box-shadow: 0 0 0 2px var(--color-primary-10) !important;
 }
 
 .custom-dropdown-arrow {
@@ -1174,12 +1151,12 @@ body .apexcharts-legend-marker {
 }
 
 .ant-dropdown-option:hover {
-    background-color: var(--primary-10) !important;
+    background-color: var(--color-primary-10) !important;
 }
 
 .ant-dropdown-option-selected {
-    background-color: var(--primary-10) !important;
-    color: var(--primary) !important;
+    background-color: var(--color-primary-10) !important;
+    color: var(--color-primary) !important;
 }
 
 .ant-dropdown-empty {
@@ -1201,12 +1178,12 @@ body .apexcharts-legend-marker {
 }
 
 .custom-dropdown-menu .ant-select-item-option-active:not(.ant-select-item-option-disabled) {
-    background-color: var(--primary-10);
+    background-color: var(--color-primary-10);
 }
 
 .custom-dropdown-menu .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
-    background-color: var(--primary-10);
-    color: var(--primary);
+    background-color: var(--color-primary-10);
+    color: var(--color-primary);
     font-weight: normal;
 }
 

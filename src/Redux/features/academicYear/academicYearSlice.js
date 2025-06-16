@@ -20,6 +20,7 @@ const createAsyncReducers = (prefix, stateKey) => ({
 const academicYearSlice = createSlice({
   name: "academicYear",
   initialState: {
+    activeAcademicYearData: null,
     academicYearData: null,
     academicYearDataPagination: null,
     academicYearDataFetch: null,
@@ -30,6 +31,7 @@ const academicYearSlice = createSlice({
     error: null,
   },
   reducers: {
+    ...createAsyncReducers("getActiveAcademicYear", "activeAcademicYearData"),
     ...createAsyncReducers("getAcademicYear", "academicYearData"),
     ...createAsyncReducers("getAcademicYearPagination", "academicYearDataPagination"),
     ...createAsyncReducers("getAcademicYearFetch", "academicYearDataFetch"),
@@ -43,6 +45,10 @@ const academicYearSlice = createSlice({
 
 // Now these exports will match your original names
 export const {
+  getActiveAcademicYearRequest,
+  getActiveAcademicYearSuccess,
+  getActiveAcademicYearFailure,
+
   getAcademicYearRequest,
   getAcademicYearSuccess,
   getAcademicYearFailure,

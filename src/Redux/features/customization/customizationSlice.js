@@ -8,7 +8,7 @@ const defaultSettings = {
   quote: "Welcome to the central hub for managing your Campus & School Management ERP solution. Streamline administration, improve efficiency, and stay organized — all from one place.",
   motto2: "Log in to take full control of your ERP ecosystem.",
   quote2: "Built on a robust AWS microservices architecture, this portal empowers SSAS administrators with seamless access to configure, monitor, and support tenant environments in real time.",
-  theme: "indigo",
+  theme: "cyan",
   darkMode: false,
   rtlMode: false,
   fontFamily: "Mulish, sans-serif",
