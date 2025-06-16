@@ -398,7 +398,7 @@ const CourseListPage = () => {
                                   {/* <button className="btn btn-light-primary p-2"
                                     // onClick={() => router.push("/academicsManagement/applicationForm")}
                                     onClick={() => modalHandlers.courseRegistration.open(item)}
-                                  >
+                                  >d
                                     <IconPencilPlus className='w-[16px] h-[16px] md:w-[18px] md:h-[18px] min-w-[16px]' />
                                   </button> */}
                                   <button className="btn btn-light-primary p-2"
