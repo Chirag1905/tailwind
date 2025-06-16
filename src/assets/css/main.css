@@ -135,47 +135,47 @@
 
 }
 
-@theme inline {
+/* @theme inline {
     --color-secondary: var(--secondary);
-    --color-theme-indigo: var(--theme-indigo);
-    --color-theme-blue: var(--theme-blue);
-    --color-theme-cyan: var(--theme-cyan);
-    --color-theme-green: var(--theme-green);
-    --color-theme-orange: var(--theme-orange);
-    --color-theme-blush: var(--theme-blush);
-    --color-theme-red: var(--theme-red);
+    --color-theme-indigo: var(--theme-indigo),
+        --color-theme-blue: var(--theme-blue),
+        --color-theme-cyan: var(--theme-cyan),
+        --color-theme-green: var(--theme-green),
+        --color-theme-orange: var(--theme-orange),
+        --color-theme-blush: var(--theme-blush),
+        --color-theme-red: var(--theme-red),
 
-    --color-white: var(--white);
-    --color-white-10: var(--white-10);
-    --color-black: var(--black);
-    --color-black-50: var(--black-50);
-    --color-dark: var(--dark);
-    --color-grey: var(--grey);
-    --color-success: var(--success);
-    --color-success-50: var(--success-50);
-    --color-warning: var(--warning);
-    --color-info: var(--info);
-    --color-danger: var(--danger);
-    --color-sky: var(--sky);
-    --color-blue: var(--blue);
+        --color-white: var(--white),
+        --color-white-10: var(--white-10),
+        --color-black: var(--black),
+        --color-black-50: var(--black-50),
+        --color-dark: var(--dark),
+        --color-grey: var(--grey),
+        --color-success: var(--success),
+        --color-success-50: var(--success-50),
+        --color-warning: var(--warning),
+        --color-info: var(--info),
+        --color-danger: var(--danger),
+        --color-sky: var(--sky),
+        --color-blue: var(--blue),
 
-    --color-body-color: var(--body-color);
-    --color-font-color: var(--font-color);
-    --color-font-color-100: var(--font-color-100);
-    --color-font-color-200: var(--font-color-200);
-    --color-font-color-400: var(--font-color-400);
-    --color-card-color: var(--card-color);
-    --color-border-color: var(--border-color);
+        --color-body-color: var(--body-color),
+        --color-font-color: var(--font-color),
+        --color-font-color-100: var(--font-color-100),
+        --color-font-color-200: var(--font-color-200),
+        --color-font-color-400: var(--font-color-400),
+        --color-card-color: var(--card-color),
+        --color-border-color: var(--border-color),
 
-    --color-primary: var(--primary);
-    --color-primary-10: var(--primary-10);
-    --color-secondary: var(--secondary);
-    --color-chart-color1: var(--chart-color1);
-    --color-chart-color2: var(--chart-color2);
-    --color-chart-color3: var(--chart-color3);
-    --color-chart-color4: var(--chart-color4);
-    --color-chart-color5: var(--chart-color5);
-}
+        --color-primary: var(--primary),
+        --color-primary-10: var(--primary-10),
+        --color-secondary: var(--secondary),
+        --color-chart-color1: var(--chart-color1),
+        --color-chart-color2: var(--chart-color2),
+        --color-chart-color3: var(--chart-color3),
+        --color-chart-color4: var(--chart-color4),
+        --color-chart-color5: var(--chart-color5),
+} */
 
 /* Default (light) theme */
 
