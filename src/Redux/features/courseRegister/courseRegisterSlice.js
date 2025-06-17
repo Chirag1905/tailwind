@@ -20,14 +20,16 @@ const createAsyncReducers = (prefix, stateKey) => ({
 const courseRegisterSlice = createSlice({
   name: "courseRegister",
   initialState: {
+    singleCourseRegisterData: null,
+    singleCourseRegisterPostData: null,
     courseRegisterData: null,
     courseRegisterPostData: null,
     loading: false,
     error: null,
   },
   reducers: {
-    ...createAsyncReducers("getSingleCourseRegister", "courseRegisterData"),
-    ...createAsyncReducers("postSingleCourseRegister", "courseRegisterPostData"),
+    ...createAsyncReducers("getSingleCourseRegister", "singleCourseRegisterData"),
+    ...createAsyncReducers("postSingleCourseRegister", "singleCourseRegisterPostData"),
     ...createAsyncReducers("getCourseRegister", "courseRegisterData"),
     ...createAsyncReducers("postCourseRegister", "courseRegisterPostData"),
   },

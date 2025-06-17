@@ -253,6 +253,7 @@ const CourseListPage = () => {
         <SingleCourseRegister
           openModal={modalHandlers.courseRegistration.open}
           closeModal={modalHandlers.courseRegistration.close}
+          courseData={selectedItem}
         // courseData={data}
         // selectedItem={selectedItem}
         // setSelectedItem={setSelectedItem}
@@ -290,13 +291,46 @@ const CourseListPage = () => {
                     <IconSearch className='w-[20px] h-[20px]' />
                   </button>
                 </div>
-                <button
-                  onClick={() => router.push("/academicsManagement/course/registerCourse")}
-                  className="flex gap-1 btn btn-light-primary w-full"
-                >
-                  <IconPencilPlus />
-                  <span className="block">Registration Course</span>
-                </button>
+                <div className='flex gap-3'>
+                  <Select
+                    value={selectedAcademicYear}
+                    onChange={(value) => handleChange(value)}
+                    className="w-full"
+                    placeholder="Academic Year"
+                    showSearch={true}
+                    filterOption={(input, option) =>
+                      (option?.children ?? '')
+                        .toString()
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                    optionFilterProp="children"
+                    suffixIcon={
+                      <svg
+                        className="w-5 h-5 text-primary"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    }
+                  >
+                    {academicYears?.map((item) => (
+                      <Select.Option key={item.id} value={item.id}>
+                        {item.academicYearName}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                  <button
+                    onClick={() => router.push("/academicsManagement/course/registerCourse")}
+                    className="flex gap-1 btn btn-light-primary w-full"
+                  >
+                    <IconPencilPlus />
+                    <span className="block">Registration Course</span>
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -395,12 +429,11 @@ const CourseListPage = () => {
                                   >
                                     <IconEdit className='w-[16px] h-[16px] md:w-[18px] md:h-[18px] min-w-[16px]' />
                                   </button>
-                                  {/* <button className="btn btn-light-primary p-2"
-                                    // onClick={() => router.push("/academicsManagement/applicationForm")}
+                                  <button className="btn btn-light-primary p-2"
                                     onClick={() => modalHandlers.courseRegistration.open(item)}
-                                  >d
+                                  >
                                     <IconPencilPlus className='w-[16px] h-[16px] md:w-[18px] md:h-[18px] min-w-[16px]' />
-                                  </button> */}
+                                  </button>
                                   <button className="btn btn-light-primary p-2"
                                     onClick={() => modalHandlers.formTemplate.open(item)}
                                   >
@@ -414,39 +447,8 @@ const CourseListPage = () => {
                                 <td colSpan="5" className="py-4 px-6">
                                   <div className='flex items-center justify-between gap-5 relative group form-control'>
                                     <h4 className="text-base sm:text-lg my-3">Batches Listing for {item.campusCourseName}</h4>
-                                    <Select
-                                      value={selectedAcademicYear}
-                                      onChange={(value) => handleChange(value)}
-                                      className="w-[140px] h-fit"
-                                      placeholder="Academic Year"
-                                      showSearch={true}
-                                      filterOption={(input, option) =>
-                                        (option?.children ?? '')
-                                          .toString()
-                                          .toLowerCase()
-                                          .includes(input.toLowerCase())
-                                      }
-                                      optionFilterProp="children"
-                                      suffixIcon={
-                                        <svg
-                                          className="w-5 h-5 text-primary"
-                                          fill="none"
-                                          stroke="currentColor"
-                                          viewBox="0 0 24 24"
-                                          xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                        </svg>
-                                      }
-                                    >
-                                      {academicYears?.map((item) => (
-                                        <Select.Option key={item.id} value={item.id}>
-                                          {item.academicYearName}
-                                        </Select.Option>
-                                      ))}
-                                    </Select>
                                   </div>
-                                  <BatchListPage courseId={item.id} />
+                                  <BatchListPage courseId={item?.id} />
                                 </td>
                               </tr>
                             )}

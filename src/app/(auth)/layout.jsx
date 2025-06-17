@@ -45,9 +45,9 @@ export default function AuthLayout({ children }) {
                     <div className="mb-4 sm:mb-6 lg:mb-8">
                         <div className="flex items-center justify-center lg:justify-start gap-3 mb-3 sm:mb-4">
                             <Image
-                                // src={customizations?.schoolLogo || Techvein_logo}
-                                src={profile_av}
-                                alt="Techvein IT Solutions Logo"
+                                src={customizations?.schoolLogo || profile_av}
+                                // src={profile_av}
+                                alt="Campus Logo"
                                 className="text-primary rounded-full"
                                 width={64}
                                 height={64}
@@ -55,7 +55,7 @@ export default function AuthLayout({ children }) {
                                 priority
                             />
                             <span className="text-primary font-bold text-xl sm:text-2xl lg:text-3xl">
-                                {customizations?.schoolName || "Techvein School Portal"}
+                                {customizations?.schoolName || "Demo School Portal"}
                             </span>
                         </div>
 

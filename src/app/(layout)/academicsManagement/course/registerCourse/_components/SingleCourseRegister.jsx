@@ -1,9 +1,9 @@
 'use client';
-import { 
-  getCourseRegisterRequest, 
-  postCourseRegisterRequest, 
-  postCourseRegisterSuccess,
-  postCourseRegisterFailure
+import {
+  getSingleCourseRegisterRequest,
+  postSingleCourseRegisterFailure,
+  postSingleCourseRegisterRequest,
+  postSingleCourseRegisterSuccess
 } from "@/Redux/features/courseRegister/courseRegisterSlice";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,28 +16,28 @@ const SingleCourseRegister = (props) => {
   const {
     openModal,
     closeModal,
+    courseData
   } = props;
 
   // Redux state
   const dispatch = useDispatch();
-  const { courseRegisterPostData, loading, error } = useSelector((state) => state.courseRegister);
+  const { singleCourseRegisterData, singleCourseRegisterPostData, loading, error } = useSelector((state) => state.courseRegister);
+  const selectedAcademicYear = useSelector((state) => state.academicYear.selectedAcademicYear);
   const { token } = useSelector((state) => state.auth);
 
   // Component state
-  const [formData, setFormData] = useState({
-    campusCourseId: "",
-    campusCourseName: "",
-    courseDisplayName: "",
-    appFormPrefix: "",
-    regAmount: "",
-    isDobValidation: false,
-    dobStartDate: "",
-    dobEndDate: "",
+  const [data, setData] = useState({
+    campusCourseName: '',
+    courseDisplayName: '',
+    appFormPrefix: '',
+    regAmount: '',
     isActive: false,
+    isDobValidation: false,
+    dobStartDate: null,
+    dobEndDate: null
   });
 
   const [errors, setErrors] = useState({});
-  const [touchedFields, setTouchedFields] = useState({});
   const fieldRefs = useRef({
     campusCourseName: null,
     courseDisplayName: null,
@@ -46,9 +46,37 @@ const SingleCourseRegister = (props) => {
     isActive: null
   });
 
+
+  // Effect for data update - automatically select rows where isActive is true
+  useEffect(() => {
+    if (singleCourseRegisterData) {
+      setData(prev => ({
+        ...prev,
+        ...singleCourseRegisterData?.data
+      }));
+    }
+  }, [singleCourseRegisterData]);
+
+  // Effect for data fetching
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        dispatch(getSingleCourseRegisterRequest({
+          selectedCourse: courseData?.id,
+          selectedAcademicYear,
+          token
+        }));
+      } catch (error) {
+        console.error("Error fetching campus group data:", error);
+        toast.error("Failed to load campus group data");
+      }
+    };
+    fetchData();
+  }, [dispatch, selectedAcademicYear, courseData, token]);
+
   // Function to update form data
   const handleChange = (name, value) => {
-    setFormData(prevData => ({
+    setData(prevData => ({
       ...prevData,
       [name]: value
     }));
@@ -70,65 +98,23 @@ const SingleCourseRegister = (props) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Basic validation
-    const newErrors = {};
-    if (!formData.campusCourseName) newErrors.campusCourseName = "Course name is required";
-    if (!formData.courseDisplayName) newErrors.courseDisplayName = "Display name is required";
-    if (!formData.appFormPrefix) newErrors.appFormPrefix = "Form prefix is required";
-    if (!formData.regAmount) newErrors.regAmount = "Registration amount is required";
-    
-    // Date validation if DOB validation is enabled
-    if (formData.isDobValidation) {
-      if (!formData.dobStartDate) newErrors.dobStartDate = "Start date is required";
-      if (!formData.dobEndDate) newErrors.dobEndDate = "End date is required";
-      
-      if (formData.dobStartDate && formData.dobEndDate) {
-        const startDate = new Date(formData.dobStartDate);
-        const endDate = new Date(formData.dobEndDate);
-        
-        if (endDate <= startDate) {
-          newErrors.dobEndDate = "End date must be after start date";
-        }
-      }
-    }
-
-    setErrors(newErrors);
-    
-    // If there are errors, scroll to the first one
-    if (Object.keys(newErrors).length > 0) {
-      scrollToFirstError();
-      return;
-    }
 
     try {
-      const params = {
-        campusCourseId: formData.campusCourseId,
-        campusCourseName: formData.campusCourseName,
-        courseDisplayName: formData.courseDisplayName,
-        appFormPrefix: formData.appFormPrefix,
-        regAmount: formData.regAmount,
-        isDobValidation: formData.isDobValidation,
-        dobStartDate: formData.dobStartDate,
-        dobEndDate: formData.dobEndDate,
-        isActive: formData.isActive,
+      const payload = {
+        campusCourseId: courseData?.id,
+        ...data
       };
-      dispatch(postCourseRegisterRequest({ data: params, token }));
+      dispatch(postSingleCourseRegisterRequest({
+        data: payload,
+        selectedAcademicYear,
+        token
+      }));
     } catch (err) {
       console.error("Error submitting data:", err);
       toast.error(err || "Failed to submit data. Please try again.", {
         position: "top-right",
         duration: 2000,
       });
-    }
-  };
-
-  const handleBlur = (name) => {
-    if (!touchedFields[name]) {
-      setTouchedFields(prev => ({
-        ...prev,
-        [name]: true
-      }));
     }
   };
 
@@ -166,15 +152,15 @@ const SingleCourseRegister = (props) => {
 
   // Handle API responses
   useEffect(() => {
-    if (!courseRegisterPostData?.message) return;
+    if (!singleCourseRegisterData?.message) return;
 
-    toast.success(courseRegisterPostData?.message, {
+    toast.success(singleCourseRegisterData?.message, {
       position: "top-right",
       duration: 5000,
     });
 
     // Refresh course register data
-    dispatch(getCourseRegisterRequest({
+    dispatch(getSingleCourseRegisterRequest({
       data: {
         page: 0,
         size: 10,
@@ -184,9 +170,9 @@ const SingleCourseRegister = (props) => {
       token
     }));
 
-    dispatch(postCourseRegisterSuccess(null));
+    dispatch(postSingleCourseRegisterSuccess(null));
     closeModal();
-  }, [courseRegisterPostData, dispatch, closeModal, token]);
+  }, [singleCourseRegisterData, dispatch, closeModal, token]);
 
   // Handle API errors
   useEffect(() => {
@@ -213,8 +199,8 @@ const SingleCourseRegister = (props) => {
     } else {
       toast.error("An unexpected error occurred", { position: "top-right", duration: 2000 });
     }
-    dispatch(postCourseRegisterSuccess(null));
-    dispatch(postCourseRegisterFailure(null));
+    dispatch(postSingleCourseRegisterSuccess(null));
+    dispatch(postSingleCourseRegisterFailure(null));
   }, [error, dispatch]);
 
   return (
@@ -231,15 +217,13 @@ const SingleCourseRegister = (props) => {
                 <input
                   type="text"
                   placeholder="campusCourseName Title"
-                  className={`form-input w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.campusCourseName ? 'border-red-500' : ''
-                  }`}
-                  value={formData.campusCourseName}
+                  className={`form-input w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.campusCourseName ? 'border-red-500' : ''
+                    }`}
+                  value={data.campusCourseName}
                   onChange={(e) => handleChange("campusCourseName", e.target.value)}
-                  onBlur={() => handleBlur("campusCourseName")}
                 />
                 <label htmlFor="campusCourseName" className="form-label">
-                  Course Name<span className="text-red-500">*</span>
+                  Course Name
                 </label>
               </div>
               {errors.campusCourseName && (
@@ -253,15 +237,13 @@ const SingleCourseRegister = (props) => {
                 <input
                   type="text"
                   placeholder="courseDisplayName Title"
-                  className={`form-input w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.courseDisplayName ? 'border-red-500' : ''
-                  }`}
-                  value={formData.courseDisplayName}
+                  className={`form-input w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.courseDisplayName ? 'border-red-500' : ''
+                    }`}
+                  value={data.courseDisplayName}
                   onChange={(e) => handleChange("courseDisplayName", e.target.value)}
-                  onBlur={() => handleBlur("courseDisplayName")}
                 />
                 <label htmlFor="courseDisplayName" className="form-label">
-                  Course Display Name<span className="text-red-500">*</span>
+                  Course Display Name
                 </label>
               </div>
               {errors.courseDisplayName && (
@@ -272,17 +254,17 @@ const SingleCourseRegister = (props) => {
             {/* Active Status */}
             <div className="w-full relative" ref={fieldRefs.current.isActive}>
               <label className="block font-medium mb-1 form-label">
-                Active Status <span className="text-red-500">*</span>
+                Active Status
               </label>
               <div className="form-check form-switch flex items-center gap-3 mt-1">
                 <input
                   type="checkbox"
                   className="form-check-input h-5 w-10 rounded-full appearance-none bg-gray-300 checked:bg-blue-500 transition duration-200 relative cursor-pointer"
-                  checked={formData.isActive}
+                  checked={data.isActive}
                   onChange={(e) => handleChange("isActive", e.target.checked)}
                 />
                 <span className="text-sm font-medium">
-                  {formData.isActive ? "Active" : "Inactive"}
+                  {data.isActive ? "Active" : "Inactive"}
                 </span>
               </div>
               {errors.isActive && (
@@ -298,15 +280,13 @@ const SingleCourseRegister = (props) => {
                 <input
                   type="text"
                   placeholder="appFormPrefix Title"
-                  className={`form-input w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.appFormPrefix ? 'border-red-500' : ''
-                  }`}
-                  value={formData.appFormPrefix}
+                  className={`form-input w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.appFormPrefix ? 'border-red-500' : ''
+                    }`}
+                  value={data.appFormPrefix}
                   onChange={(e) => handleChange("appFormPrefix", e.target.value)}
-                  onBlur={() => handleBlur("appFormPrefix")}
                 />
                 <label htmlFor="appFormPrefix" className="form-label">
-                  App Form Prefix<span className="text-red-500">*</span>
+                  App Form Prefix
                 </label>
               </div>
               {errors.appFormPrefix && (
@@ -320,20 +300,13 @@ const SingleCourseRegister = (props) => {
                 <input
                   type="text"
                   placeholder="regAmount Title"
-                  className={`form-input w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.regAmount ? 'border-red-500' : ''
-                  }`}
-                  value={formData.regAmount}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    if (/^\d*$/.test(value)) {
-                      handleChange("regAmount", value);
-                    }
-                  }}
-                  onBlur={() => handleBlur("regAmount")}
+                  className={`form-input w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.regAmount ? 'border-red-500' : ''
+                    }`}
+                  value={data.regAmount}
+                  onChange={(e) => handleChange("regAmount", e.target.value)}
                 />
                 <label htmlFor="regAmount" className="form-label">
-                  Reg Amount<span className="text-red-500">*</span>
+                  Reg Amount
                 </label>
               </div>
               {errors.regAmount && (
@@ -348,7 +321,7 @@ const SingleCourseRegister = (props) => {
               <input
                 type="checkbox"
                 className="form-check-input h-5 w-10 rounded-full appearance-none bg-gray-300 checked:bg-blue-500 transition duration-200 relative cursor-pointer"
-                checked={formData.isDobValidation}
+                checked={data.isDobValidation}
                 onChange={(e) => handleChange("isDobValidation", e.target.checked)}
               />
               <label className="text-sm mt-1 ml-2">
@@ -356,7 +329,7 @@ const SingleCourseRegister = (props) => {
               </label>
             </div>
 
-            {formData.isDobValidation && (
+            {data.isDobValidation && (
               <div className="flex flex-col md:flex-row md:space-x-5 space-y-4 md:space-y-0 mt-4">
                 {/* DOB Start Date */}
                 <div className="w-full relative" ref={fieldRefs.current.dobStartDate}>
@@ -364,9 +337,8 @@ const SingleCourseRegister = (props) => {
                     <label className="form-label">DOB Start Date</label>
                     <DatePicker
                       className={`w-full ${errors.dobStartDate ? 'border-red-500' : ''}`}
-                      value={formData.dobStartDate ? dayjs(formData.dobStartDate) : null}
+                      value={data.dobStartDate ? dayjs(data.dobStartDate) : null}
                       onChange={(date) => handleDateChange("dobStartDate", date)}
-                      onBlur={() => handleBlur("dobStartDate")}
                       format="YYYY-MM-DD"
                     />
                   </div>
@@ -381,17 +353,9 @@ const SingleCourseRegister = (props) => {
                     <label className="form-label">DOB End Date</label>
                     <DatePicker
                       className={`w-full ${errors.dobEndDate ? 'border-red-500' : ''}`}
-                      value={formData.dobEndDate ? dayjs(formData.dobEndDate) : null}
+                      value={data.dobEndDate ? dayjs(data.dobEndDate) : null}
                       onChange={(date) => handleDateChange("dobEndDate", date)}
-                      onBlur={() => handleBlur("dobEndDate")}
                       format="YYYY-MM-DD"
-                      disabledDate={(current) => {
-                        return (
-                          current &&
-                          formData.dobStartDate &&
-                          current <= dayjs(formData.dobStartDate)
-                        );
-                      }}
                     />
                   </div>
                   {errors.dobEndDate && (
