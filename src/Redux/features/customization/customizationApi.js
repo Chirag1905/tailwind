@@ -3,20 +3,24 @@ import axios from "axios";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export const getCustomization = async (realmName) => {
+    console.log("🚀 ~ getCustomization ~ realmName:", realmName);
     try {
-        const response = await axios.post(`${API_BASE_URL}/utils/realmSettings/download`, {
-            realmName
-        }, {
-            headers: {
-                'Content-Type': 'application/json'
+        const response = await axios.post(
+            `${API_BASE_URL}/utils/realmSettings/download`,
+            { realmName },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
             }
-        });
+        );
         return response;
     } catch (err) {
-        console.log(err, "err");
+        console.error("Error in getCustomization:", err);
         return err.response;
     }
 };
+
 
 export const postCustomization = async (obj) => {
     try {

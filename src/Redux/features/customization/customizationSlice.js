@@ -1,8 +1,9 @@
+import { profile_av } from '@/assets/images';
 import { createSlice } from '@reduxjs/toolkit';
 
 const defaultSettings = {
-  schoolLogo: "/Techvein_logo.png",
-  schoolName: "Admin Portal",
+  schoolLogo: profile_av,
+  schoolName: "School Portal",
   heading: "Effortless Control, Powerful Management.",
   motto: "All-in-One Tool",
   quote: "Welcome to the central hub for managing your Campus & School Management ERP solution. Streamline administration, improve efficiency, and stay organized — all from one place.",
@@ -30,20 +31,27 @@ const defaultSettings = {
     chartColor4: { r: 234, g: 88, b: 12, a: 1 },
     chartColor5: { r: 244, g: 63, b: 94, a: 1 }
   },
+};
+
+const initialState = {
+  customizationData: defaultSettings,
   loading: false,
   error: null
 };
 
 export const customizationSlice = createSlice({
   name: 'customization',
-  initialState: defaultSettings,
+  initialState,
   reducers: {
     fetchCustomizationRequest: (state) => {
       state.loading = true;
       state.error = null;
     },
     fetchCustomizationSuccess: (state, action) => {
-      return { ...state, ...action.payload, loading: false, error: null };
+      const customData = action.payload.customizations;
+      state.customizationData = customData ? { ...defaultSettings, ...customData } : defaultSettings;
+      state.loading = false;
+      state.error = null;
     },
     fetchCustomizationFailure: (state, action) => {
       state.loading = false;
@@ -54,7 +62,10 @@ export const customizationSlice = createSlice({
       state.error = null;
     },
     postCustomizationSuccess: (state, action) => {
-      return { ...state, ...action.payload, loading: false, error: null };
+      const customData = action.payload.customizations;
+      state.customizationData = customData ? { ...defaultSettings, ...customData } : defaultSettings;
+      state.loading = false;
+      state.error = null;
     },
     postCustomizationFailure: (state, action) => {
       state.loading = false;
@@ -62,34 +73,6 @@ export const customizationSlice = createSlice({
     },
     resetCustomization: () => {
       return defaultSettings;
-    },
-    // Other specific actions remain the same
-    setSchoolLogo: (state, action) => {
-      state.schoolLogo = action.payload;
-    },
-    setTheme: (state, action) => {
-      state.theme = action.payload;
-    },
-    toggleDarkMode: (state) => {
-      state.darkMode = !state.darkMode;
-    },
-    toggleRtlMode: (state) => {
-      state.rtlMode = !state.rtlMode;
-    },
-    setFontFamily: (state, action) => {
-      state.fontFamily = action.payload;
-    },
-    setDynamicFont: (state, action) => {
-      state.dynamicFont = action.payload;
-    },
-    toggleRadius: (state) => {
-      state.showRadius = !state.showRadius;
-    },
-    toggleShadow: (state) => {
-      state.showShadow = !state.showShadow;
-    },
-    setDynamicColors: (state, action) => {
-      state.dynamicColors = action.payload;
     },
   },
 });
@@ -130,4 +113,3 @@ export default customizationSlice.reducer;
 //     "clientId": "admin-cli",
 //     "realmName": "master"
 // }'
-

@@ -5,6 +5,7 @@ import { IconBrandGoogleFilled, IconEye, IconEyeOff } from '@tabler/icons-react'
 import { fetchDataRequest, signInRequest } from '@/Redux/features/auth/authSlice';
 import Link from 'next/link';
 import Cookies from 'js-cookie';
+import { fetchCustomizationRequest } from '@/Redux/features/customization/customizationSlice';
 
 const Signin = () => {
     const dispatch = useDispatch();
@@ -58,6 +59,13 @@ const Signin = () => {
             }
         }
     }, [fetchData]);
+
+    useEffect(() => {
+        // Only dispatch if clientParams.realmName is available
+        if (clientParams?.realmName) {
+            dispatch(fetchCustomizationRequest(clientParams.realmName));
+        }
+    }, [dispatch, clientParams?.realmName]);
 
     // Load saved credentials if "Remember me" was checked previously
     useEffect(() => {
