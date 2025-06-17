@@ -29,8 +29,7 @@ import BatchListPage from '../batch/page';
 import { useRouter } from 'next/navigation';
 import CardSelection from '../../CardSelection/page';
 import { Empty, Select } from 'antd';
-import CourseRegisterListPage from './registerCourse/page';
-import { getAcademicYearRequest, getActiveAcademicYearRequest, setSelectedAcademicYear } from '@/Redux/features/academicYear/academicYearSlice';
+import { getActiveAcademicYearRequest, setSelectedAcademicYear } from '@/Redux/features/academicYear/academicYearSlice';
 import SingleCourseRegister from './registerCourse/_components/SingleCourseRegister';
 
 const CourseListPage = () => {
@@ -101,7 +100,7 @@ const CourseListPage = () => {
         dispatch(openModal({ modalType: "createCourse" }));
         dispatch(closeModal({ modalType: "editCourse" }));
         dispatch(closeModal({ modalType: "selectApplicationFormTemplate" }));
-        // dispatch(closeModal({ modalType: "registrationCourse" }));
+        dispatch(closeModal({ modalType: "registrationCourse" }));
       },
       close: () => dispatch(closeModal({ modalType: "createCourse" }))
     },
@@ -110,7 +109,7 @@ const CourseListPage = () => {
         dispatch(openModal({ modalType: "editCourse" }));
         dispatch(closeModal({ modalType: "createCourse" }));
         dispatch(closeModal({ modalType: "selectApplicationFormTemplate" }));
-        // dispatch(closeModal({ modalType: "registrationCourse" }));
+        dispatch(closeModal({ modalType: "registrationCourse" }));
         setSelectedItem(item);
       },
       close: () => dispatch(closeModal({ modalType: "editCourse" }))
@@ -120,7 +119,7 @@ const CourseListPage = () => {
         dispatch(openModal({ modalType: "selectApplicationFormTemplate" }));
         dispatch(closeModal({ modalType: "createCourse" }));
         dispatch(closeModal({ modalType: "editCourse" }));
-        // dispatch(closeModal({ modalType: "registrationCourse" }));
+        dispatch(closeModal({ modalType: "registrationCourse" }));
       },
       close: () => dispatch(closeModal({ modalType: "selectApplicationFormTemplate" }))
     },
@@ -233,6 +232,7 @@ const CourseListPage = () => {
         <div className="md:hidden h-4"></div>
         <WelcomeHeader />
       </div>
+
       {isCreateModalOpen && (
         <CourseCreate
           openModal={modalHandlers.create.open}

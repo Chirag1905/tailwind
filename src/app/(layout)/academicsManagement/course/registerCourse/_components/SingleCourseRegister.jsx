@@ -36,6 +36,7 @@ const SingleCourseRegister = (props) => {
     dobStartDate: null,
     dobEndDate: null
   });
+  console.log("🚀 ~ SingleCourseRegister ~ data:", data)
 
   const [errors, setErrors] = useState({});
   const fieldRefs = useRef({
@@ -51,8 +52,8 @@ const SingleCourseRegister = (props) => {
   useEffect(() => {
     if (singleCourseRegisterData) {
       setData(prev => ({
-        ...prev,
-        ...singleCourseRegisterData?.data
+        ...prev, // keep defaults
+        ...singleCourseRegisterData?.data // apply loaded data
       }));
     }
   }, [singleCourseRegisterData]);
@@ -152,9 +153,9 @@ const SingleCourseRegister = (props) => {
 
   // Handle API responses
   useEffect(() => {
-    if (!singleCourseRegisterData?.message) return;
+    if (!singleCourseRegisterPostData?.message) return;
 
-    toast.success(singleCourseRegisterData?.message, {
+    toast.success(singleCourseRegisterPostData?.message, {
       position: "top-right",
       duration: 5000,
     });
@@ -172,7 +173,7 @@ const SingleCourseRegister = (props) => {
 
     dispatch(postSingleCourseRegisterSuccess(null));
     closeModal();
-  }, [singleCourseRegisterData, dispatch, closeModal, token]);
+  }, [singleCourseRegisterPostData, dispatch, closeModal, token]);
 
   // Handle API errors
   useEffect(() => {
