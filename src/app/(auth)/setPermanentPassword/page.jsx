@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import { backToSignIn, fetchDataRequest, permanentPassRequest } from '@/Redux/features/auth/authSlice';
 import Image from 'next/image';
+import { fetchCustomizationRequest } from '@/Redux/features/customization/customizationSlice';
 
 export default function SetPermanentPassword() {
     const dispatch = useDispatch();
@@ -56,6 +57,13 @@ export default function SetPermanentPassword() {
             }
         }
     }, [fetchData]);
+
+      useEffect(() => {
+            // Only dispatch if clientParams.realmName is available
+            if (clientParams?.realmName) {
+                dispatch(fetchCustomizationRequest(clientParams.realmName));
+            }
+        }, [dispatch, clientParams?.realmName]);
 
     const togglePasswordVisibility = () => setShowPassword(!showPassword);
 

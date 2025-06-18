@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ChromePicker } from 'react-color';
 import {
     IconBrush,
@@ -11,36 +11,38 @@ import Image from 'next/image';
 import { useDispatch, useSelector } from 'react-redux';
 import { dark_version, font_jura, font_mali, font_mulish, font_quicksand, light_version, profile_av, rtl_version } from '@/assets/images';
 import toast from 'react-hot-toast';
-import { resetCustomization } from '@/Redux/features/customization/customizationSlice';
+import { postCustomizationRequest, resetCustomization } from '@/Redux/features/customization/customizationSlice';
 import { useFavicon } from '../utils/useFavicon';
 
 const CustomizationSettings = (props) => {
     const {
-        // customization,
-        customizations,
-        setCustomizations,
+        localCustomizations,
+        setLocalCustomizations,
         settingToggle,
         toggleThemeSetting,
-        // toggleDarkMode
+        toggleDarkMode
     } = props;
-        console.log("🚀 ~ CustomizationSettings ~ customizations:", customizations)
-const customization = useSelector((state) => state.customization);
     const dispatch = useDispatch();
+    const customizationData = useSelector((state) => state.customization);
+    const token = useSelector((state) => state.auth.token);
+
+    console.log("Redux State", customizationData)
+    console.log("Local State", localCustomizations)
 
     useEffect(() => {
-        if (customizations) {
+        if (localCustomizations) {
             try {
-                setCustomizations({
-                    ...customization,
-                    ...customizations,
+                setLocalCustomizations({
+                    ...customizationData,
+                    ...localCustomizations,
                     dynamicFont: {
-                        fontUrl: customizations.dynamicFont?.fontUrl || "",
-                        fontLink: customizations.dynamicFont?.fontLink || ""
+                        fontUrl: localCustomizations.dynamicFont?.fontUrl || "",
+                        fontLink: localCustomizations.dynamicFont?.fontLink || ""
                     }
                 });
             } catch (error) {
                 console.error("Failed to parse customizations from localStorage:", error);
-                setCustomizations(customization);
+                setLocalCustomizations(customizationData);
             }
         }
     }, []);
@@ -156,8 +158,8 @@ const customization = useSelector((state) => state.customization);
     // In your component, use the hook with the schoolLogo
     const setFavicon = useFavicon();
     useEffect(() => {
-        setFavicon(customizations.schoolLogo || '/Techvein_logo.png');
-    }, [customizations.schoolLogo, setFavicon]);
+        setFavicon(localCustomizations.schoolLogo || '/Techvein_logo.png');
+    }, [localCustomizations.schoolLogo, setFavicon]);
 
     // Also update the handleFileChange function to save to localStorage:
     const handleFileChange = (event) => {
@@ -166,7 +168,7 @@ const customization = useSelector((state) => state.customization);
             const reader = new FileReader();
             reader.onloadend = () => {
                 const newLogo = reader.result;
-                setCustomizations(prev => ({
+                setLocalCustomizations(prev => ({
                     ...prev,
                     schoolLogo: newLogo
                 }));
@@ -186,7 +188,7 @@ const customization = useSelector((state) => state.customization);
 
     // Theme Setting
     const handleThemeChange = (name) => {
-        setCustomizations((prev) => ({
+        setLocalCustomizations((prev) => ({
             ...prev,
             theme: name,
         }));
@@ -194,8 +196,8 @@ const customization = useSelector((state) => state.customization);
     };
 
     useEffect(() => {
-        document.body.setAttribute("data-swift-theme", customizations.theme);
-    }, [customizations.theme]);
+        document.body.setAttribute("data-swift-theme", localCustomizations.theme);
+    }, [localCustomizations.theme]);
 
     // dynamic color setting
     const handleChangeDynamicColor = (newColor, index) => {
@@ -220,20 +222,20 @@ const customization = useSelector((state) => state.customization);
 
     // rtl mode
     const toggleRtlMode = () => {
-        const newRtlMode = !customizations.rtlMode;
-        setCustomizations((prev) => ({
+        const newRtlMode = !localCustomizations.rtlMode;
+        setLocalCustomizations((prev) => ({
             ...prev,
             rtlMode: newRtlMode,
         }));
         document.documentElement.setAttribute("dir", newRtlMode ? "rtl" : "ltr");
     };
     useEffect(() => {
-        document.documentElement.setAttribute('dir', customizations.rtlMode ? 'rtl' : 'ltr');
-    }, [customizations.rtlMode]);
+        document.documentElement.setAttribute('dir', localCustomizations.rtlMode ? 'rtl' : 'ltr');
+    }, [localCustomizations.rtlMode]);
 
     // font family setting
     const toggleFontFamily = (fontFamily) => {
-        setCustomizations((prev) => ({
+        setLocalCustomizations((prev) => ({
             ...prev,
             fontFamily: fontFamily,
         }));
@@ -242,7 +244,7 @@ const customization = useSelector((state) => state.customization);
 
     // dynamic font setting
     const handleApply = () => {
-        const { fontUrl, fontLink } = customizations.dynamicFont || { fontUrl: '', fontLink: '' };
+        const { fontUrl, fontLink } = localCustomizations.dynamicFont || { fontUrl: '', fontLink: '' };
 
         if (fontUrl) {
             const link = document.createElement('link');
@@ -253,7 +255,7 @@ const customization = useSelector((state) => state.customization);
 
         if (fontLink) {
             document.body.style.setProperty("--font-family", fontLink);
-            setCustomizations(prev => ({
+            setLocalCustomizations(prev => ({
                 ...prev,
                 fontFamily: fontLink
             }));
@@ -262,7 +264,7 @@ const customization = useSelector((state) => state.customization);
 
     // Clear Font 
     const handleClear = () => {
-        const fontUrl = customizations.dynamicFont?.fontUrl || '';
+        const fontUrl = localCustomizations.dynamicFont?.fontUrl || '';
         if (fontUrl) {
             const link = document.querySelector(`link[href="${fontUrl}"]`);
             if (link) {
@@ -274,24 +276,24 @@ const customization = useSelector((state) => state.customization);
         document.body.style.setProperty("--font-family", "");
 
         // Clear dynamicFont
-        setCustomizations(prev => ({
+        setLocalCustomizations(prev => ({
             ...prev,
             dynamicFont: {
                 fontUrl: "",
                 fontLink: ""
             },
-            fontFamily: customization.fontFamily // Reset to default font
+            fontFamily: localCustomizations.fontFamily // Reset to default font
         }));
     };
 
 
     useEffect(() => {
-        document.body.style.setProperty("--font-family", customizations.fontFamily);
-    }, [customizations.fontFamily]);
+        document.body.style.setProperty("--font-family", localCustomizations.fontFamily);
+    }, [localCustomizations.fontFamily]);
 
     // border radius setting
     const radiusToggle = () => {
-        setCustomizations((prev) => ({
+        setLocalCustomizations((prev) => ({
             ...prev,
             showRadius: !prev.showRadius
         }));
@@ -301,7 +303,7 @@ const customization = useSelector((state) => state.customization);
     // box shadow setting
     const cardShadow = document.querySelectorAll(".card")
     const shadowToggle = () => {
-        setCustomizations((prev) => ({
+        setLocalCustomizations((prev) => ({
             ...prev,
             showShadow: !prev.showShadow
         }));
@@ -310,33 +312,81 @@ const customization = useSelector((state) => state.customization);
         });
     }
 
-    // Save the title to localStorage when the "Save" button is clicked
-    const handleSave = () => {
-        localStorage.setItem('customizations', JSON.stringify(customizations));
-        toast.success('Customizations saved!', { position: 'top-right' });
-    };
+    // const handleSubmit = useCallback(async (e) => {
+    //     e.preventDefault();
+    //     try {
+    //         dispatch(postCustomizationRequest({ data: customizations, token }));
+    //     } catch (err) {
+    //         console.error("Error submitting data:", err);
+    //         toast.error(err?.message || "Failed to submit data. Please try again.", {
+    //             position: "top-right",
+    //             duration: 2000,
+    //         });
+    //     }
+    // }, [customizations, token, dispatch]);
+
+    const handleSubmit = useCallback(async (e) => {
+        e.preventDefault();
+        try {
+            // Create the customizations object with all settings
+            const customizationsPayload = {
+                schoolLogo: localCustomizations.schoolLogo,
+                schoolName: localCustomizations.schoolName,
+                heading: localCustomizations.heading,
+                motto: localCustomizations.motto,
+                quote: localCustomizations.quote,
+                motto2: localCustomizations.motto2,
+                quote2: localCustomizations.quote2,
+                theme: localCustomizations.theme,
+                darkMode: localCustomizations.darkMode,
+                rtlMode: localCustomizations.rtlMode,
+                fontFamily: localCustomizations.fontFamily,
+                dynamicFont: localCustomizations.dynamicFont,
+                showRadius: localCustomizations.showRadius,
+                showShadow: localCustomizations.showShadow,
+                dynamicColors: dynamicColorItem.reduce((acc, item) => {
+                    acc[item.label.toLowerCase().replace(/\s+/g, '')] = item.colorValue;
+                    return acc;
+                }, {})
+            };
+
+            console.log("🚀 ~ handleSubmit ~ customizations:", customizationsPayload);
+
+            // Pass as { customizations: {...} } object
+            dispatch(postCustomizationRequest({
+                data: { customizations: customizationsPayload },
+                token
+            }));
+        } catch (err) {
+            console.error("Error submitting data:", err);
+            toast.error(err?.message || "Failed to submit data. Please try again.", {
+                position: "top-right",
+                duration: 2000,
+            });
+        }
+    }, [localCustomizations, dynamicColorItem, token, dispatch]);
 
     const handleReset = () => {
         dispatch(resetCustomization());
-        setCustomizations(customization);
+        setLocalCustomizations(customizationData?.customizationData);
         setDynamicColorItem(dynamicColorItem.map(item => ({
             ...item,
-            colorValue: customization.dynamicColors[item.label.toLowerCase().replace(/\s+/g, '')],
+            colorValue: customizationData?.customizationData?.dynamicColors[item.label.toLowerCase().replace(/\s+/g, '')],
             displayColorPicker: false
         })));
         toast.success('Customizations reset to default', { position: 'top-right' });
         setFavicon('/Techvein_logo.png');
-        document.body.setAttribute("data-swift-theme", customization.theme);
-        document.documentElement.setAttribute('data-theme', customization.darkMode ? 'dark' : 'light');
-        document.documentElement.setAttribute('dir', customization.rtlMode ? 'rtl' : 'ltr');
-        document.body.style.setProperty("--font-family", customization.fontFamily);
-        if (customization.showRadius) {
+        document.body.setAttribute("data-swift-theme", customizationData?.customizationData?.theme);
+        document.documentElement.setAttribute('data-theme', customizationData?.customizationData?.darkMode ? 'dark' : 'light');
+        document.documentElement.setAttribute('dir', customizationData?.customizationData?.rtlMode ? 'rtl' : 'ltr');
+        document.body.style.setProperty("--font-family", customizationData?.customizationData?.fontFamily);
+        if (customizationData?.customizationData?.showRadius) {
             document.body.classList.remove("radius-0");
         } else {
             document.body.classList.add("radius-0");
         }
         document.querySelectorAll(".card").forEach(card => {
-            if (customization.showShadow) {
+            if (customizationData?.customizationData?.showShadow) {
                 card.classList.add("shadow-shadow-sm");
             } else {
                 card.classList.remove("shadow-shadow-sm");
@@ -353,7 +403,7 @@ const customization = useSelector((state) => state.customization);
                 <div className='flex items-center gap-2'>
                     <div className="relative group">
                         <button className='btn'
-                            onClick={() => handleReset}
+                            onClick={handleReset}
                         >
                             <IconRestore />
                         </button>
@@ -380,7 +430,7 @@ const customization = useSelector((state) => state.customization);
                         </label>
                         <div className='sm:w-[120px] sm:h-[120px] sm:min-w-[120px] w-[100px] h-[100px] min-w-[100px] relative'>
                             <Image
-                                src={customizations?.schoolLogo || profile_av}
+                                src={localCustomizations?.schoolLogo || profile_av}
                                 alt='avatar'
                                 width={"120"}
                                 height={"120"}
@@ -408,12 +458,12 @@ const customization = useSelector((state) => state.customization);
                         <input
                             type="text"
                             id="font_url"
-                            value={customizations?.schoolName}
+                            value={localCustomizations?.schoolName}
                             onChange={(e) => {
                                 const words = e.target.value.trim().split(/\s+/);
                                 // Limit to 20 words (adjust the number as needed)
                                 if (words.length <= 20) {
-                                    setCustomizations({ ...customizations, schoolName: e.target.value });
+                                    setLocalCustomizations({ ...localCustomizations, schoolName: e.target.value });
                                 }
                             }}
                             // placeholder="Welcome to the central hub for managing your Campus & School Management ERP solution."
@@ -431,12 +481,12 @@ const customization = useSelector((state) => state.customization);
                         <input
                             type="text"
                             id="font_url"
-                            value={customizations?.heading}
+                            value={localCustomizations?.heading}
                             onChange={(e) => {
                                 const words = e.target.value.trim().split(/\s+/);
                                 // Limit to 20 words (adjust the number as needed)
                                 if (words.length <= 20) {
-                                    setCustomizations({ ...customizations, heading: e.target.value });
+                                    setLocalCustomizations({ ...localCustomizations, heading: e.target.value });
                                 }
                             }}
                             // placeholder="Welcome to the central hub for managing your Campus & School Management ERP solution."
@@ -454,12 +504,12 @@ const customization = useSelector((state) => state.customization);
                         <input
                             type="text"
                             id="font_url"
-                            value={customizations?.motto}
+                            value={localCustomizations?.motto}
                             onChange={(e) => {
                                 const words = e.target.value.trim().split(/\s+/);
                                 // Limit to 20 words (adjust the number as needed)
                                 if (words.length <= 20) {
-                                    setCustomizations({ ...customizations, motto: e.target.value });
+                                    setLocalCustomizations({ ...localCustomizations, motto: e.target.value });
                                 }
                             }}
                             // placeholder="Welcome to the central hub for managing your Campus & School Management ERP solution."
@@ -470,12 +520,12 @@ const customization = useSelector((state) => state.customization);
                             className="form-textarea"
                             placeholder="Leave a Quote here"
                             rows="4"
-                            value={customizations?.quote}
+                            value={localCustomizations?.quote}
                             onChange={(e) => {
                                 const words = e.target.value.trim().split(/\s+/);
                                 // Limit to 20 words (adjust the number as needed)
                                 if (words.length <= 20) {
-                                    setCustomizations({ ...customizations, quote: e.target.value });
+                                    setLocalCustomizations({ ...localCustomizations, quote: e.target.value });
                                 }
                             }}
                         />
@@ -485,12 +535,12 @@ const customization = useSelector((state) => state.customization);
                         <input
                             type="text"
                             id="font_url"
-                            value={customizations?.motto2}
+                            value={localCustomizations?.motto2}
                             onChange={(e) => {
                                 const words = e.target.value.trim().split(/\s+/);
                                 // Limit to 20 words (adjust the number as needed)
                                 if (words.length <= 20) {
-                                    setCustomizations({ ...customizations, motto2: e.target.value });
+                                    setLocalCustomizations({ ...localCustomizations, motto2: e.target.value });
                                 }
                             }}
                             // placeholder="Welcome to the central hub for managing your Campus & School Management ERP solution."
@@ -501,12 +551,12 @@ const customization = useSelector((state) => state.customization);
                             className="form-textarea"
                             placeholder="Leave a Quote here"
                             rows="4"
-                            value={customizations?.quote2}
+                            value={localCustomizations?.quote2}
                             onChange={(e) => {
                                 const words = e.target.value.trim().split(/\s+/);
                                 // Limit to 20 words (adjust the number as needed)
                                 if (words.length <= 20) {
-                                    setCustomizations({ ...customizations, quote2: e.target.value });
+                                    setLocalCustomizations({ ...localCustomizations, quote2: e.target.value });
                                 }
                             }}
                         />
@@ -521,7 +571,7 @@ const customization = useSelector((state) => state.customization);
                             <li
                                 key={key}
                                 onClick={() => handleThemeChange(item?.name)}
-                                className={`sm:w-[30px] w-[24px] sm:h-[26px] h-[20px] rounded-md flex items-center justify-center relative cursor-pointer ${item?.color} ${customizations?.theme === item?.name ? 'after:absolute after:-left-1 after:-top-1 sm:after:w-[38px] after:w-[32px] sm:after:h-[34px] after:h-[28px] after:rounded-md after:border after:border-primary' : ''}`}
+                                className={`sm:w-[30px] w-[24px] sm:h-[26px] h-[20px] rounded-md flex items-center justify-center relative cursor-pointer ${item?.color} ${localCustomizations?.theme === item?.name ? 'after:absolute after:-left-1 after:-top-1 sm:after:w-[38px] after:w-[32px] sm:after:h-[34px] after:h-[28px] after:rounded-md after:border after:border-primary' : ''}`}
                             >
                                 {item?.icon && <item.icon className='stroke-[1.5] w-[20px] h-[20px] cursor-pointer' />}
                             </li>
@@ -547,7 +597,7 @@ const customization = useSelector((state) => state.customization);
                                         <div className='absolute z-[2]'>
                                             <div onClick={() => handleCloseDynamicColor(index)} className='fixed top-0 right-0 bottom-0 left-0' />
                                             <ChromePicker color={item?.colorValue} onChange={(newColor) => handleChangeDynamicColor(newColor, index)} />
-                                        </div>
+                                         </div>
                                     )}
                                 </li>
                             ))}
@@ -560,20 +610,20 @@ const customization = useSelector((state) => state.customization);
                     </span>
                     <div className='flex'>
                         <div
-                            // onClick={toggleDarkMode}
-                            className={`p-2 m-1 rounded-xl border cursor-pointer hover:bg-primary-10 ${!customizations?.darkMode ? 'bg-primary-10 border-dashed border-primary' : 'bg-card-color border-transparent'}`}
+                            onClick={toggleDarkMode}
+                            className={`p-2 m-1 rounded-xl border cursor-pointer hover:bg-primary-10 ${!localCustomizations?.darkMode ? 'bg-primary-10 border-dashed border-primary' : 'bg-card-color border-transparent'}`}
                         >
                             <Image src={light_version} alt='light version' width={300} height={168} />
                         </div>
                         <div
-                            // onClick={toggleDarkMode}
-                            className={`p-2 m-1 rounded-xl border cursor-pointer hover:bg-primary-10 ${customizations?.darkMode ? 'bg-primary-10 border-dashed border-primary' : 'bg-card-color border-transparent'}`}
+                            onClick={toggleDarkMode}
+                            className={`p-2 m-1 rounded-xl border cursor-pointer hover:bg-primary-10 ${localCustomizations?.darkMode ? 'bg-primary-10 border-dashed border-primary' : 'bg-card-color border-transparent'}`}
                         >
                             <Image src={dark_version} alt='dark version' width={300} height={168} />
                         </div>
                         <div
                             onClick={toggleRtlMode}
-                            className={`p-2 m-1 rounded-xl border cursor-pointer hover:bg-primary-10 ${customizations?.rtlMode ? 'bg-primary-10 border-dashed border-primary' : 'bg-card-color border-transparent'}`}
+                            className={`p-2 m-1 rounded-xl border cursor-pointer hover:bg-primary-10 ${localCustomizations?.rtlMode ? 'bg-primary-10 border-dashed border-primary' : 'bg-card-color border-transparent'}`}
                         >
                             <Image src={rtl_version} alt='rtl version' width={300} height={168} />
                         </div>
@@ -588,7 +638,7 @@ const customization = useSelector((state) => state.customization);
                             <div
                                 key={key}
                                 onClick={() => toggleFontFamily(item?.font)}
-                                className={`p-2 m-1 rounded-xl border cursor-pointer hover:bg-primary-10 ${customizations?.fontFamily === item?.font ? 'bg-primary-10 border-dashed border-primary' : 'bg-card-color border-transparent'}`}
+                                className={`p-2 m-1 rounded-xl border cursor-pointer hover:bg-primary-10 ${localCustomizations?.fontFamily === item?.font ? 'bg-primary-10 border-dashed border-primary' : 'bg-card-color border-transparent'}`}
                             >
                                 <Image src={item?.image} alt='font mali' width={79} height={44} />
                             </div>
@@ -604,12 +654,12 @@ const customization = useSelector((state) => state.customization);
                         <input
                             type="text"
                             id="font_url"
-                            value={customizations?.dynamicFont?.fontUrl || ""}
+                            value={localCustomizations?.dynamicFont?.fontUrl || ""}
                             onChange={(e) =>
-                                setCustomizations({
-                                    ...customizations,
+                                setLocalCustomizations({
+                                    ...localCustomizations,
                                     dynamicFont: {
-                                        ...customizations?.dynamicFont,
+                                        ...localCustomizations?.dynamicFont,
                                         fontUrl: e.target.value
                                     }
                                 })
@@ -623,12 +673,12 @@ const customization = useSelector((state) => state.customization);
                         <input
                             type="text"
                             id="font_family"
-                            value={customizations?.dynamicFont?.fontLink || ""}
+                            value={localCustomizations?.dynamicFont?.fontLink || ""}
                             onChange={(e) =>
-                                setCustomizations({
-                                    ...customizations,
+                                setLocalCustomizations({
+                                    ...localCustomizations,
                                     dynamicFont: {
-                                        ...customizations?.dynamicFont,
+                                        ...localCustomizations?.dynamicFont,
                                         fontLink: e.target.value
                                     }
                                 })
@@ -663,7 +713,7 @@ const customization = useSelector((state) => state.customization);
                                     type="checkbox"
                                     id="radius_checkbox"
                                     onChange={radiusToggle}
-                                    checked={customizations?.showRadius}
+                                    checked={localCustomizations?.showRadius}
                                     className="form-check-input"
                                 />
                                 <label className="form-check-label" htmlFor="radius_checkbox">Border Radius</label>
@@ -675,7 +725,7 @@ const customization = useSelector((state) => state.customization);
                                     type="checkbox"
                                     id="shadow_checkbox"
                                     onChange={shadowToggle}
-                                    checked={customizations?.showShadow}
+                                    checked={localCustomizations?.showShadow}
                                     className="form-check-input"
                                 />
                                 <label className="form-check-label" htmlFor="shadow_checkbox">Card Box-Shadow</label>
@@ -686,7 +736,7 @@ const customization = useSelector((state) => state.customization);
             </div>
             <div className='md:px-6 px-4 md:py-4 py-3 flex items-center gap-[10px] border-t border-border-color'>
                 <button className='btn btn-primary w-full'
-                    onClick={handleSave}
+                    onClick={handleSubmit}
                 >
                     Save Changes
                 </button>

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchDataRequest, forgotPassRequest } from '@/Redux/features/auth/authSlice';
 import Image from 'next/image';
+import { fetchCustomizationRequest } from '@/Redux/features/customization/customizationSlice';
 
 const ForgotPassword = () => {
     const dispatch = useDispatch();
@@ -52,6 +53,13 @@ const ForgotPassword = () => {
             }
         }
     }, [fetchData]);
+
+    useEffect(() => {
+        // Only dispatch if clientParams.realmName is available
+        if (clientParams?.realmName) {
+            dispatch(fetchCustomizationRequest(clientParams.realmName));
+        }
+    }, [dispatch, clientParams?.realmName]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();

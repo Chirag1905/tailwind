@@ -48,11 +48,24 @@ export const customizationSlice = createSlice({
       state.error = null;
     },
     fetchCustomizationSuccess: (state, action) => {
-      const customData = action.payload.customizations;
-      state.customizationData = customData ? { ...defaultSettings, ...customData } : defaultSettings;
+      const customData = action.payload; // Now this is just the custom data
+      console.log(customData, "customdata")
+      state.customizationData = customData ? { ...customData } : { ...defaultSettings };
+      // state.customizationData = {
+      //   ...defaultSettings, // Start with defaults
+      //   ...customData,     // Override with custom data
+      // };
       state.loading = false;
       state.error = null;
     },
+    // fetchCustomizationSuccess: (state, action) => {
+    //   const customData = action.payload.customizations;
+    //   // const dd = action.payload;
+    //   // state.customizationData = action.payload;
+    //   state.customizationData = customData ? { ...customData } : { ...defaultSettings };
+    //   state.loading = false;
+    //   state.error = null;
+    // },
     fetchCustomizationFailure: (state, action) => {
       state.loading = false;
       state.error = action.payload;
@@ -62,17 +75,27 @@ export const customizationSlice = createSlice({
       state.error = null;
     },
     postCustomizationSuccess: (state, action) => {
-      const customData = action.payload.customizations;
-      state.customizationData = customData ? { ...defaultSettings, ...customData } : defaultSettings;
+      const customData = action.payload; // Now this is just the custom data
+      state.customizationData = {
+        // ...defaultSettings, // Start with defaults
+        ...customData,     // Override with custom data
+      };
       state.loading = false;
       state.error = null;
     },
+    // postCustomizationSuccess: (state, action) => {
+    //   const customData = action.payload.customizations;
+    //   state.customizationData = customData ? { ...customData } : defaultSettings;
+    //   // state.customizationData = action.payload.customizations;
+    //   state.loading = false;
+    //   state.error = null;
+    // },
     postCustomizationFailure: (state, action) => {
       state.loading = false;
       state.error = action.payload;
     },
-    resetCustomization: () => {
-      return defaultSettings;
+    resetCustomization: (state) => {
+      state.customizationData = defaultSettings;
     },
   },
 });
@@ -85,15 +108,6 @@ export const {
   postCustomizationSuccess,
   postCustomizationFailure,
   resetCustomization,
-  setSchoolLogo,
-  setTheme,
-  toggleDarkMode,
-  toggleRtlMode,
-  setFontFamily,
-  setDynamicFont,
-  toggleRadius,
-  toggleShadow,
-  setDynamicColors
 } = customizationSlice.actions;
 
 export default customizationSlice.reducer;

@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ChromePicker } from 'react-color';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
@@ -54,18 +54,20 @@ import Image from 'next/image';
 import toast from 'react-hot-toast';
 import { useFavicon } from '../utils/useFavicon';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchCustomizationRequest, resetCustomization } from '@/Redux/features/customization/customizationSlice';
+import { fetchCustomizationRequest, postCustomizationRequest, resetCustomization } from '@/Redux/features/customization/customizationSlice';
 import CustomizationSettings from './Customization';
 
 export default function Header({ toggleMobileNav, mobileNav, toggleNote, toggleChat }) {
     const dispatch = useDispatch();
-    const { customizationData, loading, error } = useSelector((state) => state.customization);
-    const [customizations, setCustomizations] = useState();
-    console.log("🚀 ~ Header ~ customizationData:", customizationData)
+    const customizationData = useSelector((state) => state.customization);
+    const [localCustomizations, setLocalCustomizations] = useState(customizationData?.customizationData);
+    // console.log("Redux State", customizationData)
+    // console.log("Local State", localCustomizations)
 
     useEffect(() => {
-        dispatch(fetchCustomizationRequest('master'));
+        dispatch(fetchCustomizationRequest('000001'));
     }, [dispatch]);
+
 
     // Search bar open
     const [searchBar, setSearchBar] = useState(false);
@@ -97,17 +99,17 @@ export default function Header({ toggleMobileNav, mobileNav, toggleNote, toggleC
     }
 
     // light dark mode
-    // const toggleDarkMode = () => {
-    //     const newDarkMode = !customizations.darkMode;
-    //     setCustomizations((prev) => ({
-    //         ...prev,
-    //         darkMode: newDarkMode,
-    //     }));
-    //     document.documentElement.setAttribute("data-theme", newDarkMode ? "dark" : "light");
-    // };
-    // useEffect(() => {
-    //     document.documentElement.setAttribute('data-theme', customizations.darkMode ? 'dark' : 'light');
-    // }, [customizations.darkMode]);
+    const toggleDarkMode = () => {
+        const newDarkMode = !localCustomizations.darkMode;
+        setLocalCustomizations((prev) => ({
+            ...prev,
+            darkMode: newDarkMode,
+        }));
+        document.documentElement.setAttribute("data-theme", newDarkMode ? "dark" : "light");
+    };
+    useEffect(() => {
+        document.documentElement.setAttribute('data-theme', localCustomizations.darkMode ? 'dark' : 'light');
+    }, [localCustomizations.darkMode]);
 
     return (
         <>
@@ -119,7 +121,7 @@ export default function Header({ toggleMobileNav, mobileNav, toggleNote, toggleC
                             <span
                                 className="p-1 font-semibold text-xl text-white text-left w-full bg-transparent"
                             >
-                                {customizations?.schoolName?.length === 8 ? customizations.schoolName : "Demo"}
+                                {localCustomizations?.schoolName?.length === 8 ? localCustomizations.schoolName : "Demo"}
                             </span>
                         </Link>
                         <span className="text-white w-full bg-transparent hover:border-gray-400 transition-colors placeholder-gray-400 hidden sm:block">- Admin</span>
@@ -437,7 +439,7 @@ export default function Header({ toggleMobileNav, mobileNav, toggleNote, toggleC
                         <IconMessage className='stroke-[1.5] w-[20px] h-[20px]' />
                     </button>
                     <button
-                        // onClick={toggleDarkMode}
+                        onClick={toggleDarkMode}
                         className='md:py-2 md:px-3 p-2 hover:bg-primary-10 transition-all duration-300'
                     >
                         <IconMoonStars className='stroke-[1.5] xl:w-[24px] xl:h-[24px] w-[20px] h-[20px]' />
@@ -500,10 +502,10 @@ export default function Header({ toggleMobileNav, mobileNav, toggleNote, toggleC
                 {settingToggle &&
                     <CustomizationSettings
                         settingToggle={settingToggle}
-                        customizations={customizations}
-                        setCustomizations={setCustomizations}
+                        localCustomizations={localCustomizations}
+                        setLocalCustomizations={setLocalCustomizations}
                         toggleThemeSetting={toggleThemeSetting}
-                    // toggleDarkMode={toggleDarkMode}
+                        toggleDarkMode={toggleDarkMode}
                     />
                 }
             </div>

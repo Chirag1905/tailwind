@@ -266,34 +266,6 @@ export default function Sidebar(props) {
     findActiveMenu(pageUrl);
   }, [pageUrl]);
 
-  const [customizations, setCustomizations] = useState();
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedCustomizations = localStorage.getItem('customizations');
-      if (savedCustomizations) {
-        try {
-          const parsedCustomizations = JSON.parse(savedCustomizations);
-          if (typeof parsedCustomizations === 'object' && parsedCustomizations !== null) {
-            setCustomizations({
-              ...parsedCustomizations,
-              dynamicFont: {
-                fontUrl: parsedCustomizations.dynamicFont?.fontUrl || "",
-                fontLink: parsedCustomizations.dynamicFont?.fontLink || ""
-              }
-            });
-          } else {
-            throw new Error("Parsed customizations is not a valid object");
-          }
-        } catch (error) {
-          console.error("Failed to parse customizations from localStorage:", error);
-          localStorage.removeItem('customizations');
-          setCustomizations();
-        }
-      }
-    }
-  }, []);
-
   const highlightAncestors = (item, currentUrl, path = []) => {
     if (item.url === currentUrl) {
       return [...path, item];
@@ -318,7 +290,7 @@ export default function Sidebar(props) {
       <div className='p-6 flex items-start gap-4'>
         <div className='relative group flex'>
           <button>
-            <Image src={customizations?.schoolLogo || profile_av} alt='profile' width={56} height={56} className='bg-white shadow-shadow-lg p-1 rounded-lg saturate-50 transition-all hover:filter-none' />
+            <Image src={profile_av} alt='profile' width={56} height={56} className='bg-white shadow-shadow-lg p-1 rounded-lg saturate-50 transition-all hover:filter-none' />
           </button>
           <div className='bg-card-color text-font-color rounded-xl overflow-hidden w-[240px] text-start shadow-shadow-lg absolute start-0 top-full origin-top-left rtl:origin-top-right z-[1] opacity-0 invisible scale-0 transition-all duration-300 group-hover:opacity-100 group-hover:visible group-hover:scale-100'>
             <div className='p-4 border-b border-border-color'>

@@ -16,7 +16,7 @@ export const getCustomization = async (realmName) => {
         );
         return response;
     } catch (err) {
-        console.error("Error in getCustomization:", err);
+        console.log(err, "err");
         return err.response;
     }
 };
@@ -24,7 +24,8 @@ export const getCustomization = async (realmName) => {
 
 export const postCustomization = async (obj) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/upload`,
+        const response = await axios.post(
+            `${API_BASE_URL}/utils/realmSettings/upload`,
             obj?.data,
             {
                 headers: {
