@@ -44,7 +44,6 @@ const PrivateRoute = ({ children }) => {
     fetchData,
     fetchDataError,
 
-
     token,
     refreshToken,
     tokenExpiry,

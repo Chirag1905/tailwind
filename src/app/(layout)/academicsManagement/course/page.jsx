@@ -27,10 +27,10 @@ import LoadingSpinner from '@/components/utils/LoadingSpinner';
 import toast from 'react-hot-toast';
 import BatchListPage from '../batch/page';
 import { useRouter } from 'next/navigation';
-import CardSelection from '../../CardSelection/page';
 import { Empty, Select } from 'antd';
 import { getActiveAcademicYearRequest, setSelectedAcademicYear } from '@/Redux/features/academicYear/academicYearSlice';
 import SingleCourseRegister from './registerCourse/_components/SingleCourseRegister';
+import CreateForm from '../../CreateForm/page';
 
 const CourseListPage = () => {
   // Constants
@@ -261,7 +261,7 @@ const CourseListPage = () => {
       )}
 
       {isFormTemplateModalOpen && (
-        <CardSelection
+        <CreateForm
           openModal={modalHandlers.formTemplate.open}
           closeModal={modalHandlers.formTemplate.close}
         // selectedItem={selectedItem}
@@ -339,7 +339,7 @@ const CourseListPage = () => {
               {loading ? (
                 <LoadingSpinner />
               ) : (
-                <div className="rounded-xl overflow-hidden border border-primary-10 shadow-sm">
+                <div className="rounded-xl overflow-hidden border border-primary-10 shadow-sm overflow-x-auto cus-scrollbar">
                   <table className="w-full min-w-[600px] border-collapse">
                     <thead className='bg-primary-10'>
                       <tr>

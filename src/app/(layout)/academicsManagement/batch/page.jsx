@@ -228,7 +228,7 @@ const BatchListPage = (props) => {
             {loading ? (
               <LoadingSpinner />
             ) : (
-              <div className="rounded-xl overflow-hidden border border-primary-10 shadow-sm">
+              <div className="rounded-xl overflow-hidden border border-primary-10 shadow-sm overflow-x-auto cus-scrollbar">
                 <table className="w-full min-w-[600px] border-collapse">
                   <thead className='bg-primary-10'>
                     <tr>

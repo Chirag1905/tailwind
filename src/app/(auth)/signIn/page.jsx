@@ -152,12 +152,11 @@ const Signin = () => {
         dispatch(signInRequest({
             username,
             password,
-            // clientId: "admin-cli",
-            // realmName: "master"
+            // clientId: "000001-fe-client",
+            // realmName: "000001"
             clientId: clientParams.clientId,
             realmName: clientParams.realmName
         }));
-
     };
 
     return (
