@@ -16,6 +16,7 @@ import { useFavicon } from '../utils/useFavicon';
 
 const CustomizationSettings = (props) => {
     const {
+        customizationData,
         localCustomizations,
         setLocalCustomizations,
         settingToggle,
@@ -23,11 +24,7 @@ const CustomizationSettings = (props) => {
         toggleDarkMode
     } = props;
     const dispatch = useDispatch();
-    const customizationData = useSelector((state) => state.customization);
     const token = useSelector((state) => state.auth.token);
-
-    console.log("Redux State", customizationData)
-    console.log("Local State", localCustomizations)
 
     useEffect(() => {
         if (localCustomizations) {
@@ -371,7 +368,7 @@ const CustomizationSettings = (props) => {
         setLocalCustomizations(customizationData?.customizationData);
         setDynamicColorItem(dynamicColorItem.map(item => ({
             ...item,
-            colorValue: customizationData?.customizationData?.dynamicColors[item.label.toLowerCase().replace(/\s+/g, '')],
+            colorValue: customizationData?.customizationData?.dynamicColors[item?.label?.toLowerCase().replace(/\s+/g, '')],
             displayColorPicker: false
         })));
         toast.success('Customizations reset to default', { position: 'top-right' });

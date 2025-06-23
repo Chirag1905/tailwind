@@ -21,12 +21,12 @@ export const getCustomization = async (realmName) => {
     }
 };
 
-
 export const postCustomization = async (obj) => {
     try {
         const response = await axios.post(
             `${API_BASE_URL}/utils/realmSettings/upload`,
             obj?.data,
+            // {},
             {
                 headers: {
                     "Content-Type": "application/json",

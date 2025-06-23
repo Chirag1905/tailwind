@@ -61,13 +61,21 @@ export default function Header({ toggleMobileNav, mobileNav, toggleNote, toggleC
     const dispatch = useDispatch();
     const customizationData = useSelector((state) => state.customization);
     const [localCustomizations, setLocalCustomizations] = useState(customizationData?.customizationData);
-    // console.log("Redux State", customizationData)
-    // console.log("Local State", localCustomizations)
+    console.log("Redux State", customizationData)
+    console.log("Local State", localCustomizations)
+
+    useEffect(() => {
+        // Initialize local customizations from Redux state
+        if (customizationData?.customizationData?.customizations) {
+            setLocalCustomizations(customizationData?.customizationData?.customizations);
+        } else {
+            setLocalCustomizations(customizationData?.customizationData);
+        }
+    }, [customizationData]);
 
     useEffect(() => {
         dispatch(fetchCustomizationRequest('000001'));
     }, [dispatch]);
-
 
     // Search bar open
     const [searchBar, setSearchBar] = useState(false);
@@ -100,7 +108,7 @@ export default function Header({ toggleMobileNav, mobileNav, toggleNote, toggleC
 
     // light dark mode
     const toggleDarkMode = () => {
-        const newDarkMode = !localCustomizations.darkMode;
+        const newDarkMode = !localCustomizations?.darkMode;
         setLocalCustomizations((prev) => ({
             ...prev,
             darkMode: newDarkMode,
@@ -502,6 +510,7 @@ export default function Header({ toggleMobileNav, mobileNav, toggleNote, toggleC
                 {settingToggle &&
                     <CustomizationSettings
                         settingToggle={settingToggle}
+                        customizationData={customizationData}
                         localCustomizations={localCustomizations}
                         setLocalCustomizations={setLocalCustomizations}
                         toggleThemeSetting={toggleThemeSetting}
