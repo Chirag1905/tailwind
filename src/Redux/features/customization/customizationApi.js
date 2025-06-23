@@ -3,7 +3,7 @@ import axios from "axios";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export const getCustomization = async (realmName) => {
-    console.log("🚀 ~ getCustomization ~ realmName:", realmName);
+    // console.log("🚀 ~ getCustomization ~ realmName:", realmName);
     try {
         const response = await axios.post(
             `${API_BASE_URL}/utils/realmSettings/download`,

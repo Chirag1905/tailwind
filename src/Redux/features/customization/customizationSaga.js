@@ -21,7 +21,7 @@ function* fetchCustomizationSaga(action) {
 function* postCustomizationSaga(action) {
     try {
         const response = yield call(postCustomization, action.payload);
-        yield put(postCustomizationSuccess(response.data));
+        yield put(postCustomizationSuccess(postCustomization));
     } catch (error) {
         yield put(postCustomizationFailure(error.message));
     }

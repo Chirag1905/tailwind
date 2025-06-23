@@ -22,7 +22,7 @@ import useDebounce from '@/components/utils/useDebounce';
 import LoadingSpinner from '@/components/utils/LoadingSpinner';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
-import { Empty } from 'antd';
+import { Empty, Skeleton } from 'antd';
 
 const BatchListPage = (props) => {
   const router = useRouter();
@@ -162,7 +162,7 @@ const BatchListPage = (props) => {
   return (
     <>
       <div className="flex flex-col md:flex-row justify-end items-start md:items-center gap-2 md:gap-2 mb-4">
-        <div className='w-full md:w-auto card bg-card-color rounded-xl form-control flex'>
+         <div className='w-auto bg-card-color rounded-xl form-control flex'>
           <input
             type="text"
             id="team_board_search"
@@ -226,7 +226,50 @@ const BatchListPage = (props) => {
           {/* Content Section */}
           <div className={`my-6 md:my-8 px-2 sm:px-4 md:px-10 h-fit md:h-max ${loading ? '' : 'overflow-auto cus-scrollbar'}`}>
             {loading ? (
-              <LoadingSpinner />
+              <div className="rounded-xl overflow-hidden border border-primary-10 shadow-sm overflow-x-auto cus-scrollbar">
+                <table className="w-full min-w-[600px] border-collapse">
+                  <thead className='bg-primary-10'>
+                    <tr>
+                      <th className="py-3 px-2 md:px-4 border-b border-r border-primary-10 first:rounded-tl-lg">
+                        <Skeleton.Input active style={{ width: 40, height: 24 }} className="rounded-md mx-auto" />
+                      </th>
+                      <th className="py-3 px-2 md:px-4 border-b border-r border-primary-10">
+                        <Skeleton.Input active style={{ width: 120, height: 24 }} className="rounded-md mx-auto" />
+                      </th>
+                      <th className="py-3 px-2 md:px-4 border-b border-r border-primary-10">
+                        <Skeleton.Input active style={{ width: 120, height: 24 }} className="rounded-md mx-auto" />
+                      </th>
+                      <th className="py-3 px-2 md:px-4 border-b border-primary-10 last:rounded-tr-lg">
+                        <Skeleton.Input active style={{ width: 80, height: 24 }} className="rounded-md mx-auto" />
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-primary-10">
+                    {[...Array(5)].map((_, rowIndex) => (
+                      <tr key={`row-${rowIndex}`} className="hover:bg-primary-10 transition-colors">
+                        <td className="py-4 px-2 md:px-4 text-center border-r">
+                          <Skeleton.Input active style={{ width: 30, height: 24 }} className="rounded-md mx-auto" />
+                        </td>
+                        <td className="py-4 px-2 md:px-4 text-center border-r">
+                          <Skeleton.Input active style={{ width: 180, height: 24 }} className="rounded-md mx-auto" />
+                        </td>
+                        <td className="py-4 px-2 md:px-4 text-center border-r">
+                          <Skeleton.Button active style={{ width: 80, height: 32 }} className="rounded-full mx-auto" />
+                        </td>
+                        <td className="py-4 px-2 md:px-4 text-center">
+                          <div className="flex items-center justify-center gap-2">
+                            <Skeleton.Button
+                              active
+                              style={{ width: 32, height: 32 }}
+                              className="rounded-md"
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             ) : (
               <div className="rounded-xl overflow-hidden border border-primary-10 shadow-sm overflow-x-auto cus-scrollbar">
                 <table className="w-full min-w-[600px] border-collapse">

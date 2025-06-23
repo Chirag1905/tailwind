@@ -1121,10 +1121,10 @@ body .apexcharts-legend-marker {
 .ant-select-selector {
     height: 40px !important;
     border-radius: 8px !important;
-    border: 1px solid var(--border-color) !important;
+    border: 1px solid var(--color-border-color) !important;
     padding: 4px 12px !important;
-    background-color: var(--card-color) !important;
-    color: var(--font-color) !important;
+    background-color: var(--color-card-color) !important;
+    color: var(--color-font-color) !important;
 }
 
 .ant-select-selector:hover {
@@ -1147,31 +1147,31 @@ body .apexcharts-legend-marker {
 
 .ant-dropdown-search {
     padding: 8px;
-    border-bottom: 1px solid var(--border-color);
-    background-color: var(--card-color);
+    border-bottom: 1px solid var(--color-border-color);
+    background-color: var(--color-card-color);
 }
 
 .ant-dropdown-search .ant-input {
-    background-color: var(--card-color);
-    color: var(--font-color);
-    border-color: var(--border-color);
+    background-color: var(--color-card-color);
+    color: var(--color-font-color);
+    border-color: var(--color-border-color);
 }
 
 .ant-dropdown-search .ant-input::placeholder {
-    color: var(--font-color-100);
+    color: var(--color-font-color-100);
 }
 
 .ant-dropdown-menu {
     max-height: 240px;
     overflow-y: auto;
-    background-color: var(--card-color);
-    color: var(--font-color);
+    background-color: var(--color-card-color);
+    color: var(--color-font-color);
 }
 
 .ant-dropdown-option {
     padding: 8px 12px !important;
     transition: all 0.2s;
-    color: var(--font-color) !important;
+    color: var(--color-font-color) !important;
 }
 
 .ant-dropdown-option:hover {
@@ -1185,20 +1185,20 @@ body .apexcharts-legend-marker {
 
 .ant-dropdown-empty {
     padding: 8px 12px;
-    color: var(--font-color-100);
+    color: var(--color-font-color-100);
     text-align: center;
-    background-color: var(--card-color);
+    background-color: var(--color-card-color);
 }
 
 .custom-dropdown-menu {
     border-radius: 8px !important;
-    box-shadow: var(--shadow-lg);
-    background-color: var(--card-color);
-    border: 1px solid var(--border-color);
+    box-shadow: var(--inset-shadow-lg);
+    background-color: var(--color-card-color);
+    border: 1px solid var(--color-border-color);
 }
 
 .custom-dropdown-menu .ant-select-item {
-    color: var(--font-color);
+    color: var(--color-font-color);
 }
 
 .custom-dropdown-menu .ant-select-item-option-active:not(.ant-select-item-option-disabled) {
@@ -1224,7 +1224,7 @@ body .apexcharts-legend-marker {
 }
 
 .ant-dropdown-menu::-webkit-scrollbar-thumb {
-    background-color: var(--scrollbar-thumb);
+    background-color: var(--color-scrollbar-thumb);
     border-radius: 3px;
 }
 

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { IconSquareRoundedX, IconSquareRoundedCheck } from '@tabler/icons-react';
 import toast from 'react-hot-toast';
 import { getCourseRegisterRequest, postCourseRegisterFailure, postCourseRegisterRequest, postCourseRegisterSuccess, updateCourseRegisterRequest } from '@/Redux/features/courseRegister/courseRegisterSlice';
-import { DatePicker, Empty } from 'antd';
+import { DatePicker, Empty, Skeleton } from 'antd';
 import dayjs from 'dayjs';
 import LoadingSpinner from '@/components/utils/LoadingSpinner';
 import { useRouter } from 'next/navigation';
@@ -267,7 +267,7 @@ const RegisterCourse = () => {
     return (
         <>
             <Breadcrumb breadcrumbItem={breadcrumbItem} />
-            <div className="mt-10 pt-6 md:pt-7 px-5 sm:px-6 md:px-0 bg-card-color border rounded-xl shadow-xl">
+            <div className="my-10 py-6 md:py-7 px-5 sm:px-6 md:px-0 bg-card-color border rounded-xl shadow-xl">
                 {/* Header Section */}
                 <div className="flex flex-col px-5 md:mx-6 md:flex-row justify-between items-start md:items-center">
                     <h5 className="text-lg sm:text-xl font-medium">
@@ -278,195 +278,260 @@ const RegisterCourse = () => {
                 {/* Content Section */}
                 <div className={`my-6 md:my-8 px-2 sm:px-4 md:px-10 h-fit md:h-max ${loading ? '' : 'overflow-auto cus-scrollbar'}`}>
                     {loading ? (
-                        <LoadingSpinner />
-                    ) : (
-                        <table className="w-full min-w-[600px]">
-                            <thead>
-                                <tr>
-                                    <th>
-                                        <div className="form-check text-center py-3 px-4 md:px-6">
-                                            <input
-                                                type="checkbox"
-                                                checked={selectAll}
-                                                onChange={handleSelectAll}
-                                                className="form-check-input h-5 w-10 rounded-full appearance-none bg-gray-300 checked:bg-blue-500 transition duration-200 relative cursor-pointer"
-                                            />
-                                        </div>
-                                    </th>
-                                    <th className="py-3 px-4 md:px-6 font-medium text-gray-700 text-left">Course Name</th>
-                                    <th className="py-3 px-4 md:px-6 font-medium text-gray-700 text-left">App Form Prefix</th>
-                                    <th className="py-3 px-4 md:px-6 font-medium text-gray-700 text-left">Reg Amount</th>
-                                    <th className="py-3 px-4 md:px-6 font-medium text-gray-700 text-left">DOB Validation</th>
-                                    <th className="py-3 px-4 md:px-6 font-medium text-gray-700 text-left">DOB Start Date & DOB End Date</th>
-                                    <th className="py-3 px-4 md:px-6 font-medium text-gray-700 text-left">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {data && data.length > 0 ? (
-                                    data.map((item, index) => (
-                                        <tr
-                                            key={index}
-                                            className="form-control border-b border-body-color hover:bg-body-color"
-                                        >
+                        <div className="rounded-xl overflow-hidden border border-primary-10 shadow-sm overflow-x-auto cus-scrollbar">
+                            <table className="w-full min-w-[600px] border-collapse">
+                                <thead className='bg-primary-10'>
+                                    <tr>
+                                        {/* Checkbox column */}
+                                        <th>
+                                            <div className="form-check text-center py-3 px-4 md:px-6">
+                                                <Skeleton.Button active style={{ width: 20, height: 20 }} className="rounded-full" />
+                                            </div>
+                                        </th>
+
+                                        {/* Other columns */}
+                                        {['Course Name', 'App Form Prefix', 'Reg Amount', 'DOB Validation', 'DOB Start Date & DOB End Date', 'Status'].map((header, i) => (
+                                            <th key={i} className="py-3 px-4 md:px-6 font-medium text-gray-700 text-center">
+                                                <Skeleton.Input active style={{ width: i === 0 ? 100 : i === 3 ? 120 : i === 4 ? 200 : 80, height: 24 }} className="rounded-md mx-auto" />
+                                            </th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {[...Array(5)].map((_, rowIndex) => (
+                                        <tr key={`row-${rowIndex}`} className="form-control border-b border-body-color hover:bg-body-color">
                                             {/* Checkbox */}
-                                            <td className="form-check text-center py-4 px-4 md:px-6">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={item.selected || false}
-                                                    onChange={handleSelectItem(index)}
-                                                    className="form-check-input h-5 w-5 rounded cursor-pointer"
-                                                />
+                                            <td className="form-check text-center py-4 px-4">
+                                                <Skeleton.Button active style={{ width: 20, height: 20 }} className="rounded-full" />
                                             </td>
 
                                             {/* Course Name */}
-                                            <td className="py-4 px-4 md:px-6 text-center" ref={el => {
-                                                if (!fieldRefs.current[index]) fieldRefs.current[index] = {};
-                                                fieldRefs.current[index].campusCourseName = { current: el };
-                                            }}>
-                                                <input
-                                                    type="text"
-                                                    value={item.campusCourseName || ""}
-                                                    onChange={handleChange(index, 'campusCourseName')}
-                                                    className={`form-control ${errors[`campusCourseName_${index}`] ? 'border-red-500' : 'border-gray-300'} border rounded-lg px-2 py-1 text-sm w-full`}
-                                                    disabled={!item.selected}
-                                                />
-                                                {errors[`campusCourseName_${index}`] && (
-                                                    <p className="mt-1 text-xs text-red-600">{errors[`campusCourseName_${index}`]}</p>
-                                                )}
+                                            <td className="py-4 px-4 text-center">
+                                                <Skeleton.Input active style={{ width: '90%', height: 32 }} className="rounded-lg" />
                                             </td>
 
                                             {/* App Form Prefix */}
-                                            <td className="py-4 px-4 md:px-6 text-center" ref={el => {
-                                                if (!fieldRefs.current[index]) fieldRefs.current[index] = {};
-                                                fieldRefs.current[index].appFormPrefix = { current: el };
-                                            }}>
-                                                <input
-                                                    type="text"
-                                                    value={item.appFormPrefix || ""}
-                                                    onChange={handleChange(index, 'appFormPrefix')}
-                                                    className={`form-control ${errors[`appFormPrefix_${index}`] ? 'border-red-500' : 'border-gray-300'} border rounded-lg px-2 py-1 text-sm w-full`}
-                                                    disabled={!item.selected}
-                                                />
-                                                {errors[`appFormPrefix_${index}`] && (
-                                                    <p className="mt-1 text-xs text-red-600">{errors[`appFormPrefix_${index}`]}</p>
-                                                )}
+                                            <td className="py-4 px-4 md:px-6 text-center">
+                                                <Skeleton.Input active style={{ width: '80%', height: 32 }} className="rounded-lg" />
                                             </td>
 
                                             {/* Reg Amount */}
-                                            <td className="py-4 px-4 md:px-6 text-center" ref={el => {
-                                                if (!fieldRefs.current[index]) fieldRefs.current[index] = {};
-                                                fieldRefs.current[index].regAmount = { current: el };
-                                            }}>
-                                                <input
-                                                    type="number"
-                                                    min="0"
-                                                    step="0.01"
-                                                    value={item.regAmount || ""}
-                                                    onChange={handleChange(index, 'regAmount')}
-                                                    className={`form-control ${errors[`regAmount_${index}`] ? 'border-red-500' : 'border-gray-300'} border rounded-lg px-2 py-1 text-sm w-full`}
-                                                    disabled={!item.selected}
-                                                />
-                                                {errors[`regAmount_${index}`] && (
-                                                    <p className="mt-1 text-xs text-red-600">{errors[`regAmount_${index}`]}</p>
-                                                )}
+                                            <td className="py-4 px-4 md:px-6 text-center">
+                                                <Skeleton.Input active style={{ width: '70%', height: 32 }} className="rounded-lg" />
                                             </td>
 
-                                            {/* DOB Validation */}
-                                            <td className="py-4 px-4 md:px-6 text-center form-control" ref={el => {
-                                                if (!fieldRefs.current[index]) fieldRefs.current[index] = {};
-                                                fieldRefs.current[index].isDobValidation = { current: el };
-                                            }}>
-                                                <div className="form-check form-switch flex items-center justify-center">
-                                                    <input
-                                                        type="checkbox"
-                                                        className="form-check-input h-5 w-10 rounded-full appearance-none bg-gray-300 checked:bg-blue-500 transition duration-200 cursor-pointer"
-                                                        checked={item.isDobValidation || false}
-                                                        onChange={handleChange(index, 'isDobValidation')}
-                                                        disabled={!item.selected}
-                                                    />
+                                            {/* DOB Validation Toggle */}
+                                            <td className="py-4 px-4 md:px-6 text-center">
+                                                <Skeleton.Button active style={{ width: 40, height: 20 }} className="rounded-full" />
+                                            </td>
+
+                                            {/* DOB Date Range */}
+                                            <td className="py-4 px-4 w-[320px]">
+                                                <div className="flex gap-2">
+                                                    <Skeleton.Input active style={{ width: '45%', height: 32 }} className="rounded-lg" />
+                                                    <Skeleton.Input active style={{ width: '45%', height: 32 }} className="rounded-lg" />
                                                 </div>
                                             </td>
 
-                                            {/* DOB Start-End Range */}
-                                            <td className="py-4 px-4 md:px-6 w-[320px]" ref={el => {
-                                                if (!fieldRefs.current[index]) fieldRefs.current[index] = {};
-                                                fieldRefs.current[index].dateRange = { current: el };
-                                            }}>
-                                                <div className="form-control w-full">
-                                                    <RangePicker
-                                                        placeholder={["Start DOB Date", "End DOB Date"]}
-                                                        className={`w-full ${errors[`dobStartDate_${index}`] ? 'border-red-500' : 'border-gray-300'} border rounded px-2 py-1 text-sm`}
-                                                        onChange={(dates, dateStrings) => handleDateChange(index, dates, dateStrings)}
-                                                        value={getRangePickerValue(index)}
-                                                        allowEmpty
-                                                        format="DD-MM-YYYY"
-                                                        disabled={!item.isDobValidation || !item.selected}
-                                                    />
-                                                    {errors[`dobStartDate_${index}`] && (
-                                                        <p className="mt-1 text-xs text-red-600">{errors[`dobStartDate_${index}`]}</p>
-                                                    )}
-                                                </div>
-                                            </td>
-
-                                            {/* Active Status */}
-                                            <td className="py-4 px-4 md:px-6 text-center form-control" ref={el => {
-                                                if (!fieldRefs.current[index]) fieldRefs.current[index] = {};
-                                                fieldRefs.current[index].isActive = { current: el };
-                                            }}>
-                                                <div className="form-check form-switch flex items-center justify-center">
-                                                    <input
-                                                        type="checkbox"
-                                                        className="form-check-input h-5 w-10 rounded-full appearance-none bg-gray-300 checked:bg-blue-500 transition duration-200 cursor-pointer"
-                                                        checked={item.isActive || false}
-                                                        onChange={handleChange(index, 'isActive')}
-                                                        disabled={!item.selected}
-                                                    />
-                                                </div>
+                                            {/* Status Toggle */}
+                                            <td className="py-4 px-4 text-center">
+                                                <Skeleton.Button active style={{ width: 40, height: 20 }} className="rounded-full" />
                                             </td>
                                         </tr>
-                                    ))
-                                ) : (
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    ) : (
+                        <div className="rounded-xl overflow-hidden border border-primary-10 shadow-sm overflow-x-auto cus-scrollbar">
+                            <table className="w-full min-w-[600px] border-collapse">
+                                <thead className='bg-primary-10'>
                                     <tr>
-                                        <td colSpan="7" className="text-center py-6 px-4 md:px-6">
-                                            <Empty
-                                                image={Empty.PRESENTED_IMAGE_SIMPLE}
-                                                description="No Courses Available For Registration"
-                                                className="flex flex-col items-center justify-center"
-                                            />
-                                        </td>
+                                        <th>
+                                            <div className="form-check text-center py-3 px-4 md:px-6">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectAll}
+                                                    onChange={handleSelectAll}
+                                                    className="!m-0 form-check-input !float-none h-5 w-10 rounded-full appearance-none"
+                                                />
+                                            </div>
+                                        </th>
+                                        <th className="py-3 px-4 md:px-6 font-medium text-gray-700 text-center">Course Name</th>
+                                        <th className="py-3 px-4 md:px-6 font-medium text-gray-700 text-center">App Form Prefix</th>
+                                        <th className="py-3 px-4 md:px-6 font-medium text-gray-700 text-center">Reg Amount</th>
+                                        <th className="py-3 px-4 md:px-6 font-medium text-gray-700 text-center">DOB Validation</th>
+                                        <th className="py-3 px-4 md:px-6 font-medium text-gray-700 text-center">DOB Start Date & DOB End Date</th>
+                                        <th className="py-3 px-4 md:px-6 font-medium text-gray-700 text-center">Status</th>
                                     </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    )}
-                    {/* Buttons */}
-                    <div className="flex flex-col-reverse md:flex-row md:justify-start items-stretch md:items-center gap-3 mt-5 w-full">
-                        <button
-                            onClick={() => router.push("/academicsManagement/course")}
-                            className="flex items-center justify-center gap-2 px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:text-primary hover:border-primary transition-colors duration-200 w-full md:w-auto"
-                        >
-                            Close
-                            <IconSquareRoundedX className="w-5 h-5 text-current" />
-                        </button>
+                                </thead>
+                                <tbody>
+                                    {data && data.length > 0 ? (
+                                        data.map((item, index) => (
+                                            <tr
+                                                key={index}
+                                                className="form-control border-b border-body-color hover:bg-body-color"
+                                            >
+                                                {/* Checkbox */}
+                                                <td className="form-check text-center py-4 px-4 ">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={item.selected || false}
+                                                        onChange={handleSelectItem(index)}
+                                                        className="form-check-input !float-none !m-0 h-5 w-5 rounded cursor-pointer"
+                                                    />
+                                                </td>
 
-                        <button
-                            onClick={handleSubmit}
-                            disabled={loading}
-                            className="flex items-center justify-center gap-2 px-4 py-2 rounded-md bg-primary border border-primary-10 text-white hover:bg-primary-dark disabled:opacity-80 disabled:cursor-wait transition-colors duration-200 w-full md:w-auto group"
-                        >
-                            {loading ? (
-                                <>
-                                    Processing...
-                                    <div className="w-5 h-5 border-2 border-t-transparent border-white rounded-full animate-spin" />
-                                </>
-                            ) : (
-                                <>
-                                    Submit
-                                    <IconSquareRoundedCheck className="w-5 h-5 text-white" />
-                                </>
-                            )}
-                        </button>
-                    </div>
+                                                {/* Course Name */}
+                                                <td className="py-4 px-4  text-center" ref={el => {
+                                                    if (!fieldRefs.current[index]) fieldRefs.current[index] = {};
+                                                    fieldRefs.current[index].campusCourseName = { current: el };
+                                                }}>
+                                                    <input
+                                                        type="text"
+                                                        value={item.campusCourseName || ""}
+                                                        onChange={handleChange(index, 'campusCourseName')}
+                                                        className={`form-control ${errors[`campusCourseName_${index}`] ? 'border-red-500' : 'border-gray-300'} border rounded-lg px-2 py-1 text-sm w-full`}
+                                                        disabled={!item.selected}
+                                                    />
+                                                    {errors[`campusCourseName_${index}`] && (
+                                                        <p className="mt-1 text-xs text-red-600">{errors[`campusCourseName_${index}`]}</p>
+                                                    )}
+                                                </td>
+
+                                                {/* App Form Prefix */}
+                                                <td className="py-4 px-4 md:px-6 text-center" ref={el => {
+                                                    if (!fieldRefs.current[index]) fieldRefs.current[index] = {};
+                                                    fieldRefs.current[index].appFormPrefix = { current: el };
+                                                }}>
+                                                    <input
+                                                        type="text"
+                                                        value={item.appFormPrefix || ""}
+                                                        onChange={handleChange(index, 'appFormPrefix')}
+                                                        className={`form-control ${errors[`appFormPrefix_${index}`] ? 'border-red-500' : 'border-gray-300'} border rounded-lg px-2 py-1 text-sm w-full`}
+                                                        disabled={!item.selected}
+                                                    />
+                                                    {errors[`appFormPrefix_${index}`] && (
+                                                        <p className="mt-1 text-xs text-red-600">{errors[`appFormPrefix_${index}`]}</p>
+                                                    )}
+                                                </td>
+
+                                                {/* Reg Amount */}
+                                                <td className="py-4 px-4 md:px-6 text-center" ref={el => {
+                                                    if (!fieldRefs.current[index]) fieldRefs.current[index] = {};
+                                                    fieldRefs.current[index].regAmount = { current: el };
+                                                }}>
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        step="0.01"
+                                                        value={item.regAmount || ""}
+                                                        onChange={handleChange(index, 'regAmount')}
+                                                        className={`form-control ${errors[`regAmount_${index}`] ? 'border-red-500' : 'border-gray-300'} border rounded-lg px-2 py-1 text-sm w-full`}
+                                                        disabled={!item.selected}
+                                                    />
+                                                    {errors[`regAmount_${index}`] && (
+                                                        <p className="mt-1 text-xs text-red-600">{errors[`regAmount_${index}`]}</p>
+                                                    )}
+                                                </td>
+
+                                                {/* DOB Validation */}
+                                                <td className="py-4 px-4 md:px-6 text-center form-control" ref={el => {
+                                                    if (!fieldRefs.current[index]) fieldRefs.current[index] = {};
+                                                    fieldRefs.current[index].isDobValidation = { current: el };
+                                                }}>
+                                                    <div className=" !p-0 form-check form-switch flex items-center justify-center">
+                                                        <input
+                                                            type="checkbox"
+                                                            className="!m-0 form-check-input h-5 w-10 rounded-full appearance-none bg-gray-300 checked:bg-blue-500 transition duration-200 cursor-pointer"
+                                                            checked={item.isDobValidation || false}
+                                                            onChange={handleChange(index, 'isDobValidation')}
+                                                            disabled={!item.selected}
+                                                        />
+                                                    </div>
+                                                </td>
+
+                                                {/* DOB Start-End Range */}
+                                                <td className="py-4 px-4  w-[320px]" ref={el => {
+                                                    if (!fieldRefs.current[index]) fieldRefs.current[index] = {};
+                                                    fieldRefs.current[index].dateRange = { current: el };
+                                                }}>
+                                                    <div className="form-control w-full">
+                                                        <RangePicker
+                                                            placeholder={["Start DOB Date", "End DOB Date"]}
+                                                            className={`w-full ${errors[`dobStartDate_${index}`] ? 'border-red-500' : 'border-gray-300'} border rounded px-2 py-1 text-sm`}
+                                                            onChange={(dates, dateStrings) => handleDateChange(index, dates, dateStrings)}
+                                                            value={getRangePickerValue(index)}
+                                                            allowEmpty
+                                                            format="DD-MM-YYYY"
+                                                            disabled={!item.isDobValidation || !item.selected}
+                                                        />
+                                                        {errors[`dobStartDate_${index}`] && (
+                                                            <p className="mt-1 text-xs text-red-600">{errors[`dobStartDate_${index}`]}</p>
+                                                        )}
+                                                    </div>
+                                                </td>
+
+                                                {/* Active Status */}
+                                                <td className="py-4 px-4  text-center form-control" ref={el => {
+                                                    if (!fieldRefs.current[index]) fieldRefs.current[index] = {};
+                                                    fieldRefs.current[index].isActive = { current: el };
+                                                }}>
+                                                    <div className="!p-0 form-check form-switch flex items-center justify-center">
+                                                        <input
+                                                            type="checkbox"
+                                                            className=" !m-0 form-check-input h-5 w-10 rounded-full appearance-none bg-gray-300 checked:bg-blue-500 transition duration-200 cursor-pointer"
+                                                            checked={item.isActive || false}
+                                                            onChange={handleChange(index, 'isActive')}
+                                                            disabled={!item.selected}
+                                                        />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="7" className="text-center py-6 px-4 ">
+                                                <Empty
+                                                    image={Empty.PRESENTED_IMAGE_SIMPLE}
+                                                    description="No Courses Available For Registration"
+                                                    className="flex flex-col items-center justify-center"
+                                                />
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </div>
+                {/* Buttons */}
+                <div className="flex flex-col-reverse md:flex-row md:justify-start items-stretch md:items-center gap-3 mt-5 px-5 md:mx-6 w-full">
+                    <button
+                        onClick={() => router.push("/academicsManagement/course")}
+                        className="flex items-center justify-center gap-2 px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:text-primary hover:border-primary transition-colors duration-200 w-full md:w-auto"
+                    >
+                        Close
+                        <IconSquareRoundedX className="w-5 h-5 text-current" />
+                    </button>
+
+                    <button
+                        onClick={handleSubmit}
+                        disabled={loading}
+                        className="flex items-center justify-center gap-2 px-4 py-2 rounded-md bg-primary border border-primary-10 text-white hover:bg-primary-dark disabled:opacity-80 disabled:cursor-wait transition-colors duration-200 w-full md:w-auto group"
+                    >
+                        {loading ? (
+                            <>
+                                Processing...
+                                <div className="w-5 h-5 border-2 border-t-transparent border-white rounded-full animate-spin" />
+                            </>
+                        ) : (
+                            <>
+                                Submit
+                                <IconSquareRoundedCheck className="w-5 h-5 text-white" />
+                            </>
+                        )}
+                    </button>
                 </div>
             </div>
         </>

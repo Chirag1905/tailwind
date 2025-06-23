@@ -59,6 +59,8 @@ import CustomizationSettings from './Customization';
 
 export default function Header({ toggleMobileNav, mobileNav, toggleNote, toggleChat }) {
     const dispatch = useDispatch();
+      // Settings sidebar
+    const [settingToggle, setSettingToggle] = useState(false)
     const customizationData = useSelector((state) => state.customization);
     const [localCustomizations, setLocalCustomizations] = useState(customizationData?.customizationData);
     console.log("Redux State", customizationData)
@@ -66,9 +68,11 @@ export default function Header({ toggleMobileNav, mobileNav, toggleNote, toggleC
 
     useEffect(() => {
         // Initialize local customizations from Redux state
+        console.log("🚀 ~ useEffect ~ customizationData?.customizationData?.customizations:", customizationData?.customizationData)
         if (customizationData?.customizationData?.customizations) {
             setLocalCustomizations(customizationData?.customizationData?.customizations);
-        } else {
+        } 
+        if(!customizationData) {
             setLocalCustomizations(customizationData?.customizationData);
         }
     }, [customizationData]);
@@ -99,8 +103,7 @@ export default function Header({ toggleMobileNav, mobileNav, toggleNote, toggleC
         }
     };
 
-    // Settings sidebar
-    const [settingToggle, setSettingToggle] = useState(false)
+  
     const toggleThemeSetting = () => {
         setSettingToggle(!settingToggle)
         document.body.classList.toggle("overflow-hidden", !settingToggle)

@@ -1,5 +1,5 @@
 'use client';
-import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { getCoursePaginationRequest } from '@/Redux/features/course/courseSlice';
 import {
@@ -27,7 +27,7 @@ import LoadingSpinner from '@/components/utils/LoadingSpinner';
 import toast from 'react-hot-toast';
 import BatchListPage from '../batch/page';
 import { useRouter } from 'next/navigation';
-import { Empty, Select } from 'antd';
+import { Empty, Select, Skeleton } from 'antd';
 import { getActiveAcademicYearRequest, setSelectedAcademicYear } from '@/Redux/features/academicYear/academicYearSlice';
 import SingleCourseRegister from './registerCourse/_components/SingleCourseRegister';
 import CreateForm from '../../CreateForm/page';
@@ -291,7 +291,7 @@ const CourseListPage = () => {
                     <IconSearch className='w-[20px] h-[20px]' />
                   </button>
                 </div>
-                <div className='flex gap-3'>
+                <div className='flex w-1/2'>
                   <Select
                     value={selectedAcademicYear}
                     onChange={(value) => handleChange(value)}
@@ -307,7 +307,7 @@ const CourseListPage = () => {
                     optionFilterProp="children"
                     suffixIcon={
                       <svg
-                        className="w-5 h-5 text-primary"
+                        className="w-5 h-5 mt-2 text-primary"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -323,9 +323,11 @@ const CourseListPage = () => {
                       </Select.Option>
                     ))}
                   </Select>
+                </div>
+                <div className='flex w-full'>
                   <button
                     onClick={() => router.push("/academicsManagement/course/registerCourse")}
-                    className="flex gap-1 btn btn-light-primary w-full"
+                    className="flex btn btn-light-primary w-full"
                   >
                     <IconPencilPlus />
                     <span className="block">Registration Course</span>
@@ -337,7 +339,53 @@ const CourseListPage = () => {
             {/* Content Section */}
             <div className={`my-6 md:my-8 px-2 sm:px-4 md:px-10 h-fit md:h-max ${loading ? '' : 'overflow-auto cus-scrollbar'}`}>
               {loading ? (
-                <LoadingSpinner />
+                <div className="rounded-xl overflow-hidden border border-primary-10 shadow-sm overflow-x-auto cus-scrollbar">
+                  <table className="w-full min-w-[600px] border-collapse">
+                    <thead className='bg-primary-10'>
+                      <tr>
+                        {[...Array(5)].map((_, i) => (
+                          <th key={`header-${i}`} className="py-3 px-2 md:px-4 border-b border-r border-primary-10 first:rounded-tl-lg last:rounded-tr-lg">
+                            <Skeleton.Input
+                              active
+                              style={{ width: i === 0 ? 40 : 120, height: 24 }}
+                              className="rounded-md mx-auto"
+                            />
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-primary-10">
+                      {[...Array(5)].map((_, rowIndex) => (
+                        <tr key={`row-${rowIndex}`} className="hover:bg-primary-10 transition-colors">
+                          <td className="py-4 px-2 md:px-4 text-center border-r">
+                            <Skeleton.Input active style={{ width: 30, height: 24 }} className="rounded-md mx-auto" />
+                          </td>
+                          <td className="py-4 px-2 md:px-4 text-center border-r">
+                            <Skeleton.Input active style={{ width: 150, height: 24 }} className="rounded-md mx-auto" />
+                          </td>
+                          <td className="py-4 px-2 md:px-4 text-center border-r">
+                            <Skeleton.Input active style={{ width: 100, height: 24 }} className="rounded-md mx-auto" />
+                          </td>
+                          <td className="py-4 px-2 md:px-4 text-center border-r">
+                            <Skeleton.Button active style={{ width: 80, height: 32 }} className="rounded-full mx-auto" />
+                          </td>
+                          <td className="py-4 px-2 md:px-4 text-center">
+                            <div className="flex items-center justify-center gap-2">
+                              {[...Array(4)].map((_, btnIndex) => (
+                                <Skeleton.Button
+                                  key={`btn-${rowIndex}-${btnIndex}`}
+                                  active
+                                  style={{ width: 32, height: 32 }}
+                                  className="rounded-md"
+                                />
+                              ))}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               ) : (
                 <div className="rounded-xl overflow-hidden border border-primary-10 shadow-sm overflow-x-auto cus-scrollbar">
                   <table className="w-full min-w-[600px] border-collapse">

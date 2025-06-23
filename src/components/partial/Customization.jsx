@@ -11,7 +11,7 @@ import Image from 'next/image';
 import { useDispatch, useSelector } from 'react-redux';
 import { dark_version, font_jura, font_mali, font_mulish, font_quicksand, light_version, profile_av, rtl_version } from '@/assets/images';
 import toast from 'react-hot-toast';
-import { postCustomizationRequest, resetCustomization } from '@/Redux/features/customization/customizationSlice';
+import { fetchCustomizationRequest, postCustomizationRequest, resetCustomization } from '@/Redux/features/customization/customizationSlice';
 import { useFavicon } from '../utils/useFavicon';
 
 const CustomizationSettings = (props) => {
@@ -322,7 +322,7 @@ const CustomizationSettings = (props) => {
     //     }
     // }, [customizations, token, dispatch]);
 
-    const handleSubmit = useCallback(async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             // Create the customizations object with all settings
@@ -354,6 +354,8 @@ const CustomizationSettings = (props) => {
                 data: { customizations: customizationsPayload },
                 token
             }));
+            dispatch(fetchCustomizationRequest('000001'));
+
         } catch (err) {
             console.error("Error submitting data:", err);
             toast.error(err?.message || "Failed to submit data. Please try again.", {
@@ -361,7 +363,7 @@ const CustomizationSettings = (props) => {
                 duration: 2000,
             });
         }
-    }, [localCustomizations, dynamicColorItem, token, dispatch]);
+    };
 
     const handleReset = () => {
         dispatch(resetCustomization());
@@ -455,7 +457,7 @@ const CustomizationSettings = (props) => {
                         <input
                             type="text"
                             id="font_url"
-                            value={localCustomizations?.schoolName}
+                            value={localCustomizations?.schoolName || ''}
                             onChange={(e) => {
                                 const words = e.target.value.trim().split(/\s+/);
                                 // Limit to 20 words (adjust the number as needed)

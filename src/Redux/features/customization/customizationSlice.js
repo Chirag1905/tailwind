@@ -49,7 +49,7 @@ export const customizationSlice = createSlice({
     },
     fetchCustomizationSuccess: (state, action) => {
       const customData = action.payload;
-      console.log(customData, "customdata")
+      // console.log(customData, "customdata")
       state.customizationData = customData && Object.keys(customData).length > 0
         ? customData
         : defaultSettings;
@@ -65,7 +65,6 @@ export const customizationSlice = createSlice({
       state.error = null;
     },
     postCustomizationSuccess: (state, action) => {
-      state.customizationData = action.payload;
       state.loading = false;
       state.error = null;
     },

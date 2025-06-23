@@ -1,6 +1,3 @@
-import "./globals.css";
-import "@/assets/css/main.css";
-import "@/assets/css/font.css";
 import ClientProvider from "./ClientProvider";
 
 export const metadata = {
