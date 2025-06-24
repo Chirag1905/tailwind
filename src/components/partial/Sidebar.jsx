@@ -113,7 +113,7 @@ export default function Sidebar(props) {
           children: [
             { link: 'Academic Years', url: '/academicsManagement/academicYear' },
             { icon: IconCertificate, link: 'Course', url: '/academicsManagement/course' },
-            { link: 'Application Form', url: '/academicsManagement/applicationForm' }
+            { link: 'Create Form', url: '/academicsManagement/createForm' }
           ],
         },
       ],

@@ -70,8 +70,8 @@ export default function Header({ toggleMobileNav, mobileNav, toggleNote, toggleC
         }
     }, [customizationData])
     
-    console.log("Redux State", customizationData?.customizationData)
-    console.log("Local State", localCustomizations)
+    // console.log("Redux State", customizationData?.customizationData)
+    // console.log("Local State", localCustomizations)
 
 
     // useEffect(() => {

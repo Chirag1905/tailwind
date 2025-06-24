@@ -30,7 +30,7 @@ import { useRouter } from 'next/navigation';
 import { Empty, Select, Skeleton } from 'antd';
 import { getActiveAcademicYearRequest, setSelectedAcademicYear } from '@/Redux/features/academicYear/academicYearSlice';
 import SingleCourseRegister from './registerCourse/_components/SingleCourseRegister';
-import CreateForm from '../../CreateForm/page';
+import CreateForm from '../createForm/page';
 
 const CourseListPage = () => {
   // Constants

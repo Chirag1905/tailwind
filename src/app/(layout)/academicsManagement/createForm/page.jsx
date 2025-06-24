@@ -99,7 +99,7 @@
 //                   </div>
 //                 ))}
 //               </div>
-              
+
 //               {selectedFormId && (
 //                 <div className="mt-6 border-t pt-4">
 //                   <h3 className="font-medium mb-2">Preview:</h3>
@@ -264,7 +264,7 @@
 'use client';
 import { IconArrowLeft, IconArrowRight, IconSettings, IconTrash } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
-import ApplicationForm from '../academicsManagement/applicationForm/page';
+import ApplicationForm from '../applicationForm/page';
 import CustomForm from './_components/CustomForm';
 
 const CreateForm = (props) => {
@@ -333,11 +333,10 @@ const CreateForm = (props) => {
                   <div
                     key={form.id}
                     onClick={() => setSelectedFormId(form.id)}
-                    className={`p-4 border rounded-lg cursor-pointer transition-all relative ${
-                      selectedFormId === form.id 
-                        ? 'border-primary bg-blue-50 ring-2 ring-primary' 
-                        : 'border-gray-200 hover:border-blue-300'
-                    }`}
+                    className={`p-4 border rounded-lg cursor-pointer transition-all relative ${selectedFormId === form.id
+                      ? 'border-primary bg-blue-50 ring-2 ring-primary'
+                      : 'border-gray-200 hover:border-blue-300'
+                      }`}
                   >
                     {selectedFormId === form.id && (
                       <div className="absolute -top-2 -right-2 bg-primary text-white rounded-full p-1">
@@ -364,14 +363,14 @@ const CreateForm = (props) => {
                       <p>Sections: {Object.values(form.config.sections).filter(s => s.enabled).length}</p>
                       <p>Fields: {
                         Object.values(form.config.sections)
-                          .reduce((total, section) => 
+                          .reduce((total, section) =>
                             total + Object.values(section.fields).filter(f => f.enabled).length, 0)
                       }</p>
                     </div>
                   </div>
                 ))}
               </div>
-              
+
               {selectedFormId && (
                 <div className="mt-6 border-t pt-4">
                   <h3 className="font-medium mb-2">Preview:</h3>
@@ -386,9 +385,9 @@ const CreateForm = (props) => {
               <p className="text-gray-500">No saved forms available</p>
               <button
                 onClick={() => setSelectedCard(2)}
-                className="mt-4 px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark"
+                className="mt-4 btn btn-primary"
               >
-                Create New Form
+                <IconSettings size={18} /> Create New Form
               </button>
             </div>
           )}
@@ -412,7 +411,7 @@ const CreateForm = (props) => {
           <p className="text-gray-600 mb-6">Configure your own form by selecting which sections and fields to include</p>
           <button
             onClick={() => setShowFormBuilder(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors"
+            className="mt-4 btn btn-primary"
           >
             <IconSettings size={18} /> Configure Form
           </button>
@@ -451,18 +450,17 @@ const CreateForm = (props) => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className="w-full mx-auto p-6">
       <h1 className="text-3xl font-bold text-primary mb-8">Form Template Management</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         {cards?.map((card) => (
           <div
             key={card.id}
             onClick={() => handleCardClick(card.id)}
-            className={`py-4 px-7 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
-              selectedCard === card.id
-                ? 'border-blue-500 bg-blue-50 scale-[1.02] shadow-lg'
-                : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
-            }`}
+            className={`py-4 px-7 rounded-xl border-2 cursor-pointer transition-all duration-200 ${selectedCard === card.id
+              ? 'border-blue-500 bg-blue-50 scale-[1.02] shadow-lg'
+              : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+              }`}
           >
             <div className="flex items-center justify-between mb-4">
               <div className="text-primary">{card.icon}</div>
