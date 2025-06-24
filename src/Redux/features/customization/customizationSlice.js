@@ -35,6 +35,8 @@ const defaultSettings = {
 
 const initialState = {
   customizationData: defaultSettings,
+  customizationPostData: false,
+  customizationResetData: false,
   loading: false,
   error: null
 };
@@ -50,7 +52,7 @@ export const customizationSlice = createSlice({
     fetchCustomizationSuccess: (state, action) => {
       const customData = action.payload;
       // console.log(customData, "customdata")
-      state.customizationData = customData && Object.keys(customData).length > 0
+      state.customizationData = customData
         ? customData
         : defaultSettings;
       state.loading = false;
@@ -61,19 +63,23 @@ export const customizationSlice = createSlice({
       state.error = action.payload;
     },
     postCustomizationRequest: (state) => {
+      state.customizationPostData = false;
       state.loading = true;
       state.error = null;
     },
     postCustomizationSuccess: (state, action) => {
+      state.customizationPostData = true;
       state.loading = false;
       state.error = null;
     },
     postCustomizationFailure: (state, action) => {
+      state.customizationPostData = false;
       state.loading = false;
       state.error = action.payload;
     },
     resetCustomization: (state) => {
       state.customizationData = defaultSettings;
+      state.customizationResetData = true;
     },
   },
 });
@@ -89,19 +95,3 @@ export const {
 } = customizationSlice.actions;
 
 export default customizationSlice.reducer;
-
-
-// curl --location 'https://api.testmazing.com/utils/realmSettings/download' \
-// --header 'Content-Type: application/json' \
-// --data '{
-//     "realmName": "master"
-// }'
-
-// curl --location 'https://api.testmazing.com/utils/realmSettings/upload' \
-// --header 'Content-Type: application/json' \
-// --header 'Authorization: Bearer <token>’ \
-// --data '{
-//     "username": "erp-admin",
-//     "clientId": "admin-cli",
-//     "realmName": "master"
-// }'

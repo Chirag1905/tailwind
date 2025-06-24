@@ -59,27 +59,24 @@ import CustomizationSettings from './Customization';
 
 export default function Header({ toggleMobileNav, mobileNav, toggleNote, toggleChat }) {
     const dispatch = useDispatch();
-      // Settings sidebar
+    // Settings sidebar
     const [settingToggle, setSettingToggle] = useState(false)
     const customizationData = useSelector((state) => state.customization);
     const [localCustomizations, setLocalCustomizations] = useState(customizationData?.customizationData);
-    console.log("Redux State", customizationData)
+
+    useEffect(() => {
+        if(customizationData){
+            setLocalCustomizations(customizationData?.customizationData)
+        }
+    }, [customizationData])
+    
+    console.log("Redux State", customizationData?.customizationData)
     console.log("Local State", localCustomizations)
 
-    useEffect(() => {
-        // Initialize local customizations from Redux state
-        console.log("🚀 ~ useEffect ~ customizationData?.customizationData?.customizations:", customizationData?.customizationData)
-        if (customizationData?.customizationData?.customizations) {
-            setLocalCustomizations(customizationData?.customizationData?.customizations);
-        } 
-        if(!customizationData) {
-            setLocalCustomizations(customizationData?.customizationData);
-        }
-    }, [customizationData]);
 
-    useEffect(() => {
-        dispatch(fetchCustomizationRequest('000001'));
-    }, [dispatch]);
+    // useEffect(() => {
+    //     dispatch(fetchCustomizationRequest('000001'));
+    // }, [dispatch]);
 
     // Search bar open
     const [searchBar, setSearchBar] = useState(false);
@@ -103,7 +100,7 @@ export default function Header({ toggleMobileNav, mobileNav, toggleNote, toggleC
         }
     };
 
-  
+
     const toggleThemeSetting = () => {
         setSettingToggle(!settingToggle)
         document.body.classList.toggle("overflow-hidden", !settingToggle)
@@ -513,7 +510,6 @@ export default function Header({ toggleMobileNav, mobileNav, toggleNote, toggleC
                 {settingToggle &&
                     <CustomizationSettings
                         settingToggle={settingToggle}
-                        customizationData={customizationData}
                         localCustomizations={localCustomizations}
                         setLocalCustomizations={setLocalCustomizations}
                         toggleThemeSetting={toggleThemeSetting}

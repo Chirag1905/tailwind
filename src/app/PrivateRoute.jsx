@@ -1,6 +1,7 @@
 'use client';
 import { useLogout } from '@/components/utils/useLogout';
 import { clearAuthState, forgotPassSuccess, permanentPassSuccess, refreshTokenSuccess, signOutSuccess } from '@/Redux/features/auth/authSlice';
+import { fetchCustomizationRequest } from '@/Redux/features/customization/customizationSlice';
 import { IconArrowBigRightLine, IconLock } from '@tabler/icons-react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
@@ -55,6 +56,11 @@ const PrivateRoute = ({ children }) => {
   const publicPages = ['/signIn', '/signUp', '/forgotPassword', '/resetPassword'];
   const isPublicPage = publicPages.includes(pathname);
   const isSetPasswordPage = pathname === '/setPermanentPassword';
+  const { customizationPostData } = useSelector((state) => state.customization);
+
+  useEffect(() => {
+    dispatch(fetchCustomizationRequest('000001'));
+  }, [customizationPostData]);
 
   // Sign in Page 
   useEffect(() => {

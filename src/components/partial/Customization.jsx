@@ -16,7 +16,6 @@ import { useFavicon } from '../utils/useFavicon';
 
 const CustomizationSettings = (props) => {
     const {
-        customizationData,
         localCustomizations,
         setLocalCustomizations,
         settingToggle,
@@ -24,23 +23,18 @@ const CustomizationSettings = (props) => {
         toggleDarkMode
     } = props;
     const dispatch = useDispatch();
+    const { customizationData, customizationPostData, customizationResetData } = useSelector((state) => state.customization);
     const token = useSelector((state) => state.auth.token);
 
     useEffect(() => {
         if (localCustomizations) {
-            try {
-                setLocalCustomizations({
-                    ...customizationData,
-                    ...localCustomizations,
-                    dynamicFont: {
-                        fontUrl: localCustomizations.dynamicFont?.fontUrl || "",
-                        fontLink: localCustomizations.dynamicFont?.fontLink || ""
-                    }
-                });
-            } catch (error) {
-                console.error("Failed to parse customizations from localStorage:", error);
-                setLocalCustomizations(customizationData);
-            }
+            setLocalCustomizations({
+                ...localCustomizations,
+                dynamicFont: {
+                    fontUrl: localCustomizations.dynamicFont?.fontUrl || "",
+                    fontLink: localCustomizations.dynamicFont?.fontLink || ""
+                }
+            });
         }
     }, []);
 
@@ -283,7 +277,6 @@ const CustomizationSettings = (props) => {
         }));
     };
 
-
     useEffect(() => {
         document.body.style.setProperty("--font-family", localCustomizations.fontFamily);
     }, [localCustomizations.fontFamily]);
@@ -309,19 +302,6 @@ const CustomizationSettings = (props) => {
         });
     }
 
-    // const handleSubmit = useCallback(async (e) => {
-    //     e.preventDefault();
-    //     try {
-    //         dispatch(postCustomizationRequest({ data: customizations, token }));
-    //     } catch (err) {
-    //         console.error("Error submitting data:", err);
-    //         toast.error(err?.message || "Failed to submit data. Please try again.", {
-    //             position: "top-right",
-    //             duration: 2000,
-    //         });
-    //     }
-    // }, [customizations, token, dispatch]);
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -346,16 +326,7 @@ const CustomizationSettings = (props) => {
                     return acc;
                 }, {})
             };
-
-            console.log("🚀 ~ handleSubmit ~ customizations:", customizationsPayload);
-
-            // Pass as { customizations: {...} } object
-            dispatch(postCustomizationRequest({
-                data: { customizations: customizationsPayload },
-                token
-            }));
-            dispatch(fetchCustomizationRequest('000001'));
-
+            dispatch(postCustomizationRequest({ data: customizationsPayload, token }));
         } catch (err) {
             console.error("Error submitting data:", err);
             toast.error(err?.message || "Failed to submit data. Please try again.", {
@@ -365,32 +336,45 @@ const CustomizationSettings = (props) => {
         }
     };
 
+    useEffect(() => {
+        if (customizationPostData) {
+            dispatch(fetchCustomizationRequest('000001'));
+        }
+    }, [customizationPostData]);
+    useEffect(() => {
+        if (customizationResetData) {
+            dispatch(fetchCustomizationRequest('000001'));
+            dispatch(postCustomizationRequest({ data: customizationData, token }));
+        }
+    }, [customizationResetData]);
+
     const handleReset = () => {
         dispatch(resetCustomization());
-        setLocalCustomizations(customizationData?.customizationData);
-        setDynamicColorItem(dynamicColorItem.map(item => ({
-            ...item,
-            colorValue: customizationData?.customizationData?.dynamicColors[item?.label?.toLowerCase().replace(/\s+/g, '')],
-            displayColorPicker: false
-        })));
-        toast.success('Customizations reset to default', { position: 'top-right' });
-        setFavicon('/Techvein_logo.png');
-        document.body.setAttribute("data-swift-theme", customizationData?.customizationData?.theme);
-        document.documentElement.setAttribute('data-theme', customizationData?.customizationData?.darkMode ? 'dark' : 'light');
-        document.documentElement.setAttribute('dir', customizationData?.customizationData?.rtlMode ? 'rtl' : 'ltr');
-        document.body.style.setProperty("--font-family", customizationData?.customizationData?.fontFamily);
-        if (customizationData?.customizationData?.showRadius) {
-            document.body.classList.remove("radius-0");
-        } else {
-            document.body.classList.add("radius-0");
-        }
-        document.querySelectorAll(".card").forEach(card => {
-            if (customizationData?.customizationData?.showShadow) {
-                card.classList.add("shadow-shadow-sm");
-            } else {
-                card.classList.remove("shadow-shadow-sm");
-            }
-        });
+        console.log("🚀 ~ handleReset ~ customizationData:", customizationData)
+        // setLocalCustomizations(customizationData?.customizationData);
+        // setDynamicColorItem(dynamicColorItem.map(item => ({
+        //     ...item,
+        //     colorValue: customizationData?.customizationData?.dynamicColors[item?.label?.toLowerCase().replace(/\s+/g, '')],
+        //     displayColorPicker: false
+        // })));
+        // toast.success('Customizations reset to default', { position: 'top-right' });
+        // setFavicon('/Techvein_logo.png');
+        // document.body.setAttribute("data-swift-theme", customizationData?.customizationData?.theme);
+        // document.documentElement.setAttribute('data-theme', customizationData?.customizationData?.darkMode ? 'dark' : 'light');
+        // document.documentElement.setAttribute('dir', customizationData?.customizationData?.rtlMode ? 'rtl' : 'ltr');
+        // document.body.style.setProperty("--font-family", customizationData?.customizationData?.fontFamily);
+        // if (customizationData?.customizationData?.showRadius) {
+        //     document.body.classList.remove("radius-0");
+        // } else {
+        //     document.body.classList.add("radius-0");
+        // }
+        // document.querySelectorAll(".card").forEach(card => {
+        //     if (customizationData?.customizationData?.showShadow) {
+        //         card.classList.add("shadow-shadow-sm");
+        //     } else {
+        //         card.classList.remove("shadow-shadow-sm");
+        //     }
+        // });
     };
 
     return (
@@ -596,7 +580,7 @@ const CustomizationSettings = (props) => {
                                         <div className='absolute z-[2]'>
                                             <div onClick={() => handleCloseDynamicColor(index)} className='fixed top-0 right-0 bottom-0 left-0' />
                                             <ChromePicker color={item?.colorValue} onChange={(newColor) => handleChangeDynamicColor(newColor, index)} />
-                                         </div>
+                                        </div>
                                     )}
                                 </li>
                             ))}
