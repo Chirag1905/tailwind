@@ -219,11 +219,11 @@ const CourseListPage = () => {
   return (
     <>
       <div>
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 md:gap-0">
+        <div className="flex flex-col md:flex-col lg:flex-row justify-between items-start md:items-start lg:items-center gap-2 md:gap-0">
           <Breadcrumb breadcrumbItem={breadcrumbItem} />
           <button
             onClick={modalHandlers.create.open}
-            className="flex gap-1 btn btn-light-primary w-full md:w-auto"
+            className="flex gap-1 btn btn-light-primary w-full md:w-full lg:w-auto"
           >
             <IconPlus />
             <span className="block">Register New Course</span>
@@ -272,12 +272,12 @@ const CourseListPage = () => {
         <>
           <div className="pt-6 md:pt-7 px-5 sm:px-6 md:px-0 bg-card-color border rounded-xl shadow-xl">
             {/* Header Section */}
-            <div className="flex flex-col px-5 md:mx-6 md:flex-row justify-between items-start md:items-center">
+            <div className="flex flex-col md:flex-col md:mx-10 lg:flex-row justify-between items-start md:items-start gap-1 lg:items-center">
               <h5 className="text-lg sm:text-xl font-medium">
                 Courses Listing
               </h5>
               {/* Search Input */}
-              <div className='flex w-auto gap-3'>
+              <div className='flex flex-col md:flex-col lg:flex-row w-full lg:w-auto gap-3'>
                 <div className='w-full bg-card-color rounded-xl form-control flex'>
                   <input
                     type="text"
@@ -291,7 +291,7 @@ const CourseListPage = () => {
                     <IconSearch className='w-[20px] h-[20px]' />
                   </button>
                 </div>
-                <div className='flex w-1/2'>
+                <div className='w-full lg:w-1/2'>
                   <Select
                     value={selectedAcademicYear}
                     onChange={(value) => handleChange(value)}
@@ -324,7 +324,7 @@ const CourseListPage = () => {
                     ))}
                   </Select>
                 </div>
-                <div className='flex w-full'>
+                <div className='w-full'>
                   <button
                     onClick={() => router.push("/academicsManagement/course/registerCourse")}
                     className="flex btn btn-light-primary w-full"

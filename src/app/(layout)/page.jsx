@@ -162,7 +162,7 @@ export default function Analysis() {
               <div className="md:p-6 p-4 mt-[12px] border-b border-dashed border-border-color">
                 <div className="flex items-center justify-between gap-[5px] mt-2 mb-2">
                   <p>NEW EMPLOYEE</p>
-                  <IconUserScan className="stroke-primary stroke-[1.5] w-[32px] h-[32px]" />
+                  <IconUserScan className=" stroke-[1.5] w-[32px] h-[32px] " />
                 </div>
                 <div className="flex items-end gap-1 mb-4">
                   <span className="inline-block text-[24px]/[30px] font-medium">51</span>
@@ -184,14 +184,14 @@ export default function Analysis() {
               <div className="md:p-6 p-4 mt-[12px] border-b border-dashed border-border-color">
                 <div className="flex items-center justify-between gap-[5px] mb-2">
                   <p>EXPENSE</p>
-                  <IconCreditCard className="stroke-primary stroke-[1.5] w-[32px] h-[32px]" />
+                  <IconCreditCard className="stroke-[1.5] w-[32px] h-[32px]" />
                 </div>
                 <div className="flex items-end gap-1 mb-4">
                   <span className="inline-block text-[24px]/[30px] font-medium">$3,251</span>
                   <IconCornerRightUp className="stroke-font-color-100 w-[18px] h-[18px]" />
                   <span className="text-font-color-100 text-[14px]/[20px]">13%</span>
                 </div>
-                <div className="progress overflow-hidden h-[2px] bg-border-color rounded-full">
+                <div className="progress overflow-hidden h-[2px] bg-border-color rounded-full mt-6">
                   <div className="progress-bar w-[13%] bg-primary h-full"></div>
                 </div>
               </div>
@@ -210,7 +210,7 @@ export default function Analysis() {
               <div className="md:p-6 p-4 mt-[12px] border-b border-dashed border-border-color">
                 <div className="flex items-center justify-between gap-[5px] mb-2">
                   <p>REVENUE</p>
-                  <IconCash className="stroke-primary stroke-[1.5] w-[32px] h-[32px]" />
+                  <IconCash className="stroke-[1.5] w-[32px] h-[32px]" />
                 </div>
                 <div className="flex items-end gap-1 mb-4">
                   <span className="inline-block text-[24px]/[30px] font-medium">$18,925</span>
@@ -232,7 +232,7 @@ export default function Analysis() {
               <div className="md:p-6 p-4 mt-[12px] border-b border-dashed border-border-color">
                 <div className="flex items-center justify-between gap-[5px] mb-2">
                   <p>NEW LEADS</p>
-                  <IconBriefcase className="stroke-primary stroke-[1.5] w-[32px] h-[32px]" />
+                  <IconBriefcase className="stroke-[1.5] w-[32px] h-[32px]" />
                 </div>
                 <div className="flex items-end gap-1 mb-4">
                   <span className="inline-block text-[24px]/[30px] font-medium">125</span>
@@ -285,7 +285,7 @@ export default function Analysis() {
               <div className="border-b border-dashed border-border-color md:p-6 p-4">
                 <div className="font-semibold md:mb-6 mb-4">My Wallet</div>
                 <p className="md:text-[24px]/[30px] text-[20px]/[26px] font-medium md:mb-2">0.0386245 BTC</p>
-                <p>Available BTC <Link href="#" className="text-primary transition-all hover:text-secondary">View Account</Link></p>
+                <p>Available BTC <Link href="#" className="text-blue-400 transition-all hover:text-secondary ml-3 underline">View Account</Link></p>
                 <div className="mt-6">
                   <span className="uppercase text-[14px]/[20px] text-font-color-100">BUY THIS MONTH</span>
                   <p className="md:text-[20px]/[26px] font-medium">3.0675432 BTC</p>

@@ -92,7 +92,7 @@
     --color-font-color-200: #EEEEEE;
     --color-font-color-400: #BDBDBD;
     --color-card-color: #ffffff;
-    --color-border-color: #e7e7e7;
+    --color-border-color: #303030;
     --color-scrollbar-thumb: #b9b9b9;
 
     --color-primary: #0d6efd;
@@ -122,7 +122,7 @@
     --color-font-color-200: #EEEEEE;
     --color-font-color-400: #BDBDBD;
     --color-card-color: #ffffff;
-    --color-border-color: #e7e7e7;
+    --color-border-color: #b8b8b8;
     --color-scrollbar-thumb: #b9b9b9;
 }
 
@@ -574,6 +574,7 @@ body .react-data-table.striped .rdt_TableCol:not(:last-of-type) {
 .form-control .form-textarea::placeholder {
     opacity: 0.5;
 }
+
 
 .form-control .form-input:focus,
 .form-control .form-textarea:focus {
