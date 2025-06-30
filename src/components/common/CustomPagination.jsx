@@ -10,10 +10,10 @@ const CustomPagination = ({ page, totalPages, handleChange, totalElements, rowsP
         styleOverrides: {
           root: {
             '&.Mui-selected': {
-              backgroundColor: 'var(--primary)',
+              backgroundColor: 'var(--color-primary)',
               color: 'white',
               '&:hover': {
-               backgroundColor: 'var(--primary)',
+               backgroundColor: 'var(--color-primary)',
               },
             },
           },

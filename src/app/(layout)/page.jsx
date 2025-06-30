@@ -251,7 +251,7 @@ export default function Analysis() {
         {/* Group 3: Swift Revenue and Sales by Category */}
         <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
           {dashboardCards.find(card => card.title === "SWIFT Revenue") && (
-            <div className="card rounded-xl bg-card-color relative">
+            <div className="rounded-xl bg-card-color relative">
               <button onClick={() => removeCardFromDashboard(dashboardCards.find(card => card.title === "SWIFT Revenue").id)} className="absolute top-2 right-2 p-1 text-red-500 hover:text-red-700">
                 <IconX className="w-[18px] h-[18px]" />
               </button>
@@ -324,7 +324,7 @@ export default function Analysis() {
                   <span>100%</span>
                 </div>
               </div>
-              <div className="overflow-x-auto border-t border-border-color mt-auto">
+              <div className="overflow-x-auto cus-scrollbar border-t border-border-color mt-auto">
                 <table className="w-full min-w-[500px]">
                   <tbody>
                     <tr>

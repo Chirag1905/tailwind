@@ -12,7 +12,7 @@ dayjs.extend(customParseFormat);
 const dateFormat = ['DD/MM/YYYY', 'DD/MM/YY', 'DD-MM-YYYY', 'DD-MM-YY'];
 const { Panel } = Collapse;
 
-const ApplicationForm = ({ config }) => {
+const ApplicationForm = ({ config }) => {                               
   const [expandedSections, setExpandedSections] = useState([]);
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
@@ -384,7 +384,7 @@ const ApplicationForm = ({ config }) => {
           </svg>
         </button>
 
-        <div className={`bg-body-color transition-all duration-300 overflow-hidden ${expandedSections.includes(index) ? 'max-h-[500px] overflow-y-auto py-4' : 'max-h-0'}`}>
+        <div className={`bg-body-color transition-all duration-300 overflow-hidden ${expandedSections.includes(index) ? 'max-h-[500px] overflow-y-auto cus-scrollbar py-4' : 'max-h-0'}`}>
           <div className="px-4 md:px-6 grid grid-cols-1 md:grid-cols-2 gap-4">
             {Object.entries(section.fields).map(([fieldKey, field]) => (
               renderField(fieldKey, field, sectionKey)
