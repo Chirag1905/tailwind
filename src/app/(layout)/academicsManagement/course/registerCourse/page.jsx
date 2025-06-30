@@ -4,11 +4,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { IconSquareRoundedX, IconSquareRoundedCheck } from '@tabler/icons-react';
 import toast from 'react-hot-toast';
 import { getCourseRegisterRequest, postCourseRegisterFailure, postCourseRegisterRequest, postCourseRegisterSuccess, updateCourseRegisterRequest } from '@/Redux/features/courseRegister/courseRegisterSlice';
-import { DatePicker, Empty } from 'antd';
+import { DatePicker, Empty, Select } from 'antd';
 import dayjs from 'dayjs';
 import LoadingSpinner from '@/components/utils/LoadingSpinner';
 import { useRouter } from 'next/navigation';
 import Breadcrumb from '@/components/common/Breadcrumb';
+import { getActiveAcademicYearRequest, setSelectedAcademicYear } from '@/Redux/features/academicYear/academicYearSlice';
 const { RangePicker } = DatePicker;
 
 const RegisterCourse = () => {
@@ -22,6 +23,7 @@ const RegisterCourse = () => {
     const dispatch = useDispatch();
     const { courseRegisterData, courseRegisterPostData, loading, error } = useSelector((state) => state.courseRegister);
     const selectedAcademicYear = useSelector((state) => state.academicYear.selectedAcademicYear);
+    const { activeAcademicYearData } = useSelector((state) => state.academicYear);
     const { token } = useSelector((state) => state.auth);
 
     // Component state
@@ -29,6 +31,29 @@ const RegisterCourse = () => {
     const [selectAll, setSelectAll] = useState(false);
     const [errors, setErrors] = useState({});
     const fieldRefs = useRef({});
+
+    const [academicYears, setAcademicYears] = useState();
+
+    useEffect(() => {
+        if (activeAcademicYearData) {
+            setAcademicYears(activeAcademicYearData?.data || []);
+        }
+        // Optionally set the first academic year as default if none is selected
+        if (activeAcademicYearData?.data?.length > 0 && !selectedAcademicYear) {
+            dispatch(setSelectedAcademicYear(activeAcademicYearData.data[0].id));
+        }
+    }, [activeAcademicYearData, selectedAcademicYear, dispatch]);
+
+    // Effect for data update
+    useEffect(() => {
+        if (token) {
+            dispatch(getActiveAcademicYearRequest({ token }));
+        }
+    }, [dispatch, token]);
+
+    const handleChangeYear = (value) => {
+        dispatch(setSelectedAcademicYear(value));
+    };
 
     // Effect for data update - automatically select rows where isActive is true
     useEffect(() => {
@@ -273,6 +298,42 @@ const RegisterCourse = () => {
                     <h5 className="text-lg sm:text-xl font-medium">
                         Registration Courses Lists
                     </h5>
+                    <div className='flex gap-4'>
+                        <span className='items-center mt-2'>Select Academic Year:</span>
+                        <div className='w-[130px]'>
+                            <Select
+                                value={selectedAcademicYear}
+                                onChange={(value) => handleChangeYear(value)}
+                                className="w-full"
+                                placeholder="Academic Year"
+                                showSearch={true}
+                                filterOption={(input, option) =>
+                                    (option?.children ?? '')
+                                        .toString()
+                                        .toLowerCase()
+                                        .includes(input.toLowerCase())
+                                }
+                                optionFilterProp="children"
+                                suffixIcon={
+                                    <svg
+                                        className="w-5 h-5 mt-2 text-primary"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                }
+                            >
+                                {academicYears?.map((item) => (
+                                    <Select.Option key={item.id} value={item.id}>
+                                        {item.academicYearName}
+                                    </Select.Option>
+                                ))}
+                            </Select>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Content Section */}
@@ -378,14 +439,15 @@ const RegisterCourse = () => {
                                                             />
                                                         </div>
                                                     </td>
-                                                    <td className="py-4 px-4 md:px-6 text-center border-r border-primary-10 w-[320px]" ref={el => {
-                                                        if (!fieldRefs.current[index]) fieldRefs.current[index] = {};
-                                                        fieldRefs.current[index].dateRange = { current: el };
-                                                    }}>
+                                                    <td className="py-4 px-4 md:px-6 text-center border-r border-primary-10 w-[320px]"
+                                                        ref={el => {
+                                                            if (!fieldRefs.current[index]) fieldRefs.current[index] = {};
+                                                            fieldRefs.current[index].dateRange = { current: el };
+                                                        }}>
                                                         <div className="form-control w-full">
                                                             <RangePicker
                                                                 placeholder={["Start DOB Date", "End DOB Date"]}
-                                                                className= {`w-full ${errors[`dobStartDate_${index}`] ? 'border-red-500' : 'border-gray-300'} border rounded px-2 py-1 text-sm`}
+                                                                className={`w-full ${errors[`dobStartDate_${index}`] ? 'border-red-500' : 'border-gray-300'} border rounded px-2 py-1 text-sm`}
                                                                 onChange={(dates, dateStrings) => handleDateChange(index, dates, dateStrings)}
                                                                 value={getRangePickerValue(index)}
                                                                 allowEmpty

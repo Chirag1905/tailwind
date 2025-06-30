@@ -23,7 +23,6 @@ import CourseCreate from './_components/CourseCreate';
 import CourseEdit from './_components/CourseEdit';
 import CustomPagination from '@/components/common/CustomPagination';
 import useDebounce from '@/components/utils/useDebounce';
-import LoadingSpinner from '@/components/utils/LoadingSpinner';
 import toast from 'react-hot-toast';
 import BatchListPage from '../batch/page';
 import { useRouter } from 'next/navigation';
@@ -46,9 +45,8 @@ const CourseListPage = () => {
   // Redux state
   const dispatch = useDispatch();
   const { courseDataPagination, loading, error } = useSelector((state) => state.course);
-  const { activeAcademicYearData } = useSelector((state) => state.academicYear);
-  // console.log("🚀 ~ CourseListPage ~ activeAcademicYearData:", activeAcademicYearData)
-  const selectedAcademicYear = useSelector(state => state.academicYear.selectedAcademicYear);
+  // const { activeAcademicYearData } = useSelector((state) => state.academicYear);
+  // const selectedAcademicYear = useSelector(state => state.academicYear.selectedAcademicYear);
   const { token } = useSelector((state) => state.auth);
   const { modals } = useSelector((state) => state.modal);
 
@@ -66,28 +64,29 @@ const CourseListPage = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [expandedCourseId, setExpandedCourseId] = useState(null);
 
-  const [academicYears, setAcademicYears] = useState();
+  // const [academicYears, setAcademicYears] = useState();
 
-  useEffect(() => {
-    if (activeAcademicYearData) {
-      setAcademicYears(activeAcademicYearData?.data || []);
-    }
-    // Optionally set the first academic year as default if none is selected
-    if (activeAcademicYearData?.data?.length > 0 && !selectedAcademicYear) {
-      dispatch(setSelectedAcademicYear(activeAcademicYearData.data[0].id));
-    }
-  }, [activeAcademicYearData, selectedAcademicYear, dispatch]);
+  // useEffect(() => {
+  //   if (activeAcademicYearData) {
+  //     setAcademicYears(activeAcademicYearData?.data || []);
+  //   }
+  //   // Optionally set the first academic year as default if none is selected
+  //   if (activeAcademicYearData?.data?.length > 0 && !selectedAcademicYear) {
+  //     dispatch(setSelectedAcademicYear(activeAcademicYearData.data[0].id));
+  //   }
+  // }, [activeAcademicYearData, selectedAcademicYear, dispatch]);
 
-  // Effect for data update
-  useEffect(() => {
-    if (token) {
-      dispatch(getActiveAcademicYearRequest({ token }));
-    }
-  }, [dispatch, token]);
+  // // Effect for data update
+  // useEffect(() => {
+  //   if (token) {
+  //     dispatch(getActiveAcademicYearRequest({ token }));
+  //   }
+  // }, [dispatch, token]);
 
-  const handleChange = (value) => {
-    dispatch(setSelectedAcademicYear(value));
-  };
+  // const handleChange = (value) => {
+  //   dispatch(setSelectedAcademicYear(value));
+  // };
+
   // Toggle accordion
   const toggleAccordion = (courseId) => {
     setExpandedCourseId(expandedCourseId === courseId ? null : courseId);
@@ -291,7 +290,7 @@ const CourseListPage = () => {
                     <IconSearch className='w-[20px] h-[20px]' />
                   </button>
                 </div>
-                <div className='w-full lg:w-1/2'>
+                {/* <div className='w-full lg:w-1/2'>
                   <Select
                     value={selectedAcademicYear}
                     onChange={(value) => handleChange(value)}
@@ -323,7 +322,7 @@ const CourseListPage = () => {
                       </Select.Option>
                     ))}
                   </Select>
-                </div>
+                </div> */}
                 <div className='w-full'>
                   <button
                     onClick={() => router.push("/academicsManagement/course/registerCourse")}

@@ -9,8 +9,9 @@ import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { IconSquareRoundedCheck, IconSquareRoundedX } from "@tabler/icons-react";
-import { DatePicker } from "antd";
+import { DatePicker, Select } from "antd";
 import dayjs from "dayjs";
+import { getActiveAcademicYearRequest, setSelectedAcademicYear } from "@/Redux/features/academicYear/academicYearSlice";
 
 const SingleCourseRegister = (props) => {
   const {
@@ -23,6 +24,7 @@ const SingleCourseRegister = (props) => {
   const dispatch = useDispatch();
   const { singleCourseRegisterData, singleCourseRegisterPostData, loading, error } = useSelector((state) => state.courseRegister);
   const selectedAcademicYear = useSelector((state) => state.academicYear.selectedAcademicYear);
+  const { activeAcademicYearData } = useSelector((state) => state.academicYear);
   const { token } = useSelector((state) => state.auth);
 
   // Component state
@@ -37,6 +39,7 @@ const SingleCourseRegister = (props) => {
     dobEndDate: null
   });
   console.log("🚀 ~ SingleCourseRegister ~ data:", data)
+  console.log("🚀 ~ SingleCourseRegister ~ data:", data.dobStartDate)
 
   const [errors, setErrors] = useState({});
   const fieldRefs = useRef({
@@ -47,13 +50,49 @@ const SingleCourseRegister = (props) => {
     isActive: null
   });
 
+  const [academicYears, setAcademicYears] = useState();
+
+  useEffect(() => {
+    if (activeAcademicYearData) {
+      setAcademicYears(activeAcademicYearData?.data || []);
+    }
+    // Optionally set the first academic year as default if none is selected
+    if (activeAcademicYearData?.data?.length > 0 && !selectedAcademicYear) {
+      dispatch(setSelectedAcademicYear(activeAcademicYearData.data[0].id));
+    }
+  }, [activeAcademicYearData, selectedAcademicYear, dispatch]);
+
+  // Effect for data update
+  useEffect(() => {
+    if (token) {
+      dispatch(getActiveAcademicYearRequest({ token }));
+    }
+  }, [dispatch, token]);
+
+  const handleChangeYear = (value) => {
+    dispatch(setSelectedAcademicYear(value));
+  };
 
   // Effect for data update - automatically select rows where isActive is true
+  // useEffect(() => {
+  //   if (singleCourseRegisterData) {
+  //     setData(prev => ({
+  //       ...prev, // keep defaults
+  //       ...singleCourseRegisterData?.data // apply loaded data
+  //     }));
+  //   }
+  // }, [singleCourseRegisterData]);
+
+  // In your useEffect where you set the initial data
   useEffect(() => {
     if (singleCourseRegisterData) {
+      const loadedData = singleCourseRegisterData?.data || {};
       setData(prev => ({
-        ...prev, // keep defaults
-        ...singleCourseRegisterData?.data // apply loaded data
+        ...prev,
+        ...loadedData,
+        // Convert string dates to Day.js objects
+        dobStartDate: loadedData.dobStartDate ? dayjs(loadedData.dobStartDate, 'DD-MM-YYYY') : null,
+        dobEndDate: loadedData.dobEndDate ? dayjs(loadedData.dobEndDate, 'DD-MM-YYYY') : null
       }));
     }
   }, [singleCourseRegisterData]);
@@ -93,8 +132,7 @@ const SingleCourseRegister = (props) => {
 
   // Handle date change for AntD DatePicker
   const handleDateChange = (name, date) => {
-    const dateString = date ? date.format('YYYY-MM-DD') : '';
-    handleChange(name, dateString);
+    handleChange(name, date); // Store the Day.js object directly
   };
 
   const handleSubmit = async (e) => {
@@ -206,9 +244,48 @@ const SingleCourseRegister = (props) => {
 
   return (
     <div className='py-6 px-4 md:py-9 md:px-10 bg-card-color rounded-xl border'>
-      <h5 className='text-lg md:text-[20px]/[30px] font-medium ml-2 md:ml-6 mb-2'>
-        Register Your Course
-      </h5>
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+        <h5 className='text-lg md:text-[20px]/[30px] font-medium ml-2 md:ml-6 mb-2'>
+          Register Your Course
+        </h5>
+        <div className='flex gap-4'>
+          <span className='items-center mt-2'>Select Academic Year:</span>
+          <div className='w-[130px]'>
+            <Select
+              value={selectedAcademicYear}
+              onChange={(value) => handleChangeYear(value)}
+              className="w-full"
+              placeholder="Academic Year"
+              showSearch={true}
+              filterOption={(input, option) =>
+                (option?.children ?? '')
+                  .toString()
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              optionFilterProp="children"
+              suffixIcon={
+                <svg
+                  className="w-5 h-5 mt-2 text-primary"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              }
+            >
+              {academicYears?.map((item) => (
+                <Select.Option key={item.id} value={item.id}>
+                  {item.academicYearName}
+                </Select.Option>
+              ))}
+            </Select>
+          </div>
+        </div>
+      </div>
       <div className="max-w-1xl mx-auto p-4 md:p-6">
         <div className="space-y-4 md:space-y-6">
           <div className="flex flex-col md:flex-row md:space-x-5 space-y-4 md:space-y-0">
@@ -335,12 +412,20 @@ const SingleCourseRegister = (props) => {
                 {/* DOB Start Date */}
                 <div className="w-full relative" ref={fieldRefs.current.dobStartDate}>
                   <div className="floating-form-control">
-                    <label className="form-label">DOB Start Date</label>
-                    <DatePicker
+                    {/* <label className="form-label">DOB Start Date</label> */}
+                    {/* <DatePicker
                       className={`w-full ${errors.dobStartDate ? 'border-red-500' : ''}`}
                       value={data.dobStartDate ? dayjs(data.dobStartDate) : null}
                       onChange={(date) => handleDateChange("dobStartDate", date)}
-                      format="YYYY-MM-DD"
+                      format="DD-MM-YYYY"
+                      placeholder="Select Start Date"
+                    /> */}
+                    <DatePicker
+                      className={`w-full ${errors.dobStartDate ? 'border-red-500' : ''}`}
+                      value={data.dobStartDate}
+                      onChange={(date) => handleDateChange("dobStartDate", date)}
+                      format="DD-MM-YYYY"
+                      placeholder="Select Start Date"
                     />
                   </div>
                   {errors.dobStartDate && (
@@ -351,12 +436,20 @@ const SingleCourseRegister = (props) => {
                 {/* DOB End Date */}
                 <div className="w-full relative" ref={fieldRefs.current.dobEndDate}>
                   <div className="floating-form-control">
-                    <label className="form-label">DOB End Date</label>
-                    <DatePicker
+                    {/* <label className="form-label">DOB End Date</label> */}
+                    {/* <DatePicker
                       className={`w-full ${errors.dobEndDate ? 'border-red-500' : ''}`}
                       value={data.dobEndDate ? dayjs(data.dobEndDate) : null}
                       onChange={(date) => handleDateChange("dobEndDate", date)}
-                      format="YYYY-MM-DD"
+                      format="DD-MM-YYYY"
+                      placeholder="Select End Date"
+                    /> */}
+                    <DatePicker
+                      className={`w-full ${errors.dobEndDate ? 'border-red-500' : ''}`}
+                      value={data.dobEndDate}
+                      onChange={(date) => handleDateChange("dobEndDate", date)}
+                      format="DD-MM-YYYY"
+                      placeholder="Select End Date"
                     />
                   </div>
                   {errors.dobEndDate && (

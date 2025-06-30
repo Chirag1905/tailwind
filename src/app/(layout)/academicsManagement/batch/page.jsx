@@ -10,7 +10,8 @@ import {
   IconCaretUpFilled,
   IconInfoCircle,
   IconCornerDownRightDouble,
-  IconCornerDownRight
+  IconCornerDownRight,
+  IconPencilPlus
 } from '@tabler/icons-react';
 import { closeModal, openModal } from '@/Redux/features/utils/modalSlice';
 import Breadcrumb from '@/components/common/Breadcrumb';
@@ -22,12 +23,13 @@ import useDebounce from '@/components/utils/useDebounce';
 import LoadingSpinner from '@/components/utils/LoadingSpinner';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
-import { Empty, Skeleton } from 'antd';
+import { Empty, Select, Skeleton } from 'antd';
+import { getActiveAcademicYearRequest, setSelectedAcademicYear } from '@/Redux/features/academicYear/academicYearSlice';
 
 const BatchListPage = (props) => {
   const router = useRouter();
   const { courseId } = props;
-  const selectedAcademicYear = useSelector((state) => state.academicYear.selectedAcademicYear);
+  // const selectedAcademicYear = useSelector((state) => state.academicYear.selectedAcademicYear);
   // console.log("Batch Listing Page", selectedAcademicYear)
   // Constants
   const breadcrumbItem = useMemo(() => [{ name: "Batches Management" }], []);
@@ -44,6 +46,9 @@ const BatchListPage = (props) => {
   const { token } = useSelector((state) => state.auth);
   const { modals } = useSelector((state) => state.modal);
 
+  const { activeAcademicYearData } = useSelector((state) => state.academicYear);
+  const selectedAcademicYear = useSelector(state => state.academicYear.selectedAcademicYear);
+
   // Derived modal states
   const isCreateModalOpen = useMemo(() => modals.createBatch.isOpen, [modals.createBatch.isOpen]);
   const isEditModalOpen = useMemo(() => modals.editBatch.isOpen, [modals.editBatch.isOpen]);
@@ -54,6 +59,40 @@ const BatchListPage = (props) => {
   const [isAscending, setIsAscending] = useState(true);
   const [pagination, setPagination] = useState(initialPagination);
   const [selectedItem, setSelectedItem] = useState(null);
+
+
+  const [academicYears, setAcademicYears] = useState();
+
+  useEffect(() => {
+    if (activeAcademicYearData) {
+      setAcademicYears(activeAcademicYearData?.data || []);
+    }
+    // Optionally set the first academic year as default if none is selected
+    if (activeAcademicYearData?.data?.length > 0 && !selectedAcademicYear) {
+      dispatch(setSelectedAcademicYear(activeAcademicYearData.data[0].id));
+    }
+  }, [activeAcademicYearData, selectedAcademicYear, dispatch]);
+
+  useEffect(() => {
+    if (activeAcademicYearData) {
+      setAcademicYears(activeAcademicYearData?.data || []);
+    }
+    // Optionally set the first academic year as default if none is selected
+    if (activeAcademicYearData?.data?.length > 0 && !selectedAcademicYear) {
+      dispatch(setSelectedAcademicYear(activeAcademicYearData.data[0].id));
+    }
+  }, [activeAcademicYearData, selectedAcademicYear, dispatch]);
+
+  // Effect for data update
+  useEffect(() => {
+    if (token) {
+      dispatch(getActiveAcademicYearRequest({ token }));
+    }
+  }, [dispatch, token]);
+
+  const handleChange = (value) => {
+    dispatch(setSelectedAcademicYear(value));
+  };
 
   // Memoized modal handlers
   const modalHandlers = useMemo(() => ({
@@ -162,26 +201,64 @@ const BatchListPage = (props) => {
   return (
     <>
       <div className="flex flex-col md:flex-row justify-end items-start md:items-center gap-2 md:gap-2 mb-4">
-         <div className='w-auto bg-card-color rounded-xl form-control flex'>
-          <input
-            type="text"
-            id="team_board_search"
-            className="form-input !rounded-e-none !py-[6px]"
-            placeholder="Search Batches..."
-            value={searchText}
-            onChange={handleSearch}
-          />
-          <button className="btn border border-border-color !rounded-s-none">
-            <IconSearch className='w-[20px] h-[20px]' />
-          </button>
-        </div>
-        <button
-          onClick={modalHandlers.create.open}
-          className="flex gap-1 btn btn-light-primary w-full md:w-auto"
-        >
-          <IconPlus />
+        {/* Search Input */}
+        <div className='flex flex-col md:flex-col lg:flex-row w-full lg:w-auto gap-3'>
+          <div className='w-full bg-card-color rounded-xl form-control flex'>
+            <input
+              type="text"
+              id="team_board_search"
+              className="form-input !rounded-e-none !py-[6px]"
+              placeholder="Search Batches..."
+              value={searchText}
+              onChange={handleSearch}
+            />
+            <button className="btn border border-border-color !rounded-s-none">
+              <IconSearch className='w-[20px] h-[20px]' />
+            </button>
+          </div>
+          <div className='w-full lg:w-1/2'>
+            <Select
+              value={selectedAcademicYear}
+              onChange={(value) => handleChange(value)}
+              className="w-full"
+              placeholder="Academic Year"
+              showSearch={true}
+              filterOption={(input, option) =>
+                (option?.children ?? '')
+                  .toString()
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              optionFilterProp="children"
+              suffixIcon={
+                <svg
+                  className="w-5 h-5 mt-2 text-primary"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              }
+            >
+              {academicYears?.map((item) => (
+                <Select.Option key={item.id} value={item.id}>
+                  {item.academicYearName}
+                </Select.Option>
+              ))}
+            </Select>
+          </div>
+          <div className='w-full'>
+            <button
+               onClick={modalHandlers.create.open}
+              className="flex btn btn-light-primary w-full"
+            >
+               <IconPlus />
           <span className="block">Register New Batch</span>
-        </button>
+            </button>
+          </div>
+        </div>
       </div>
       {isCreateModalOpen && (
         <BatchCreate
