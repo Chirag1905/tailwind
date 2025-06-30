@@ -26,6 +26,26 @@ const CustomizationSettings = (props) => {
     const { customizationData, customizationPostData, customizationResetData } = useSelector((state) => state.customization);
     const token = useSelector((state) => state.auth.token);
 
+    const handleSave = async () => {
+        const response = await fetch('/api/customization', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(localCustomizations),
+        });
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to save customizations');
+        }
+        const data = await response.json();
+        setLocalCustomizations(data);
+        toast.success('Customizations saved successfully', {
+            position: "top-right",
+            duration: 2000,
+        });
+    };
+
     useEffect(() => {
         if (localCustomizations) {
             setLocalCustomizations({

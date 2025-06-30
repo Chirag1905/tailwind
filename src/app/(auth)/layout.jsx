@@ -5,37 +5,63 @@ import { IconBrandFacebookFilled, IconBrandGithubFilled, IconBrandTwitterFilled,
 import { Techvein_logo, profile_av } from '@/assets/images/';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import { fetchDataRequest } from '@/Redux/features/auth/authSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCustomizationRequest } from '@/Redux/features/customization/customizationSlice';
 
 export default function AuthLayout({ children }) {
+    const {
+        signInLoading,
+        signInData,
+        signInError,
+        fetchDataLoading,
+        fetchData,
+        fetchDataError
+    } = useSelector((state) => state.auth);
+    const { customizationData, customizationPostData, customizationResetData } = useSelector((state) => state.customization);
+    console.log("🚀 ~ AuthLayout ~ customizationData:", customizationData)
+    const dispatch = useDispatch();
+    const [clientParams, setClientParams] = useState({
+        clientId: "",
+        realmName: ""
+    });
 
-    const [customizations, setCustomizations] = useState();
-
-    // Load customizations from localStorage on mount
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            const savedCustomizations = localStorage.getItem('customizations');
-            if (savedCustomizations) {
-                try {
-                    const parsedCustomizations = JSON.parse(savedCustomizations);
-                    if (typeof parsedCustomizations === 'object' && parsedCustomizations !== null) {
-                        setCustomizations({
-                            ...parsedCustomizations,
-                            dynamicFont: {
-                                fontUrl: parsedCustomizations.dynamicFont?.fontUrl || "",
-                                fontLink: parsedCustomizations.dynamicFont?.fontLink || ""
-                            }
-                        });
-                    } else {
-                        throw new Error("Parsed customizations is not a valid object");
-                    }
-                } catch (error) {
-                    console.error("Failed to parse customizations from localStorage:", error);
-                    localStorage.removeItem('customizations');
-                    setCustomizations();
-                }
+        dispatch(fetchDataRequest());
+    }, []);
+
+    // Extract realm name from subdomain and find matching client
+    useEffect(() => {
+        if (typeof window !== 'undefined' && fetchData?.realm_client_mappings?.length > 0) {
+            const currentOrigin = window.location.origin;
+
+            // Skip if localhost (development)
+            if (currentOrigin.includes("localhost")) {
+                setClientParams({ clientId: "000001-fe-client", realmName: "000001" });
+                return;
+            }
+
+            const matchedClient = fetchData?.realm_client_mappings?.find(
+                client => client?.allowed_origins === currentOrigin
+            );
+
+            if (matchedClient) {
+                setClientParams({
+                    clientId: matchedClient?.client_id,
+                    realmName: matchedClient?.realm_name
+                });
+            } else {
+                console.error("No allowed_origins match for:", currentOrigin);
             }
         }
-    }, []);
+    }, [fetchData]);
+
+    useEffect(() => {
+        // Only dispatch if clientParams.realmName is available
+        if (clientParams?.realmName) {
+            dispatch(fetchCustomizationRequest(clientParams.realmName));
+        }
+    }, [dispatch, clientParams?.realmName]);
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-body-color py-4 px-4 sm:px-6">
@@ -45,7 +71,7 @@ export default function AuthLayout({ children }) {
                     <div className="mb-4 sm:mb-6 lg:mb-8">
                         <div className="flex items-center justify-center lg:justify-start gap-3 mb-3 sm:mb-4">
                             <Image
-                                src={customizations?.schoolLogo || profile_av}
+                                src={customizationData?.schoolLogo || profile_av}
                                 // src={profile_av}
                                 alt="Campus Logo"
                                 className="text-primary rounded-full"
@@ -55,29 +81,29 @@ export default function AuthLayout({ children }) {
                                 priority
                             />
                             <span className="text-primary font-bold text-xl sm:text-2xl lg:text-3xl">
-                                {customizations?.schoolName || "Demo School Portal"}
+                                {customizationData?.schoolName || "Demo School Portal"}
                             </span>
                         </div>
 
                         <h2 className="mb-3 sm:mb-4 text-lg sm:text-xl lg:text-2xl font-medium">
-                            {customizations?.heading || "Effortless Control, Powerful Management."}
+                            {customizationData?.heading || "Effortless Control, Powerful Management."}
                         </h2>
 
                         <div className="mb-4 sm:mb-6">
                             <p className="text-base sm:text-lg lg:text-xl mb-1 sm:mb-2 font-medium">
-                                {customizations?.motto || "All-in-One Tool"}
+                                {customizationData?.motto || "All-in-One Tool"}
                             </p>
                             <p className="text-xs text-justify sm:text-sm lg:text-base text-gray-600">
-                                {customizations?.quote || "Welcome to the central hub for managing your Campus & School Management ERP solution. Streamline administration, improve efficiency, and stay organized — all from one place. /n Welcome to the central hub for managing your Campus & School Management ERP solution. Streamline administration, improve efficiency, and stay organized — all from one place."}
+                                {customizationData?.quote || "Welcome to the central hub for managing your Campus & School Management ERP solution. Streamline administration, improve efficiency, and stay organized — all from one place. /n Welcome to the central hub for managing your Campus & School Management ERP solution. Streamline administration, improve efficiency, and stay organized — all from one place."}
                             </p>
                         </div>
 
                         <div className="mb-4 sm:mb-6">
                             <p className="text-base sm:text-lg lg:text-xl mb-1 sm:mb-2 font-medium">
-                                {customizations?.motto2 || "Log in to take full control of your ERP ecosystem."}
+                                {customizationData?.motto2 || "Log in to take full control of your ERP ecosystem."}
                             </p>
                             <p className="text-xs text-justify sm:text-sm lg:text-base text-gray-600">
-                                {customizations?.quote2 || "Built on a robust AWS microservices architecture, this portal empowers SSAS administrators with seamless access to configure, monitor, and support tenant environments in real time.Built on a robust AWS microservices architecture, this portal empowers SSAS administrators with seamless access to configure, monitor, and support tenant environments in real time."}
+                                {customizationData?.quote2 || "Built on a robust AWS microservices architecture, this portal empowers SSAS administrators with seamless access to configure, monitor, and support tenant environments in real time.Built on a robust AWS microservices architecture, this portal empowers SSAS administrators with seamless access to configure, monitor, and support tenant environments in real time."}
                             </p>
                         </div>
 
