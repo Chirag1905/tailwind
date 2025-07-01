@@ -3,7 +3,7 @@ import ClientProvider from "./ClientProvider";
 export const metadata = {
   title: {
     default: 'Campus Portal',
-    template: '%s | Your Site Name'
+    template: '%s | Your Site Name' 
   },
   description: 'Your default site description for SEO',
   icons: {

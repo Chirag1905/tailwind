@@ -6,6 +6,7 @@ import courseReducer from "./features/course/courseSlice";
 import batchReducer from "./features/batch/batchSlice";
 import courseRegisterReducer from "./features/courseRegister/courseRegisterSlice";
 import customizationReducer from "./features/customization/customizationSlice";
+import applicationFormReducer from "./features/applicationForm/applicationFormSlice";
 
 const appReducer = combineReducers({
   auth: authReducer,
@@ -14,7 +15,8 @@ const appReducer = combineReducers({
   course: courseReducer,
   batch: batchReducer,
   courseRegister: courseRegisterReducer,
-  customization: customizationReducer
+  customization: customizationReducer,
+  applicationForm: applicationFormReducer,
 });
 
 const rootReducer = (state, action) => {
