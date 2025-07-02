@@ -97,77 +97,77 @@
     --color-primary: #4C3575;
     --color-primary-10: #4c35751a;
     --color-secondary: #e05170;
-    --chart-color1: #b9b3a8;
-    --chart-color2: #4C3575;
-    --chart-color3: #98427e;
-    --chart-color4: #d55a75;
-    --chart-color5: #fb8665;
+    --color-chart-color1: #b9b3a8;
+    --color-chart-color2: #4C3575;
+    --color-chart-color3: #98427e;
+    --color-chart-color4: #d55a75;
+    --color-chart-color5: #fb8665;
 }
 
 [data-swift-theme="blue"] {
     --color-primary: #1363DF;
     --color-primary-10: #4c35751a;
     --color-secondary: #4FD3C4;
-    --chart-color1: #1363df;
-    --chart-color2: #ff8974;
-    --chart-color3: #ffc25b;
-    --chart-color4: #70afeb;
-    --chart-color5: #4FD3C4;
+    --color-chart-color1: #1363df;
+    --color-chart-color2: #ff8974;
+    --color-chart-color3: #ffc25b;
+    --color-chart-color4: #70afeb;
+    --color-chart-color5: #4FD3C4;
 }
 
 [data-swift-theme="cyan"] {
     --color-primary: #219F94;
     --color-primary-10: #219F941a;
     --color-secondary: #655D8A;
-    --chart-color1: #219F94;
-    --chart-color2: #655D8A;
-    --chart-color3: #C1DEAE;
-    --chart-color4: #FDCEB9;
-    --chart-color5: #D885A3;
+    --color-chart-color1: #219F94;
+    --color-chart-color2: #655D8A;
+    --color-chart-color3: #C1DEAE;
+    --color-chart-color4: #FDCEB9;
+    --color-chart-color5: #D885A3;
 }
 
 [data-swift-theme="green"] {
     --color-primary: #8CBA51;
     --color-primary-10: #8CBA511a;
     --color-secondary: #A1DD70;
-    --chart-color1: #79B989;
-    --chart-color2: #7E8954;
-    --chart-color3: #91A7FB;
-    --chart-color4: #3FBCB8;
-    --chart-color5: #ecbc7c;
+    --color-chart-color1: #79B989;
+    --color-chart-color2: #7E8954;
+    --color-chart-color3: #91A7FB;
+    --color-chart-color4: #3FBCB8;
+    --color-chart-color5: #ecbc7c;
 }
 
 [data-swift-theme="orange"] {
     --color-primary: #FF9234;
     --color-primary-10: #FF92341a;
     --color-secondary: #D8C962;
-    --chart-color1: #FFA600;
-    --chart-color2: #FF8982;
-    --chart-color3: #FFC0B7;
-    --chart-color4: #CF7F00;
-    --chart-color5: #00B4B7;
+    --color-chart-color1: #FFA600;
+    --color-chart-color2: #FF8982;
+    --color-chart-color3: #FFC0B7;
+    --color-chart-color4: #CF7F00;
+    --color-chart-color5: #00B4B7;
 }
 
 [data-swift-theme="blush"] {
     --color-primary: #dd5e89;
     --color-primary-10: #dd5e891a;
     --color-secondary: #f7bb97;
-    --chart-color1: #dd5e89;
-    --chart-color2: #b45d98;
-    --chart-color3: #865e99;
-    --chart-color4: #5b5b8b;
-    --chart-color5: #f7bb97;
+    --color-chart-color1: #dd5e89;
+    --color-chart-color2: #b45d98;
+    --color-chart-color3: #865e99;
+    --color-chart-color4: #5b5b8b;
+    --color-chart-color5: #f7bb97;
 }
 
 [data-swift-theme="red"] {
     --color-primary: #f73859;
     --color-primary-10: #f738591a;
     --color-secondary: #7e52b9;
-    --chart-color1: #FF7171;
-    --chart-color2: #FFAA71;
-    --chart-color3: #6E6D6D;
-    --chart-color4: #D9C6A5;
-    --chart-color5: #99B898;
+    --color-chart-color1: #FF7171;
+    --color-chart-color2: #FFAA71;
+    --color-chart-color3: #6E6D6D;
+    --color-chart-color4: #D9C6A5;
+    --color-chart-color5: #99B898;
 }
 
 .no-scrollbar::-webkit-scrollbar {

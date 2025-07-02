@@ -63,7 +63,7 @@ export default function Widget() {
     const chartData1 = {
         series: [55, 35, 10],
         options: {
-            colors: ['var(--chart-color1)', 'var(--chart-color2)', 'var(--chart-color3)'],
+            colors: ['var(--color-chart-color1)', 'var(--color-chart-color2)', 'var(--color-chart-color3)'],
             legend: {
                 show: true,
                 position: 'bottom',
@@ -72,7 +72,7 @@ export default function Widget() {
                 enabled: false,
             },
             stroke: {
-                colors: ['var(--card-color)']
+                colors: ['var(--color-card-color)']
             },
             plotOptions: {
                 pie: {
@@ -100,7 +100,7 @@ export default function Widget() {
             fill: {
                 type: "solid",
             },
-            colors: ['var(--secondary)'],
+            colors: ['var(--color-secondary)'],
             dataLabels: {
                 enabled: false
             },
@@ -132,7 +132,7 @@ export default function Widget() {
                 crosshairs: {
                     position: 'front',
                     stroke: {
-                        color: 'var(--danger)',
+                        color: 'var(--color-danger)',
                         dashArray: 0,
                     },
                 }

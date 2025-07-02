@@ -18,7 +18,7 @@ export default function AuthLayout({ children }) {
         fetchData,
         fetchDataError
     } = useSelector((state) => state.auth);
-    const { customizationData, customizationPostData, customizationResetData } = useSelector((state) => state.customization);
+    const customizationData = useSelector((state) => state.customization.customizationData);
     console.log("🚀 ~ AuthLayout ~ customizationData:", customizationData)
     const dispatch = useDispatch();
     const [clientParams, setClientParams] = useState({
@@ -62,6 +62,12 @@ export default function AuthLayout({ children }) {
             dispatch(fetchCustomizationRequest(clientParams.realmName));
         }
     }, [dispatch, clientParams?.realmName]);
+
+    useEffect(() => {
+        if (customizationData) {
+            document.documentElement.setAttribute('data-theme', customizationData.darkMode ? 'dark' : 'light');
+        }
+    }, [customizationData]);
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-body-color py-4 px-4 sm:px-6">
@@ -137,7 +143,7 @@ export default function AuthLayout({ children }) {
 
                 {/* Right Content (Sign In Box) */}
                 <div className="w-full sm:max-w-sm md:max-w-md px-2 sm:px-0">
-                    <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-md w-full">
+                    <div className="bg-body-color rounded-2xl p-4 sm:p-5 shadow-md w-full">
                         {children}
                     </div>
                 </div>

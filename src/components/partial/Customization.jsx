@@ -24,27 +24,8 @@ const CustomizationSettings = (props) => {
     } = props;
     const dispatch = useDispatch();
     const { customizationData, customizationPostData, customizationResetData } = useSelector((state) => state.customization);
+    // console.log("🚀 ~ CustomizationSettings ~ customizationData:", customizationData)
     const token = useSelector((state) => state.auth.token);
-
-    const handleSave = async () => {
-        const response = await fetch('/api/customization', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(localCustomizations),
-        });
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Failed to save customizations');
-        }
-        const data = await response.json();
-        setLocalCustomizations(data);
-        toast.success('Customizations saved successfully', {
-            position: "top-right",
-            duration: 2000,
-        });
-    };
 
     useEffect(() => {
         if (localCustomizations) {
@@ -98,52 +79,52 @@ const CustomizationSettings = (props) => {
         {
             color: "bg-primary",
             label: "Primary Color",
-            variable: "--primary",
+            variable: "--color-primary",
         },
         {
             color: "bg-secondary",
             label: "Secondary Color",
-            variable: "--secondary",
+            variable: "--color-secondary",
         },
         {
             color: "bg-body-color",
             label: "Body Background",
-            variable: "--body-color",
+            variable: "--color-body-color",
         },
         {
             color: "bg-card-color",
             label: "Card Background",
-            variable: "--card-color",
+            variable: "--color-card-color",
         },
         {
             color: "bg-border-color",
             label: "Border Color",
-            variable: "--border-color",
+            variable: "--color-border-color",
         },
         {
             color: "bg-chart-color1",
             label: "Chart Color 1",
-            variable: "--chart-color1",
+            variable: "--color-chart-color1",
         },
         {
             color: "bg-chart-color2",
             label: "Chart Color 2",
-            variable: "--chart-color2",
+            variable: "--color-chart-color2",
         },
         {
             color: "bg-chart-color3",
             label: "Chart Color 3",
-            variable: "--chart-color3",
+            variable: "--color-chart-color3",
         },
         {
             color: "bg-chart-color4",
             label: "Chart Color 4",
-            variable: "--chart-color4",
+            variable: "--color-chart-color4",
         },
         {
             color: "bg-chart-color5",
             label: "Chart Color 5",
-            variable: "--chart-color5",
+            variable: "--color-chart-color5",
         },
     ])
 

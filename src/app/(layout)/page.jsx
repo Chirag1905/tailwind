@@ -26,9 +26,6 @@ import Link from 'next/link';
 export default function Analysis() {
   const breadcrumbItem = [{ name: "Dashboard" }];
 
-  // const selectedAcademicYear = useSelector(state => state.academicYear.selectedAcademicYear);
-  // console.log("Analysis", selectedAcademicYear)
-
   const chartData1 = {
     series: [
       { name: 'Income', data: [20, 10, 50, 30, 40, 30, 50, 60, 5, 20, 30, 20] },
@@ -37,15 +34,15 @@ export default function Analysis() {
     ],
     options: {
       dataLabels: { enabled: false },
-      colors: ['var(--chart-color1)', 'var(--chart-color2)', 'var(--chart-color3)'],
+      colors: ['var(--color-chart-color1)', 'var(--color-chart-color2)', 'var(--color-chart-color3)'],
       chart: { stacked: true, toolbar: { show: false } },
       tooltip: { x: { show: false } },
-      grid: { borderColor: 'var(--border-color)' },
+      grid: { borderColor: 'var(--color-border-color)' },
       xaxis: {
         categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
         tooltip: { enabled: false },
-        axisBorder: { color: 'var(--border-color)' },
-        axisTicks: { color: 'var(--border-color)' },
+        axisBorder: { color: 'var(--color-border-color)' },
+        axisTicks: { color: 'var(--color-border-color)' },
       },
       yaxis: { min: 0, max: 100, tickAmount: 10 },
     },
@@ -54,10 +51,10 @@ export default function Analysis() {
   const chartData2 = {
     series: [55, 35, 10],
     options: {
-      colors: ['var(--chart-color1)', 'var(--chart-color2)', 'var(--chart-color3)'],
+      colors: ['var(--color-chart-color1)', 'var(--color-chart-color2)', 'var(--color-chart-color3)'],
       legend: { show: true, position: 'bottom' },
       dataLabels: { enabled: false },
-      stroke: { colors: ['var(--card-color)'] },
+      stroke: { colors: ['var(--color-card-color)'] },
       plotOptions: {
         pie: {
           expandOnClick: true,

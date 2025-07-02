@@ -60,16 +60,16 @@ import CustomizationSettings from './Customization';
 export default function Header({ toggleMobileNav, mobileNav, toggleNote, toggleChat }) {
     const dispatch = useDispatch();
     // Settings sidebar
-    const [settingToggle, setSettingToggle] = useState(false)
+    const [settingToggle, setSettingToggle] = useState(false);
     const customizationData = useSelector((state) => state.customization);
     const [localCustomizations, setLocalCustomizations] = useState(customizationData?.customizationData);
 
     useEffect(() => {
-        if(customizationData){
+        if (customizationData) {
             setLocalCustomizations(customizationData?.customizationData)
         }
     }, [customizationData])
-    
+
     // console.log("Redux State", customizationData?.customizationData)
     // console.log("Local State", localCustomizations)
 
@@ -105,6 +105,12 @@ export default function Header({ toggleMobileNav, mobileNav, toggleNote, toggleC
         setSettingToggle(!settingToggle)
         document.body.classList.toggle("overflow-hidden", !settingToggle)
     }
+
+    // Get the computed value of the CSS variable
+    // const primaryColor = getComputedStyle(document.documentElement)
+    //     .getPropertyValue('--color-primary').trim();
+
+    // console.log("Local Customizations", primaryColor);
 
     // light dark mode
     const toggleDarkMode = () => {
