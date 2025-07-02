@@ -26,7 +26,7 @@ export const getApplicationFormId = async (obj) => {
 export const getApplicationFormTemplate = async (obj) => {
     try {
         const response = await axios.get(
-            `${API_BASE_URL}/${ACADEMICS_API_PATH_URL}/fetchstudentapplicationtemplate/${obj?.id}`,
+            `${API_BASE_URL}/${ACADEMICS_API_PATH_URL}/fetchstudentapplicationtemplate/${obj?.selectedFormId}`,
             {
                 headers: {
                     "Content-Type": "application/json",
@@ -66,6 +66,7 @@ export const postApplicationFormTemplate = async (obj) => {
     try {
         const response = await axios.post(
             `${API_BASE_URL}/${ACADEMICS_API_PATH_URL}/createstudentapplicationtemplate?templateName=${encodeURIComponent(obj?.templateName)}`,
+            null,
             {
                 headers: {
                     "Content-Type": "application/json",
