@@ -437,6 +437,11 @@ const CourseListPage = () => {
                             Course Status
                           </div>
                         </th>
+                        <th className="py-3 px-2 md:px-4 border-b border-r border-primary-10">
+                          <div className="flex justify-center items-center gap-1">
+                            Active Course
+                          </div>
+                        </th>
                         <th className="py-3 px-2 md:px-4 border-b border-primary-10 last:rounded-tr-lg">
                           <div className="flex justify-center items-center gap-1">
                             Actions
@@ -458,6 +463,7 @@ const CourseListPage = () => {
                                   {item ? (item?.isActive ? "Active" : "Inactive") : "N/A"}
                                 </span>
                               </td>
+                              <td className="py-4 px-2 md:px-4 text-center border-r">{item?.activeRegistrationAcademicYears || "Course is not active"}</td>
                               <td className="py-4 px-2 md:px-4 text-center">
                                 <div className="flex items-center justify-center gap-2">
                                   <button

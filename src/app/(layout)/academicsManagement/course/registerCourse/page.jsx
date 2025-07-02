@@ -146,6 +146,26 @@ const RegisterCourse = () => {
         }
     };
 
+    const handleRegDateChange = (index, regDates, dateStrings) => {
+        const updatedData = [...data];
+        if (regDates && regDates.length === 2) {
+            updatedData[index].regStartDate = regDates[0].format('DD-MM-YYYY');
+            updatedData[index].regEndDate = regDates[1].format('DD-MM-YYYY');
+        } else {
+            updatedData[index].regStartDate = '';
+            updatedData[index].regEndDate = '';
+        }
+        setData(updatedData);
+
+        // Clear date errors when dates are selected
+        if (errors[`regStartDate_${index}`] || errors[`regEndDate_${index}`]) {
+            const newErrors = { ...errors };
+            delete newErrors[`regStartDate_${index}`];
+            delete newErrors[`regEndDate_${index}`];
+            setErrors(newErrors);
+        }
+    };
+
     // Save changes - Only submit selected items and validate only selected fields
     const handleSubmit = async () => {
         try {
@@ -175,6 +195,9 @@ const RegisterCourse = () => {
                 if (item.regAmount === null || item.regAmount === undefined || item.regAmount === '') {
                     validationErrors[`regAmount_${originalIndex}`] = 'Registration amount is required';
                 }
+                if (!item.regStartDate || !item.regEndDate) {
+                    validationErrors[`regStartDate_${originalIndex}`] = 'Date range is required when DOB validation is enabled';
+                }
                 if (item.isDobValidation && (!item.dobStartDate || !item.dobEndDate)) {
                     validationErrors[`dobStartDate_${originalIndex}`] = 'Date range is required when DOB validation is enabled';
                 }
@@ -193,6 +216,8 @@ const RegisterCourse = () => {
                 appFormPrefix: item.appFormPrefix,
                 regAmount: item.regAmount,
                 isDobValidation: item.isDobValidation,
+                registrationStartDate: item.registrationStartDate,
+                registrationEndDate: item.registrationEndDate,
                 dobStartDate: item.dobStartDate,
                 dobEndDate: item.dobEndDate,
                 isActive: item.isActive
@@ -289,6 +314,13 @@ const RegisterCourse = () => {
             : null;
     };
 
+    const getRangePickerRegValue = (index) => {
+        const item = data[index];
+        return item.regStartDate && item.regEndDate
+            ? [dayjs(item.regStartDate, 'DD-MM-YYYY'), dayjs(item.regEndDate, 'DD-MM-YYYY')]
+            : null;
+    };
+
     return (
         <>
             <Breadcrumb breadcrumbItem={breadcrumbItem} />
@@ -328,7 +360,7 @@ const RegisterCourse = () => {
                             >
                                 {academicYears?.map((item) => (
                                     <Select.Option key={item.id} value={item.id}>
-                                        {item.academicYearName}
+                                        {item?.academicYearName}
                                     </Select.Option>
                                 ))}
                             </Select>
@@ -359,6 +391,7 @@ const RegisterCourse = () => {
                                             <th className="py-3 px-4 md:px-6 border-b border-r border-primary-10 text-center">Course Name</th>
                                             <th className="py-3 px-4 md:px-6 border-b border-r border-primary-10 text-center">App Form Prefix</th>
                                             <th className="py-3 px-4 md:px-6 border-b border-r border-primary-10 text-center">Reg Amount</th>
+                                            <th className="py-3 px-4 md:px-6 border-b border-r border-primary-10 text-center">Registration Start Date & Registration End Date</th>
                                             <th className="py-3 px-4 md:px-6 border-b border-r border-primary-10 text-center">DOB Validation</th>
                                             <th className="py-3 px-4 md:px-6 border-b border-r border-primary-10 text-center">DOB Start Date & DOB End Date</th>
                                             <th className="py-3 px-4 md:px-6 border-b border-r border-primary-10 text-center">Status</th>
@@ -424,6 +457,26 @@ const RegisterCourse = () => {
                                                         {errors[`regAmount_${index}`] && (
                                                             <p className="mt-1 text-xs text-red-600">{errors[`regAmount_${index}`]}</p>
                                                         )}
+                                                    </td>
+                                                    <td className="py-4 px-4 md:px-6 text-center border-r border-primary-10 w-[320px]"
+                                                        ref={el => {
+                                                            if (!fieldRefs.current[index]) fieldRefs.current[index] = {};
+                                                            fieldRefs.current[index].regDateRange = { current: el };
+                                                        }}>
+                                                        <div className="form-control w-full">
+                                                            <RangePicker
+                                                                placeholder={["Start Reg Date", "End Reg Date"]}
+                                                                className={`w-full ${errors[`regStartDate_${index}`] ? 'border-red-500' : 'border-gray-300'} border rounded px-2 py-1 text-sm`}
+                                                                onChange={(regDates, dateStrings) => handleRegDateChange(index, regDates, dateStrings)}
+                                                                value={getRangePickerRegValue(index)}
+                                                                allowEmpty
+                                                                format="DD-MM-YYYY"
+                                                                // disabled={!item.isDobValidation || !item.selected}
+                                                            />
+                                                            {errors[`regStartDate_${index}`] && (
+                                                                <p className="mt-1 text-xs text-red-600">{errors[`regStartDate_${index}`]}</p>
+                                                            )}
+                                                        </div>
                                                     </td>
                                                     <td className="py-4 px-4 md:px-6 text-center border-r border-primary-10" ref={el => {
                                                         if (!fieldRefs.current[index]) fieldRefs.current[index] = {};
