@@ -19,7 +19,7 @@ export default function AuthLayout({ children }) {
         fetchDataError
     } = useSelector((state) => state.auth);
     const customizationData = useSelector((state) => state.customization.customizationData);
-    console.log("🚀 ~ AuthLayout ~ customizationData:", customizationData)
+    // console.log("🚀 ~ AuthLayout ~ customizationData:", customizationData)
     const dispatch = useDispatch();
     const [clientParams, setClientParams] = useState({
         clientId: "",
@@ -143,7 +143,7 @@ export default function AuthLayout({ children }) {
 
                 {/* Right Content (Sign In Box) */}
                 <div className="w-full sm:max-w-sm md:max-w-md px-2 sm:px-0">
-                    <div className="bg-body-color rounded-2xl p-4 sm:p-5 shadow-md w-full">
+                    <div className="bg-card-color rounded-2xl p-4 sm:p-5 shadow-md w-full">
                         {children}
                     </div>
                 </div>
