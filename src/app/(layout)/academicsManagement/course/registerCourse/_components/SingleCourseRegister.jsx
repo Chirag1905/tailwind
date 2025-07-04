@@ -36,10 +36,11 @@ const SingleCourseRegister = (props) => {
     isActive: false,
     isDobValidation: false,
     dobStartDate: null,
-    dobEndDate: null
+    dobEndDate: null,
+    isRegValidation: false,
+    registrationStartDate: null,  // Changed from regStartDate
+    registrationEndDate: null     // Changed from regEndDate
   });
-  console.log("🚀 ~ SingleCourseRegister ~ data:", data)
-  console.log("🚀 ~ SingleCourseRegister ~ data:", data.dobStartDate)
 
   const [errors, setErrors] = useState({});
   const fieldRefs = useRef({
@@ -47,7 +48,11 @@ const SingleCourseRegister = (props) => {
     courseDisplayName: null,
     appFormPrefix: null,
     regAmount: null,
-    isActive: null
+    isActive: null,
+    dobStartDate: null,
+    dobEndDate: null,
+    registrationStartDate: null,  // Changed from regStartDate
+    registrationEndDate: null     // Changed from regEndDate
   });
 
   const [academicYears, setAcademicYears] = useState();
@@ -73,16 +78,6 @@ const SingleCourseRegister = (props) => {
     dispatch(setSelectedAcademicYear(value));
   };
 
-  // Effect for data update - automatically select rows where isActive is true
-  // useEffect(() => {
-  //   if (singleCourseRegisterData) {
-  //     setData(prev => ({
-  //       ...prev, // keep defaults
-  //       ...singleCourseRegisterData?.data // apply loaded data
-  //     }));
-  //   }
-  // }, [singleCourseRegisterData]);
-
   // In your useEffect where you set the initial data
   useEffect(() => {
     if (singleCourseRegisterData) {
@@ -92,7 +87,14 @@ const SingleCourseRegister = (props) => {
         ...loadedData,
         // Convert string dates to Day.js objects
         dobStartDate: loadedData.dobStartDate ? dayjs(loadedData.dobStartDate, 'DD-MM-YYYY') : null,
-        dobEndDate: loadedData.dobEndDate ? dayjs(loadedData.dobEndDate, 'DD-MM-YYYY') : null
+        dobEndDate: loadedData.dobEndDate ? dayjs(loadedData.dobEndDate, 'DD-MM-YYYY') : null,
+        // Handle both old and new field names for backward compatibility
+        registrationStartDate: loadedData.registrationStartDate 
+          ? dayjs(loadedData.registrationStartDate, 'DD-MM-YYYY') 
+          : (loadedData.regStartDate ? dayjs(loadedData.regStartDate, 'DD-MM-YYYY') : null),
+        registrationEndDate: loadedData.registrationEndDate 
+          ? dayjs(loadedData.registrationEndDate, 'DD-MM-YYYY') 
+          : (loadedData.regEndDate ? dayjs(loadedData.regEndDate, 'DD-MM-YYYY') : null)
       }));
     }
   }, [singleCourseRegisterData]);
@@ -139,10 +141,22 @@ const SingleCourseRegister = (props) => {
     e.preventDefault();
 
     try {
+      // Format dates to DD-MM-YYYY before sending
+      const formatDate = (date) => date ? date.format('DD-MM-YYYY') : null;
+      
       const payload = {
         campusCourseId: courseData?.id,
-        ...data
+        ...data,
+        dobStartDate: formatDate(data.dobStartDate),
+        dobEndDate: formatDate(data.dobEndDate),
+        registrationStartDate: formatDate(data.registrationStartDate),
+        registrationEndDate: formatDate(data.registrationEndDate)
       };
+      
+      // Remove old field names to avoid confusion
+      delete payload.regStartDate;
+      delete payload.regEndDate;
+
       dispatch(postSingleCourseRegisterRequest({
         data: payload,
         selectedAcademicYear,
@@ -179,6 +193,10 @@ const SingleCourseRegister = (props) => {
       refToScroll = fieldRefs.current.dobStartDate;
     } else if (firstErrorField === 'dobEndDate') {
       refToScroll = fieldRefs.current.dobEndDate;
+    } else if (firstErrorField === 'registrationStartDate') {
+      refToScroll = fieldRefs.current.registrationStartDate;
+    } else if (firstErrorField === 'registrationEndDate') {
+      refToScroll = fieldRefs.current.registrationEndDate;
     }
 
     if (refToScroll && refToScroll.current) {
@@ -412,14 +430,6 @@ const SingleCourseRegister = (props) => {
                 {/* DOB Start Date */}
                 <div className="w-full relative" ref={fieldRefs.current.dobStartDate}>
                   <div className="floating-form-control">
-                    {/* <label className="form-label">DOB Start Date</label> */}
-                    {/* <DatePicker
-                      className={`w-full ${errors.dobStartDate ? 'border-red-500' : ''}`}
-                      value={data.dobStartDate ? dayjs(data.dobStartDate) : null}
-                      onChange={(date) => handleDateChange("dobStartDate", date)}
-                      format="DD-MM-YYYY"
-                      placeholder="Select Start Date"
-                    /> */}
                     <DatePicker
                       className={`w-full ${errors.dobStartDate ? 'border-red-500' : ''}`}
                       value={data.dobStartDate}
@@ -436,14 +446,6 @@ const SingleCourseRegister = (props) => {
                 {/* DOB End Date */}
                 <div className="w-full relative" ref={fieldRefs.current.dobEndDate}>
                   <div className="floating-form-control">
-                    {/* <label className="form-label">DOB End Date</label> */}
-                    {/* <DatePicker
-                      className={`w-full ${errors.dobEndDate ? 'border-red-500' : ''}`}
-                      value={data.dobEndDate ? dayjs(data.dobEndDate) : null}
-                      onChange={(date) => handleDateChange("dobEndDate", date)}
-                      format="DD-MM-YYYY"
-                      placeholder="Select End Date"
-                    /> */}
                     <DatePicker
                       className={`w-full ${errors.dobEndDate ? 'border-red-500' : ''}`}
                       value={data.dobEndDate}
@@ -459,7 +461,59 @@ const SingleCourseRegister = (props) => {
               </div>
             )}
           </div>
+
+          {/* Registration Validation Section */}
+          <div className="w-full relative space-y-2 px-4 py-2 border rounded-lg">
+            <div className="form-check form-switch flex items-center">
+              <input
+                type="checkbox"
+                className="form-check-input h-5 w-10 rounded-full appearance-none bg-gray-300 checked:bg-blue-500 transition duration-200 relative cursor-pointer"
+                checked={data.isRegValidation}
+                onChange={(e) => handleChange("isRegValidation", e.target.checked)}
+              />
+              <label className="text-sm mt-1 ml-2">
+                Enable Registration Validation
+              </label>
+            </div>
+
+            {data.isRegValidation && (
+              <div className="flex flex-col md:flex-row md:space-x-5 space-y-4 md:space-y-0 mt-4">
+                {/* Registration Start Date */}
+                <div className="w-full relative" ref={fieldRefs.current.registrationStartDate}>
+                  <div className="floating-form-control">
+                    <DatePicker
+                      className={`w-full ${errors.registrationStartDate ? 'border-red-500' : ''}`}
+                      value={data.registrationStartDate}
+                      onChange={(date) => handleDateChange("registrationStartDate", date)}
+                      format="DD-MM-YYYY"
+                      placeholder="Select Reg Start Date"
+                    />
+                  </div>
+                  {errors.registrationStartDate && (
+                    <p className="mt-1 text-sm text-red-600">{errors.registrationStartDate}</p>
+                  )}
+                </div>
+
+                {/* Registration End Date */}
+                <div className="w-full relative" ref={fieldRefs.current.registrationEndDate}>
+                  <div className="floating-form-control">
+                    <DatePicker
+                      className={`w-full ${errors.registrationEndDate ? 'border-red-500' : ''}`}
+                      value={data.registrationEndDate}
+                      onChange={(date) => handleDateChange("registrationEndDate", date)}
+                      format="DD-MM-YYYY"
+                      placeholder="Select Reg End Date"
+                    />
+                  </div>
+                  {errors.registrationEndDate && (
+                    <p className="mt-1 text-sm text-red-600">{errors.registrationEndDate}</p>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
+        
       </div>
 
       {/* Buttons */}

@@ -10,12 +10,45 @@ import CustomDropdown from '@/components/utils/CustomDropdown';
 
 dayjs.extend(customParseFormat);
 const dateFormat = ['DD/MM/YYYY', 'DD/MM/YY', 'DD-MM-YYYY', 'DD-MM-YY'];
+const { Panel } = Collapse;
+
 const ApplicationForm = ({ config }) => {
-  // Safely extract sections with fallback
-  const sections = Array.isArray(config?.applicantStudentSectionObjects)
-    ? [...config.applicantStudentSectionObjects]
-    : [];
-  // console.log("🚀 ~ Application ~ sections:", sections)
+  // Transform sections array into defaultConfig format
+  const transformedConfig = {
+    title: "Applicant Registration",
+    sections: Array.isArray(config?.applicantStudentSectionObjects) && config.applicantStudentSectionObjects.length > 0
+      ? config.applicantStudentSectionObjects.reduce((acc, section) => {
+          const sectionKey = section.applicantStudentDefaultSectionId;
+          const fieldsOrder = [];
+          const fields = {};
+
+          section.applicantStudentSectionFieldsObject.forEach(field => {
+            const fieldKey = field.fieldColumnName;
+            const enabled = field.isFieldActive && field.showField;
+            fields[fieldKey] = {
+              ...field, // Preserve all original field properties
+              enabled,
+              required: field.mandatoryField,
+              label: field.fieldDisplayName || field.fieldColumnName,
+              colSpan: 1
+            };
+            if (enabled) {
+              fieldsOrder.push(fieldKey);
+            }
+          });
+
+          acc[sectionKey] = {
+            enabled: section.isSectionActive,
+            label: section.displaySectionName,
+            fieldsOrder,
+            fields
+          };
+          return acc;
+        }, {})
+      : {}
+  };
+
+  console.log("🚀 ~ Application ~ transformedConfig:", transformedConfig);
 
   const [expandedSections, setExpandedSections] = useState([]);
   const [formData, setFormData] = useState({});
@@ -26,20 +59,20 @@ const ApplicationForm = ({ config }) => {
   const accordionRefs = useRef([]);
   const formRef = useRef(null);
 
-  // Initialize form data and expanded sections based on config
+  // Initialize form data and expanded sections based on transformedConfig
   useEffect(() => {
-    if (sections && sections.length > 0) {
+    if (transformedConfig && Object.keys(transformedConfig.sections).length > 0) {
       const initialData = {};
       const initialExpandedSections = [];
-      
-      sections.forEach((section, index) => {
-        if (section.isSectionActive) {
-          initialExpandedSections.push(index);
-          
-          section.applicantStudentSectionFieldsObject.forEach(field => {
-            if (field.isFieldActive && field.showField) {
-              // Set default value based on field type
-              initialData[field.fieldColumnName] = field.defaultValue || 
+
+      Object.entries(transformedConfig.sections).forEach(([sectionKey, section]) => {
+        if (section.enabled) {
+          initialExpandedSections.push(sectionKey);
+
+          section.fieldsOrder.forEach(fieldKey => {
+            const field = section.fields[fieldKey];
+            if (field.enabled) {
+              initialData[fieldKey] = field.defaultValue || 
                 (field.fieldElementId.elementType === 'checkbox' ? false : 
                  field.fieldElementId.elementType === 'radio' ? '' : 
                  field.fieldElementId.elementType === 'dropdown' ? '' : 
@@ -48,17 +81,17 @@ const ApplicationForm = ({ config }) => {
           });
         }
       });
-      
+
       setFormData(initialData);
       setExpandedSections(initialExpandedSections);
     }
   }, []);
 
-  const toggleSection = (index) => {
+  const toggleSection = (sectionKey) => {
     setExpandedSections(prev =>
-      prev.includes(index)
-        ? prev.filter(i => i !== index)
-        : [...prev, index]
+      prev.includes(sectionKey)
+        ? prev.filter(key => key !== sectionKey)
+        : [...prev, sectionKey]
     );
   };
 
@@ -68,7 +101,6 @@ const ApplicationForm = ({ config }) => {
       [name]: value
     }));
 
-    // Validate on change if the field has been touched
     if (touchedFields[name]) {
       validateField(name, value);
     }
@@ -85,30 +117,27 @@ const ApplicationForm = ({ config }) => {
   };
 
   const validateField = (name, value) => {
-    if (!sections) return true;
-    
-    // Find the field configuration
+    if (!transformedConfig.sections) return true;
+
     let fieldConfig = null;
-    for (const section of sections) {
-      const field = section.applicantStudentSectionFieldsObject.find(f => f.fieldColumnName === name);
-      if (field) {
-        fieldConfig = field;
+    for (const section of Object.values(transformedConfig.sections)) {
+      if (section.fields[name]) {
+        fieldConfig = section.fields[name];
         break;
       }
     }
 
     if (!fieldConfig) return true;
 
-    // Run validation based on field configuration
     let error = '';
-    
+
     if (fieldConfig.mandatoryField && !value) {
-      error = `${fieldConfig.fieldDisplayName || name} is required`;
+      error = `${fieldConfig.label} is required`;
     } else if (name === 'email' && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
       error = 'Invalid email format';
     } else if ((name === 'mobile' || name === 'phone') && value && !/^[0-9]{10}$/.test(value)) {
       error = 'Invalid phone number';
-    } else if ((name === 'pincode') && value && !/^[0-9]{6}$/.test(value)) {
+    } else if (name === 'pincode' && value && !/^[0-9]{6}$/.test(value)) {
       error = 'PIN code must be 6 digits';
     }
 
@@ -121,17 +150,16 @@ const ApplicationForm = ({ config }) => {
   };
 
   const validateForm = () => {
-    if (!sections) return false;
-    
-    let isValid = true;
-    const newErrors = {};
+    if (!transformedConfig.sections) return false;
 
-    // Validate all enabled fields
-    sections.forEach(section => {
-      if (section.isSectionActive) {
-        section.applicantStudentSectionFieldsObject.forEach(field => {
-          if (field.isFieldActive && field.showField && field.mandatoryField) {
-            const valid = validateField(field.fieldColumnName, formData[field.fieldColumnName]);
+    let isValid = true;
+
+    Object.values(transformedConfig.sections).forEach(section => {
+      if (section.enabled) {
+        section.fieldsOrder.forEach(fieldKey => {
+          const field = section.fields[fieldKey];
+          if (field.enabled && field.mandatoryField) {
+            const valid = validateField(fieldKey, formData[fieldKey]);
             if (!valid) isValid = false;
           }
         });
@@ -145,7 +173,6 @@ const ApplicationForm = ({ config }) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Mark all fields as touched
     const allFieldsTouched = {};
     Object.keys(formData).forEach(key => {
       allFieldsTouched[key] = true;
@@ -153,7 +180,6 @@ const ApplicationForm = ({ config }) => {
     setTouchedFields(allFieldsTouched);
 
     if (validateForm()) {
-      // Form is valid, proceed with submission
       console.log('Form submitted:', formData);
       message.success('Form submitted successfully!');
     } else {
@@ -175,9 +201,9 @@ const ApplicationForm = ({ config }) => {
       onBlur: () => handleBlur(field.fieldColumnName),
       error: errors[field.fieldColumnName],
       required: field.mandatoryField,
-      ref: (ref) => fieldRefs.current[field.fieldColumnName] = ref,
+      ref: (ref) => (fieldRefs.current[field.fieldColumnName] = ref),
       placeholder: `Enter ${field.fieldDisplayName || field.fieldColumnName}`,
-      disabled: false // You can add a disabled property to your field config if needed
+      disabled: false
     };
 
     switch (field.fieldElementId.elementType) {
@@ -229,13 +255,12 @@ const ApplicationForm = ({ config }) => {
         );
 
       case 'radio':
-        // Default options for gender, can be extended based on field name
         const radioOptions = field.fieldColumnName === 'gender' ? [
           { value: 'male', label: 'Male' },
           { value: 'female', label: 'Female' },
           { value: 'other', label: 'Other' }
         ] : [];
-        
+
         return (
           <div className="mb-4 form-control">
             <label className="form-label">
@@ -262,7 +287,6 @@ const ApplicationForm = ({ config }) => {
         );
 
       case 'dropdown':
-        // Default options based on field name
         const selectOptions = (() => {
           if (field.fieldColumnName === 'nationality' || field.fieldColumnName === 'country') {
             return [
@@ -271,7 +295,7 @@ const ApplicationForm = ({ config }) => {
               { value: 'Bhutan', label: 'Bhutan' },
               { value: 'Indonesia', label: 'Indonesia' },
               { value: 'South Korea', label: 'South Korea' },
-              { value: 'Dubai', label: 'Dubai' },
+              { value: 'Dubai', label: 'Dubai' }
             ];
           } else if (field.fieldColumnName === 'studentcategory') {
             return [
@@ -281,7 +305,7 @@ const ApplicationForm = ({ config }) => {
               { value: 'st', label: 'ST' },
               { value: 'ebc', label: 'EBC' },
               { value: 'new_student', label: 'NEW STUDENT' },
-              { value: 'old_student', label: 'OLD STUDENT' },
+              { value: 'old_student', label: 'OLD STUDENT' }
             ];
           } else if (field.fieldColumnName === 'bloodgroup') {
             return [
@@ -292,12 +316,12 @@ const ApplicationForm = ({ config }) => {
               { value: 'AB+', label: 'AB+' },
               { value: 'AB-', label: 'AB-' },
               { value: 'O+', label: 'O+' },
-              { value: 'O-', label: 'O-' },
+              { value: 'O-', label: 'O-' }
             ];
           }
           return [];
         })();
-        
+
         return (
           <CustomDropdown
             {...commonProps}
@@ -325,7 +349,7 @@ const ApplicationForm = ({ config }) => {
                 uid: '-1',
                 name: formData[field.fieldColumnName].name,
                 status: 'done',
-                originFileObj: formData[field.fieldColumnName],
+                originFileObj: formData[field.fieldColumnName]
               }] : []}
               listType="picture-card"
               onPreview={(file) => {
@@ -356,23 +380,23 @@ const ApplicationForm = ({ config }) => {
     }
   };
 
-  const renderSection = (section, index) => {
-    if (!section.isSectionActive) return null;
+  const renderSection = (sectionKey, section) => {
+    if (!section.enabled) return null;
 
     return (
       <div
-        ref={(ref) => accordionRefs.current[index] = ref}
+        ref={(ref) => (accordionRefs.current[sectionKey] = ref)}
         className="mb-4 border rounded-lg overflow-hidden shadow-lg bg-card-color"
-        key={section.applicantStudentDefaultSectionId}
+        key={sectionKey}
       >
         <button
           type="button"
-          className={`w-full px-4 py-3 md:px-6 md:py-4 text-left flex justify-between items-center transition-colors ${expandedSections.includes(index) ? 'bg-blue-50 text-blue-700' : 'bg-white hover:bg-gray-50'}`}
-          onClick={() => toggleSection(index)}
+          className={`w-full px-4 py-3 md:px-6 md:py-4 text-left flex justify-between items-center transition-colors ${expandedSections.includes(sectionKey) ? 'bg-blue-50 text-blue-700' : 'bg-white hover:bg-gray-50'}`}
+          onClick={() => toggleSection(sectionKey)}
         >
-          <span className="font-medium text-base md:text-lg">{section.displaySectionName}</span>
+          <span className="font-medium text-base md:text-lg">{section.label}</span>
           <svg
-            className={`w-5 h-5 transform transition-transform duration-200 ${expandedSections.includes(index) ? 'rotate-180 text-blue-600' : 'text-gray-500'}`}
+            className={`w-5 h-5 transform transition-transform duration-200 ${expandedSections.includes(sectionKey) ? 'rotate-180 text-blue-600' : 'text-gray-500'}`}
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -381,12 +405,12 @@ const ApplicationForm = ({ config }) => {
           </svg>
         </button>
 
-        <div className={`bg-body-color transition-all duration-300 overflow-hidden ${expandedSections.includes(index) ? 'max-h-[500px] overflow-y-auto cus-scrollbar py-4' : 'max-h-0'}`}>
+        <div className={`bg-body-color transition-all duration-300 overflow-hidden ${expandedSections.includes(sectionKey) ? 'max-h-[500px] overflow-y-auto cus-scrollbar py-4' : 'max-h-0'}`}>
           <div className="px-4 md:px-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              {section.applicantStudentSectionFieldsObject.map(field => (
-                <div key={field.applicantStudentDefaultSectionFieldId}>
-                  {renderField(field)}
+              {section.fieldsOrder.map(fieldKey => (
+                <div key={fieldKey}>
+                  {renderField(section.fields[fieldKey])}
                 </div>
               ))}
             </div>
@@ -396,7 +420,7 @@ const ApplicationForm = ({ config }) => {
     );
   };
 
-  if (!sections || sections.length === 0) {
+  if (!transformedConfig.sections || Object.keys(transformedConfig.sections).length === 0) {
     return (
       <div className="w-full bg-body-color p-6 text-center">
         <h2 className="text-xl font-medium text-gray-600">No form sections available</h2>
@@ -407,19 +431,19 @@ const ApplicationForm = ({ config }) => {
 
   return (
     <div className="w-full bg-body-color">
-      <h1 className="text-2xl md:text-3xl font-bold mb-6 text-primary">Applicant Registration</h1>
+      <h1 className="text-2xl md:text-3xl font-bold mb-6 text-primary">{transformedConfig.title}</h1>
       <form ref={formRef} onSubmit={handleSubmit}>
-        {sections.map((section, index) => 
-          renderSection(section, index)
-        )}
+        {Object.entries(transformedConfig.sections).map(([sectionKey, section]) => (
+          renderSection(sectionKey, section)
+        ))}
 
         <div className="flex flex-col space-y-1 mt-5">
-          <p className='text-primary'>Total Payable Fee: <span>₹ 0.00</span></p>
-          <p className='text-primary'>Summary: <span>Application Fee: </span><span>₹ 0.00</span></p>
+          <p className="text-primary">Total Payable Fee: <span>₹ 0.00</span></p>
+          <p className="text-primary">Summary: <span>Application Fee: </span><span>₹ 0.00</span></p>
         </div>
         <div className="mt-6 flex justify-start">
           <Button
-            className='btn btn-primary'
+            className="btn btn-primary"
             htmlType="submit"
             size="large"
             loading={isSubmitting}
