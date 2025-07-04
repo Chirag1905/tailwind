@@ -1,11 +1,11 @@
 'use client';
-import { IconArrowLeft, IconArrowRight, IconCirclePlus, IconEdit, IconFilePlus, IconListDetails, IconPlus, IconSettings, IconTrash } from '@tabler/icons-react';
+import { IconEdit, IconFilePlus, IconListDetails, IconPlus, IconSettings, IconTrash } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
-import ApplicationForm from '../applicationForm/page';
-import CustomForm from './_components/CustomForm';
+import CustomForm from './_components/FormCreate';
 import { useDispatch, useSelector } from 'react-redux';
 import { getApplicationFormIdRequest, getApplicationFormTemplateRequest } from '@/Redux/features/applicationForm/applicationFormSlice';
-import Application from './_components/Application';
+import ApplicationForm from './_components/ApplicationForm';
+import FormEdit from './_components/FormEdit';
 
 const CreateForm = (props) => {
   const { openModal, closeModal } = props;
@@ -30,7 +30,7 @@ const CreateForm = (props) => {
   const [availableForms, setAvailableForms] = useState([]);
   const [selectedFormId, setSelectedFormId] = useState(null);
   const [selectedFormData, setSelectedFormData] = useState(null);
-  // console.log("🚀 ~ CreateForm ~ selectedFormData:", selectedFormData)
+  const [editingFormId, setEditingFormId] = useState(null);
 
   useEffect(() => {
     dispatch(getApplicationFormIdRequest({ token }))
@@ -46,6 +46,11 @@ const CreateForm = (props) => {
       setSelectedFormData(applicationFormTemplateData?.data)
     }
   }, [applicationFormIdData, applicationFormTemplateData]);
+
+  const handleEditFormTemplate = (id, e) => {
+    e.stopPropagation();
+    setEditingFormId(id);
+  };
 
   const handleUpdateFormTemplate = () => {
 
@@ -77,7 +82,7 @@ const CreateForm = (props) => {
                     key={index}
                     onClick={() => setSelectedFormId(item.id)}
                     className={`p-4 border rounded-lg cursor-pointer transition-all relative ${selectedFormId === item.id
-                      ? 'border-primary bg-blue-50 ring-2 ring-primary'
+                      ? 'border-primary bg-card-color ring-2 ring-primary'
                       : 'border-gray-200 hover:border-blue-300'
                       }`}
                   >
@@ -91,13 +96,10 @@ const CreateForm = (props) => {
                     <div className="flex justify-between items-start">
                       <div>
                         <h3 className="font-medium text-lg">{item?.templateName}</h3>
-                        <p className="text-sm text-gray-500">
-                          {/* Created: {new Date(form.createdAt).toLocaleDateString()} */}
-                        </p>
                       </div>
                       <div className='flex gap-2 items-center'>
                         <button
-                          // onClick={(e) => handleEditFormTemplate(item?.id, e)}
+                          onClick={(e) => handleEditFormTemplate(item?.id, e)}
                           className="text-red-500 hover:text-red-700"
                         >
                           <IconEdit size={18} />
@@ -110,25 +112,31 @@ const CreateForm = (props) => {
                         </button>
                       </div>
                     </div>
-                    <div className="mt-2 text-sm">
-                      {/* <p>Sections: {Object.values(form.config.sections).filter(s => s.enabled).length}</p> */}
-                      {/* <p>Fields: {
-                        Object.values(form.config.sections)
-                          .reduce((total, section) =>
-                            total + Object.values(section.fields).filter(f => f.enabled).length, 0)
-                      }</p> */}
-                    </div>
                   </div>
                 ))}
               </div>
 
-              {selectedFormId && (
+              {selectedFormId ? (
                 <div className="mt-6 border-t pt-4">
-                  <h3 className="font-medium mb-2">Preview:</h3>
-                  <Application
-                    config={selectedFormData}
-                  // config={savedForms.find(f => f.id === selectedFormId)?.config}
-                  />
+                  {editingFormId === selectedFormId ? (
+                    <>
+                      <h3 className="font-medium mb-2">Edit Form:</h3>
+                      <FormEdit
+                        config={selectedFormData}
+                        onCancel={() => setEditingFormId(null)}
+                        onSave={handleUpdateFormTemplate}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <h3 className="font-medium mb-2">Preview:</h3>
+                      <ApplicationForm config={selectedFormData} />
+                    </>
+                  )}
+                </div>
+              ) : (
+                <div className="mt-6 border-t pt-4">
+                  <h3 className="font-medium mb-2">No form selected</h3>
                 </div>
               )}
             </>
@@ -153,9 +161,7 @@ const CreateForm = (props) => {
       description: 'Build your own form template',
       icon: <IconPlus />,
       preview: showFormBuilder ? (
-        <CustomForm
-        // onSave={handleSaveFormTemplate}
-        />
+        <CustomForm />
       ) : (
         <div className="flex flex-col items-center justify-center h-full">
           <h3 className="text-xl font-semibold mb-4">Custom Form Builder</h3>
@@ -167,20 +173,6 @@ const CreateForm = (props) => {
             <IconSettings size={18} />
             Create Form Template
           </button>
-          {/* {formConfig && (
-            <div className="mt-6 p-4 border rounded-lg w-full">
-              <h4 className="font-medium mb-2">Current Configuration:</h4>
-              <ul className="list-disc pl-5">
-                {Object.entries(formConfig.sections).map(([key, section]) => (
-                  section.enabled && (
-                    <li key={key} className="mb-1">
-                      {section.label} ({Object.values(section.fields).filter(f => f.enabled).length} fields)
-                    </li>
-                  )
-                ))}
-              </ul>
-            </div>
-          )} */}
         </div>
       )
     }
@@ -191,14 +183,6 @@ const CreateForm = (props) => {
     if (cardId !== 2) {
       setShowFormBuilder(false);
     }
-  };
-
-  const handleUseTemplate = () => {
-    if (selectedCard === 1 && !selectedFormId) {
-      alert('Please select a form to use as template');
-      return;
-    }
-    // closeModal(selectedFormId ? savedForms.find(f => f.id === selectedFormId)?.config : null);
   };
 
   return (
@@ -226,7 +210,7 @@ const CreateForm = (props) => {
       {/* Automatically show the preview of the selected card */}
       <div className="mt-6 p-6 bg-body-color rounded-xl border border-border-color shadow-lg">
         <h2 className="text-2xl font-bold text-primary mb-6">
-          {cards.find(c => c.id === selectedCard)?.title} Preview
+          {cards.find(c => c.id === selectedCard)?.title}
         </h2>
         <div className="p-4 rounded-xl">
           {cards.find(c => c.id === selectedCard)?.preview}
